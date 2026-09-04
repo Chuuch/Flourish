@@ -4,7 +4,6 @@ import '@/index.css';
 import { AppProviders } from './app/providers/AppProviders.tsx';
 import { RouterProvider } from 'react-router';
 import { router } from './app/router/router.tsx';
-import './lib/api/setup';
 
 const rootElement = document.getElementById('root');
 
