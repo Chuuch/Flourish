@@ -1,24 +1,22 @@
 import { env } from '@/config/env';
-import type { User } from '../schemas/user.schema';
 import { describe, expect, it } from 'vitest';
 import { server } from '@/test/server';
 import { HttpResponse, http as mswHttp } from 'msw';
 import { renderWithProviders } from '@/test/render';
 import { UserList } from './UserList';
 import { screen } from '@testing-library/react';
+import { makeUser } from '@/test/factories/user';
 
 const usersUrl = `${env.VITE_API_URL}/users`;
-
-function makeUser(email: string): User {
-  const now = new Date().toISOString();
-  return { id: crypto.randomUUID(), email, created_at: now, updated_at: now };
-}
 
 describe('UserList', () => {
   it('renders users returned by the API', async () => {
     server.use(
       mswHttp.get(usersUrl, () =>
-        HttpResponse.json([makeUser('ada@example.com'), makeUser('linus@example.com')]),
+        HttpResponse.json([
+          makeUser({ email: 'ada@example.com' }),
+          makeUser({ email: 'linus@example.com' }),
+        ]),
       ),
     );
 
