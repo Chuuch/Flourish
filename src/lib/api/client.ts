@@ -11,7 +11,7 @@ export const setAccessToken = (token: string | null): void => {
 export const getAccessToken = (): string | null => accessToken;
 
 export const apiClient = axios.create({
-  baseURL: env.VITE_API_URL,
+  baseURL: env.API_URL,
   timeout: 10_000,
   headers: {
     'Content-Type': 'application/json',

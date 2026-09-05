@@ -10,7 +10,7 @@ import { createUserSchema, type User } from '../schemas/user.schema';
 import { makeUser } from '@/test/factories/user';
 import { UsersPage } from '../pages/UsersPage';
 
-const usersUrl = `${env.VITE_API_URL}/users`;
+const usersUrl = `${env.API_URL}/users`;
 
 describe('CreateUserForm', () => {
   it('shows a validation error without calling the API', async () => {

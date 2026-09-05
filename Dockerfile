@@ -8,11 +8,6 @@ RUN HUSKY=0 npm ci
 
 COPY . .
 
-ARG VITE_API_URL
-ARG VITE_APP_ENV=production
-ENV VITE_API_URL=${VITE_API_URL} \
-  VITE_APP_ENV=${VITE_APP_ENV}
-
 RUN npm run build
 
 # ------ Stage 2: server ----
@@ -20,7 +15,8 @@ FROM nginxinc/nginx-unprivileged:1.28-alpine AS runtime
 
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY docker/security-headers.conf /etc/nginx/snippets/security-headers.conf
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --chmod=755 docker/40-app-config.sh /docker-entrypoint.d/40-app-config.sh
+COPY --from=build --chown=nginx:nginx /app/dist /usr/share/nginx/html
 
 EXPOSE 8080
 
