@@ -1,0 +1,10 @@
+services:
+  web:
+    build:
+      context: .
+      args:
+        VITE_API_URL: http://localhost:8080
+        VITE_APP_ENV: production
+    image: flourish-web:local
+    ports:
+      - "3000:8080"
