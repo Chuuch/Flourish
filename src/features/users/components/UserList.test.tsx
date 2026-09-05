@@ -12,7 +12,12 @@ const usersUrl = `${env.VITE_API_URL}/users`;
 describe('UserList', () => {
   it('renders users returned by the API', async () => {
     server.use(
-      mswHttp.get(usersUrl, () => HttpResponse.json(makeUser({ email: 'ada@example.com' }))),
+      mswHttp.get(usersUrl, () =>
+        HttpResponse.json([
+          makeUser({ email: 'ada@example.com' }),
+          makeUser({ email: 'linus@example.com' }),
+        ]),
+      ),
     );
 
     renderWithProviders(<UserList />);

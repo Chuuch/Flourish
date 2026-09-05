@@ -32,7 +32,7 @@ export function CreateUserForm() {
         type="email"
         autoComplete="email"
         aria-invalid={errors.email ? true : undefined}
-        aria-described-by={errors.email ? 'email-error' : undefined}
+        aria-describedby={errors.email ? 'email-error' : undefined}
         {...register('email')}
       />
       {errors.email && (

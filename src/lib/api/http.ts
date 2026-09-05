@@ -2,6 +2,7 @@ import type { AxiosRequestConfig } from 'axios';
 import z from 'zod';
 import { apiClient } from './client';
 import { ApiError } from './errors';
+import { logger } from '../logger/logger';
 
 type RequestConfig = Omit<AxiosRequestConfig, 'url' | 'method' | 'data'>;
 
@@ -10,6 +11,11 @@ export async function request<T>(schema: z.ZodType<T>, config: AxiosRequestConfi
   const parsed = schema.safeParse(response.data);
 
   if (!parsed.success) {
+    const issues = z.treeifyError(parsed.error);
+    logger.error('API response failed schema validation', undefined, {
+      url: config.url,
+      issues,
+    });
     throw new ApiError(
       'Response validation failed',
       response.status,
