@@ -1,4 +1,4 @@
-import { env } from "@/config/env";
+import { env } from '@/config/env';
 
 type LogContext = Readonly<Record<string, unknown>>;
 

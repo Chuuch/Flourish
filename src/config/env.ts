@@ -14,10 +14,7 @@ const rawEnv: Record<string, unknown> = {
 const parsed = envSchema.safeParse(rawEnv);
 
 if (!parsed.success) {
-  console.error(
-    '❌ Invalid environment configuration:',
-    z.flattenError(parsed.error).fieldErrors
-  );
+  console.error('❌ Invalid environment configuration:', z.flattenError(parsed.error).fieldErrors);
   throw new Error('Invalid environment configuration');
 }
 

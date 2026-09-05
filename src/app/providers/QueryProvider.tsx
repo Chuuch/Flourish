@@ -15,10 +15,7 @@ export const QueryProvider: React.FC<QueryProviderProps> = ({ children }) => {
             staleTime: 1000 * 60 * 5,
             gcTime: 1000 * 60 * 10,
             retry: (failureCount, error) => {
-              if (
-                error instanceof ApiError && 
-                error.status >= 400 && 
-                error.status < 500) {
+              if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
                 return false;
               }
               return failureCount < 2;
@@ -26,7 +23,7 @@ export const QueryProvider: React.FC<QueryProviderProps> = ({ children }) => {
             refetchOnWindowFocus: false,
           },
         },
-      })
+      }),
   );
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-}
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+};
