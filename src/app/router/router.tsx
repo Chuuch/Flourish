@@ -13,6 +13,13 @@ export const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
+      {
+        path: 'users',
+        lazy: async () => {
+          const { UsersPage } = await import('@/features/users');
+          return { Component: UsersPage };
+        },
+      },
     ],
   },
 ]);
