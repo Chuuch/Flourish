@@ -6,7 +6,7 @@ let accessToken: string | null = null;
 
 export const setAccessToken = (token: string | null): void => {
   accessToken = token;
-}
+};
 
 export const getAccessToken = (): string | null => accessToken;
 
@@ -28,9 +28,8 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  (error: unknown) => Promise.reject(
-    error instanceof Error ? error : new Error('Request configuration failed')
-  )
+  (error: unknown) =>
+    Promise.reject(error instanceof Error ? error : new Error('Request configuration failed')),
 );
 
 apiClient.interceptors.response.use(
@@ -53,5 +52,5 @@ apiClient.interceptors.response.use(
     }
 
     return Promise.reject(new ApiError('An unknown error occurred', 500));
-  }
+  },
 );
