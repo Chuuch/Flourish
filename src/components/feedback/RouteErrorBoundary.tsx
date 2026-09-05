@@ -1,7 +1,4 @@
-import {
-  isRouteErrorResponse,
-  useRouteError,
-} from 'react-router';
+import { isRouteErrorResponse, useRouteError } from 'react-router';
 
 import { logger } from '@/lib/logger/logger';
 
@@ -15,14 +12,12 @@ export function RouteErrorBoundary() {
       <main role="alert">
         <h1>Something went wrong</h1>
 
-        <p>
-          An unexpected error occurred. Please try again.
-        </p>
+        <p>An unexpected error occurred. Please try again.</p>
 
         <button
           type="button"
           onClick={() => {
-            window.location.reload()
+            window.location.reload();
           }}
         >
           Reload page
@@ -38,15 +33,13 @@ export function RouteErrorBoundary() {
           {error.status} {error.statusText}
         </h1>
 
-        <p>
-          The requested page could not be loaded.
-        </p>
+        <p>The requested page could not be loaded.</p>
 
         <button
           type="button"
           onClick={() => {
-            window.location.reload()
-            }}
+            window.location.reload();
+          }}
         >
           Reload page
         </button>
@@ -58,15 +51,13 @@ export function RouteErrorBoundary() {
     <main role="alert">
       <h1>Something went wrong</h1>
 
-      <p>
-        An unexpected error occurred. Please try again.
-      </p>
+      <p>An unexpected error occurred. Please try again.</p>
 
       <button
         type="button"
         onClick={() => {
-          window.location.reload()
-          }}
+          window.location.reload();
+        }}
       >
         Reload page
       </button>

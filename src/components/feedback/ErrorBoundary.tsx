@@ -1,6 +1,6 @@
-import { logger } from "@/lib/logger/logger";
-import { Component, type ErrorInfo, type ReactNode } from "react";
-import { ErrorFallback } from "./ErrorFallback";
+import { logger } from '@/lib/logger/logger';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { ErrorFallback } from './ErrorFallback';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -12,10 +12,7 @@ interface ErrorBoundaryState {
   hasError: boolean;
 }
 
-export class ErrorBoundary extends Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
+export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   override state: ErrorBoundaryState = {
     hasError: false,
   };
@@ -23,7 +20,7 @@ export class ErrorBoundary extends Component<
   static getDerivedStateFromError(): ErrorBoundaryState {
     return {
       hasError: true,
-    }
+    };
   }
 
   override componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
@@ -45,10 +42,6 @@ export class ErrorBoundary extends Component<
       return this.props.children;
     }
 
-    return (
-    this.props.fallback ?? (
-    <ErrorFallback onRetry={this.handleRetry} />
-    )
-    )
+    return this.props.fallback ?? <ErrorFallback onRetry={this.handleRetry} />;
   }
 }

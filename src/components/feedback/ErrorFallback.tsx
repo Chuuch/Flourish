@@ -1,4 +1,3 @@
-
 interface ErrorFallbackProps {
   onRetry: () => void;
 }
@@ -9,7 +8,9 @@ export function ErrorFallback({ onRetry }: ErrorFallbackProps) {
       <h1>Something went wrong</h1>
 
       <p>An unexpected error occurred. Please try again.</p>
-      <button type="button" onClick={onRetry}>Try again</button>
+      <button type="button" onClick={onRetry}>
+        Try again
+      </button>
     </main>
   );
 }
