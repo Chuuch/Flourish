@@ -1,21 +1,39 @@
 import { z } from 'zod';
 
+declare global {
+  interface Window {
+    readonly __APP_CONFIG__?: Readonly<Record<string, unknown>>;
+  }
+}
+
 const envSchema = z.object({
-  VITE_API_URL: z.url('VITE_API_URL must be a valid URL'),
-  VITE_APP_ENV: z.enum(['development', 'test', 'staging', 'production']),
+  API_URL: z.url('API_URL must be a valid URL'),
+  APP_ENV: z.enum(['development', 'test', 'staging', 'production']),
 });
 
-// Explicitly pick environment variables to validate against the schema
-const rawEnv: Record<string, unknown> = {
-  VITE_API_URL: import.meta.env['VITE_API_URL'],
-  VITE_APP_ENV: import.meta.env['VITE_APP_ENV'],
-};
+export type Env = z.infer<typeof envSchema>;
 
-const parsed = envSchema.safeParse(rawEnv);
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function readRawEnv(): Record<string, unknown> {
+  const runtime: unknown = window.__APP_CONFIG__;
+  if (isRecord(runtime)) {
+    return runtime;
+  }
+
+  return {
+    API_URL: import.meta.env['VITE_API_URL'],
+    APP_ENV: import.meta.env['VITE_APP_ENV'],
+  };
+}
+
+const parsed = envSchema.safeParse(readRawEnv());
 
 if (!parsed.success) {
   console.error('❌ Invalid environment configuration:', z.flattenError(parsed.error).fieldErrors);
   throw new Error('Invalid environment configuration');
 }
 
-export const env = parsed.data;
+export const env: Env = parsed.data;

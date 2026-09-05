@@ -21,7 +21,7 @@ describe('application router', () => {
   });
 
   it('lazy-loads the users route', async () => {
-    server.use(mswHttp.get(`${env.VITE_API_URL}/users`, () => HttpResponse.json([])));
+    server.use(mswHttp.get(`${env.API_URL}/users`, () => HttpResponse.json([])));
 
     renderAt('/users');
 

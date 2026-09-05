@@ -9,7 +9,7 @@ interface Logger {
   error(message: string, error?: unknown, context?: LogContext): void;
 }
 
-const isProduction = env.VITE_APP_ENV === 'production';
+const isProduction = env.APP_ENV === 'production';
 
 function normalizeError(error: unknown): unknown {
   if (error instanceof Error) {

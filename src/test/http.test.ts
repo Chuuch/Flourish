@@ -7,7 +7,7 @@ import { http } from '@/lib/api/http';
 import { ApiError } from '@/lib/api/errors';
 
 const userSchema = z.object({ id: z.string(), email: z.email() });
-const url = (path: string) => `${env.VITE_API_URL}${path}`;
+const url = (path: string) => `${env.API_URL}${path}`;
 
 describe('http', () => {
   it('returns schema-validated data on success', async () => {
