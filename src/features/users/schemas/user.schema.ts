@@ -7,4 +7,6 @@ export const userSchema = z.object({
   updated_at: z.string(),
 });
 
+export const usersSchema = z.array(userSchema);
+
 export type User = z.infer<typeof userSchema>;
