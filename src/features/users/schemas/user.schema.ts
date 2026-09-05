@@ -9,4 +9,9 @@ export const userSchema = z.object({
 
 export const usersSchema = z.array(userSchema);
 
+export const createUserSchema = z.object({
+  email: z.email('Enter a valid email address'),
+});
+
 export type User = z.infer<typeof userSchema>;
+export type CreateUserInput = z.infer<typeof createUserSchema>;
