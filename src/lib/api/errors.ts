@@ -1,8 +1,12 @@
-export interface ApiErrorResponse {
-  readonly message: string;
-  readonly code?: string;
-  readonly details?: unknown;
-}
+import z from 'zod';
+
+export const apiErrorResponseSchema = z.object({
+  message: z.string(),
+  code: z.string().optional(),
+  details: z.unknown().optional(),
+});
+
+export type ApiErrorResponse = z.infer<typeof apiErrorResponseSchema>;
 
 export class ApiError extends Error {
   readonly status: number;
