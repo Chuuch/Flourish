@@ -9,6 +9,7 @@ export function initSentry(): void {
   Sentry.init({
     dsn: env.SENTRY_DSN,
     environment: env.APP_ENV,
+    release: env.RELEASE,
     sendDefaultPii: false,
     enabled: env.APP_ENV !== 'test',
   });
