@@ -1,4 +1,5 @@
 import { env } from '@/config/env';
+import { captureException } from '../observability/sentry';
 
 type LogContext = Readonly<Record<string, unknown>>;
 
@@ -45,5 +46,9 @@ export const logger: Logger = {
       error: normalizeError(error),
       ...context,
     });
+
+    if (error !== undefined) {
+      captureException(error, { message, ...context });
+    }
   },
 };

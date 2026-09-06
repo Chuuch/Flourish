@@ -8,7 +8,17 @@ RUN HUSKY=0 npm ci
 
 COPY . .
 
-RUN npm run build
+ARG VITE_APP_RELEASE
+ENV VITE_APP_RELEASE=${VITE_APP_RELEASE}
+
+ARG SENTRY_ORG
+ARG SENTRY_PROJECT
+ENV SENTRY_ORG=${SENTRY_ORG} \
+    SENTRY_PROJECT=${SENTRY_PROJECT}
+
+RUN --mount=type=secret,id=sentry_auth_token \
+    SENTRY_AUTH_TOKEN="$(cat /run/secrets/sentry_auth_token 2>/dev/null || true)" \
+    npm run build
 
 # ------ Stage 2: server ----
 FROM nginxinc/nginx-unprivileged:1.28-alpine AS runtime

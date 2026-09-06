@@ -5,6 +5,9 @@ import { AppProviders } from './app/providers/AppProviders.tsx';
 import { RouterProvider } from 'react-router';
 import { router } from './app/router/router.tsx';
 import { ErrorBoundary } from './components/feedback/ErrorBoundary.tsx';
+import { initSentry } from './lib/observability/sentry.ts';
+
+initSentry();
 
 const rootElement = document.getElementById('root');
 

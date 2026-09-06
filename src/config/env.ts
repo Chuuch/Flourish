@@ -9,6 +9,8 @@ declare global {
 const envSchema = z.object({
   API_URL: z.url('API_URL must be a valid URL'),
   APP_ENV: z.enum(['development', 'test', 'staging', 'production']),
+  SENTRY_DSN: z.url().optional(),
+  RELEASE: z.string().min(1).optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -26,6 +28,8 @@ function readRawEnv(): Record<string, unknown> {
   return {
     API_URL: import.meta.env['VITE_API_URL'],
     APP_ENV: import.meta.env['VITE_APP_ENV'],
+    SENTRY_DSN: import.meta.env['VITE_SENTRY_DSN'] || undefined,
+    RELEASE: import.meta.env['VITE_APP_RELEASE'] || undefined,
   };
 }
 
