@@ -6,8 +6,13 @@ import { RouterProvider } from 'react-router';
 import { router } from './app/router/router.tsx';
 import { ErrorBoundary } from './components/feedback/ErrorBoundary.tsx';
 import { initSentry } from './lib/observability/sentry.ts';
+import { onUnauthorized } from './lib/api/session.ts';
+import { useAuthStore } from './features/auth/index.ts';
 
 initSentry();
+onUnauthorized(() => {
+  useAuthStore.getState().clearSession();
+});
 
 const rootElement = document.getElementById('root');
 
