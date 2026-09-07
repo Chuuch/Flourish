@@ -1,13 +1,15 @@
 import { NavLink, Outlet } from 'react-router';
 import { paths } from '../router/paths';
 import { useAuthStore } from '@/features/auth';
+import { useLogout } from '@/features/auth/hooks/useLogout';
+import { Button } from '@/components/ui';
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   isActive ? 'font-semibold underline' : 'hover:underline';
 
 export function RootLayout() {
   const user = useAuthStore((state) => state.user);
-  const clearSession = useAuthStore((state) => state.clearSession);
+  const logout = useLogout();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -20,9 +22,15 @@ export function RootLayout() {
             Users
           </NavLink>
           {user ? (
-            <button type="button" onClick={clearSession}>
+            <Button
+              type="button"
+              onClick={() => {
+                logout.mutate();
+              }}
+              disabled={logout.isPending}
+            >
               Sign out
-            </button>
+            </Button>
           ) : (
             <NavLink to={paths.login} className={navLinkClass}>
               Sign in
