@@ -1,5 +1,17 @@
 import { paths } from '@/app/router/paths';
 
+function isSafeInternalPath(path: string): boolean {
+  if (!path.startsWith('/') || path.startsWith('//')) {
+    return false;
+  }
+
+  try {
+    return new URL(path, window.location.origin).origin === window.location.origin;
+  } catch {
+    return false;
+  }
+}
+
 export function redirectFrom(state: unknown): string {
   if (
     state &&
@@ -9,7 +21,7 @@ export function redirectFrom(state: unknown): string {
     typeof state.from === 'object' &&
     'pathname' in state.from &&
     typeof state.from.pathname === 'string' &&
-    state.from.pathname.startsWith('/')
+    isSafeInternalPath(state.from.pathname)
   ) {
     return state.from.pathname;
   }
