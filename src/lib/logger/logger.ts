@@ -1,4 +1,5 @@
 import { env } from '@/config/env';
+import { captureException } from '../observability/sentry';
 
 type LogContext = Readonly<Record<string, unknown>>;
 
@@ -9,7 +10,7 @@ interface Logger {
   error(message: string, error?: unknown, context?: LogContext): void;
 }
 
-const isProduction = env.VITE_APP_ENV === 'production';
+const isProduction = env.APP_ENV === 'production';
 
 function normalizeError(error: unknown): unknown {
   if (error instanceof Error) {
@@ -45,5 +46,9 @@ export const logger: Logger = {
       error: normalizeError(error),
       ...context,
     });
+
+    if (error !== undefined) {
+      captureException(error, { message, ...context });
+    }
   },
 };

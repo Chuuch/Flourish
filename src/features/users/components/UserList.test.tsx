@@ -7,7 +7,7 @@ import { UserList } from './UserList';
 import { screen } from '@testing-library/react';
 import { makeUser } from '@/test/factories/user';
 
-const usersUrl = `${env.VITE_API_URL}/users`;
+const usersUrl = `${env.API_URL}/users`;
 
 describe('UserList', () => {
   it('renders users returned by the API', async () => {

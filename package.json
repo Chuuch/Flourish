@@ -8,11 +8,11 @@
     "npm": ">=11"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
+    "src/**/*.{ts,tsx}": [
       "eslint --fix --max-warnings=0",
       "prettier --write"
     ],
-    "*.{js,mjs,cjs,json,md,yml,yaml,css,html}": "prettier --write"
+    "*.{ts,tsx,js,mjs,cjs,json,md,yml,yaml,css,html}": "prettier --write"
   },
   "scripts": {
     "dev": "vite",
@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
+    "@sentry/react": "^10.73.0",
     "@tanstack/react-query": "^5.102.8",
     "axios": "^1.20.0",
     "react": "^19.2.8",
@@ -42,6 +43,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@sentry/vite-plugin": "^5.4.0",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/eslint-plugin-query": "^5.102.8",
     "@testing-library/jest-dom": "^7.0.1",
@@ -68,6 +70,7 @@
     "vitest": "^4.1.11"
   },
   "allowScripts": {
-    "msw@2.15.0": true
+    "msw@2.15.0": true,
+    "@sentry/cli@2.58.6": true
   }
 }

@@ -5,6 +5,8 @@ import { RouteErrorBoundary } from '@/components/feedback/RouteErrorBoundary';
 import { HomePage } from '@/features/home/pages/HomePage';
 import { NotFound } from '@/components/feedback/NotFound';
 import { PageLoader } from '@/components/feedback/PageLoader';
+import { RequireAuth } from '@/features/auth';
+import { UsersPage } from '@/features/users';
 
 export const routes: RouteObject[] = [
   {
@@ -15,11 +17,20 @@ export const routes: RouteObject[] = [
     children: [
       { index: true, element: <HomePage /> },
       {
-        path: paths.users,
+        path: 'login',
+        HydrateFallback: PageLoader,
         lazy: async () => {
-          const { UsersPage } = await import('@/features/users');
-          return { Component: UsersPage };
+          const { LoginPage } = await import('@/features/auth');
+          return { Component: LoginPage };
         },
+      },
+      {
+        path: 'users',
+        element: (
+          <RequireAuth>
+            <UsersPage />
+          </RequireAuth>
+        ),
       },
       { path: '*', element: <NotFound /> },
     ],

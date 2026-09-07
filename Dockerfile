@@ -8,19 +8,25 @@ RUN HUSKY=0 npm ci
 
 COPY . .
 
-ARG VITE_API_URL
-ARG VITE_APP_ENV=production
-ENV VITE_API_URL=${VITE_API_URL} \
-  VITE_APP_ENV=${VITE_APP_ENV}
+ARG VITE_APP_RELEASE
+ENV VITE_APP_RELEASE=${VITE_APP_RELEASE}
 
-RUN npm run build
+ARG SENTRY_ORG
+ARG SENTRY_PROJECT
+ENV SENTRY_ORG=${SENTRY_ORG} \
+    SENTRY_PROJECT=${SENTRY_PROJECT}
+
+RUN --mount=type=secret,id=sentry_auth_token \
+    SENTRY_AUTH_TOKEN="$(cat /run/secrets/sentry_auth_token 2>/dev/null || true)" \
+    npm run build
 
 # ------ Stage 2: server ----
 FROM nginxinc/nginx-unprivileged:1.28-alpine AS runtime
 
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY docker/security-headers.conf /etc/nginx/snippets/security-headers.conf
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --chmod=755 docker/40-app-config.sh /docker-entrypoint.d/40-app-config.sh
+COPY --from=build --chown=nginx:nginx /app/dist /usr/share/nginx/html
 
 EXPOSE 8080
 
