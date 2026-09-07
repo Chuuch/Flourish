@@ -15,5 +15,9 @@ export const loginResponseSchema = z.object({
   user: sessionUserSchema,
 });
 
+export const refreshResponseSchema = z.object({
+  accessToken: z.string().min(1),
+});
+
 export type SessionUser = z.infer<typeof sessionUserSchema>;
 export type LoginInput = z.infer<typeof loginInputSchema>;
