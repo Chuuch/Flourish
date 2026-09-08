@@ -23,10 +23,14 @@ RUN --mount=type=secret,id=sentry_auth_token \
 # ------ Stage 2: server ----
 FROM nginxinc/nginx-unprivileged:1.28-alpine AS runtime
 
+USER root
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY docker/security-headers.conf /etc/nginx/snippets/security-headers.conf
+COPY docker/csp.conf /etc/nginx/snippets/csp.conf
+RUN chown nginx:nginx /etc/nginx/snippets/csp.conf
 COPY --chmod=755 docker/40-app-config.sh /docker-entrypoint.d/40-app-config.sh
 COPY --from=build --chown=nginx:nginx /app/dist /usr/share/nginx/html
+USER nginx
 
 EXPOSE 8080
 
