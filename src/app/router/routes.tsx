@@ -5,7 +5,7 @@ import { RouteErrorBoundary } from '@/components/feedback/RouteErrorBoundary';
 import { HomePage } from '@/features/home/pages/HomePage';
 import { NotFound } from '@/components/feedback/NotFound';
 import { PageLoader } from '@/components/feedback/PageLoader';
-import { RequireAuth } from '@/features/auth';
+import { GuestOnly, LoginPage, RequireAuth } from '@/features/auth';
 import { UsersPage } from '@/features/users';
 
 export const routes: RouteObject[] = [
@@ -18,11 +18,11 @@ export const routes: RouteObject[] = [
       { index: true, element: <HomePage /> },
       {
         path: 'login',
-        HydrateFallback: PageLoader,
-        lazy: async () => {
-          const { LoginPage } = await import('@/features/auth');
-          return { Component: LoginPage };
-        },
+        element: (
+          <GuestOnly>
+            <LoginPage />
+          </GuestOnly>
+        ),
       },
       {
         path: 'users',
