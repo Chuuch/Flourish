@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { loginInputSchema, type LoginInput } from '../schemas/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { redirectFrom } from '../lib/redirect';
+import { Alert, Button, TextField } from '@/components/ui';
 
 export function LoginForm() {
   const login = useLogin();
@@ -33,41 +34,27 @@ export function LoginForm() {
       }
       noValidate
     >
-      <label htmlFor="email">Email</label>
-      <input
-        id="email"
+      <TextField
+        label="Email"
         type="email"
         autoComplete="email"
-        aria-invalid={errors.email ? true : undefined}
-        aria-describedby={errors.email ? 'email-error' : undefined}
+        error={errors.email?.message}
         {...register('email')}
       />
-      {errors.email && (
-        <p id="email-error" role="alert">
-          {errors.email.message}
-        </p>
-      )}
 
-      <label htmlFor="password">Password</label>
-      <input
-        id="password"
+      <TextField
+        label="Password"
         type="password"
         autoComplete="current-password"
-        aria-invalid={errors.password ? true : undefined}
-        aria-describedby={errors.password ? 'password-error' : undefined}
+        error={errors.password?.message}
         {...register('password')}
       />
-      {errors.password && (
-        <p id="password-error" role="alert">
-          {errors.password.message}
-        </p>
-      )}
 
-      {login.isError && <p role="alert">{login.error.message}</p>}
+      {login.isError ? <Alert>{login.error.message}</Alert> : null}
 
-      <button type="submit" disabled={login.isPending}>
+      <Button type="submit" disabled={login.isPending}>
         Sign in
-      </button>
+      </Button>
     </form>
   );
 }
