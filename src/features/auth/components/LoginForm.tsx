@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { loginInputSchema, type LoginInput } from '../schemas/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { redirectFrom } from '../lib/redirect';
-import { Button, TextField } from '@/components/ui';
+import { Alert, Button, TextField } from '@/components/ui';
 
 export function LoginForm() {
   const login = useLogin();
@@ -50,7 +50,7 @@ export function LoginForm() {
         {...register('password')}
       />
 
-      {login.isError && <p role="alert">{login.error.message}</p>}
+      {login.isError ? <Alert>{login.error.message}</Alert> : null}
 
       <Button type="submit" disabled={login.isPending}>
         Sign in

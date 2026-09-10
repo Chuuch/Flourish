@@ -1,4 +1,4 @@
-import { Button, TextField } from '@/components/ui';
+import { Alert, Button, TextField } from '@/components/ui';
 import { useCreateUser } from '@/features/users/hooks/useCreateUser';
 import { createUserSchema, type CreateUserInput } from '@/features/users/schemas/user.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -38,7 +38,7 @@ export function CreateUserForm() {
         {...register('email')}
       />
 
-      {createUser.isError && <p role="alert">{createUser.error.message}</p>}
+      {createUser.isError ? <Alert>{createUser.error.message}</Alert> : null}
       <Button type="submit" disabled={createUser.isPending}>
         Add user
       </Button>
