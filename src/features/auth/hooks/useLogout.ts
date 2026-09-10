@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../store/auth.store';
 import { logout } from '../api/auth.api';
+import { authKeys } from '../api/auth.queries';
 
 export function useLogout() {
   const queryClient = useQueryClient();
@@ -10,7 +11,7 @@ export function useLogout() {
     mutationFn: logout,
     onSettled: () => {
       clearSession();
-      queryClient.removeQueries({ queryKey: ['auth'] });
+      queryClient.removeQueries({ queryKey: authKeys.all });
     },
   });
 }
