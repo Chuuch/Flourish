@@ -1,3 +1,4 @@
+import { Alert } from '@/components/ui';
 import { useUsers } from '../hooks/useUsers';
 
 export function UserList() {
@@ -9,12 +10,12 @@ export function UserList() {
 
   if (isError) {
     return (
-      <div role="alert">
+      <Alert>
         <p>Could not load users: {error.message}</p>
         <button type="button" onClick={() => void refetch()}>
           Retry
         </button>
-      </div>
+      </Alert>
     );
   }
 
