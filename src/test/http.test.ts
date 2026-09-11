@@ -24,7 +24,10 @@ describe('http', () => {
   it('maps server error bodies to ApiError', async () => {
     server.use(
       mswHttp.get(url('/users/1'), () =>
-        HttpResponse.json({ message: 'Not found', code: 'USER_NOT_FOUND' }, { status: 404 }),
+        HttpResponse.json(
+          { error: { message: 'Not found', code: 'USER_NOT_FOUND' } },
+          { status: 404 },
+        ),
       ),
     );
 

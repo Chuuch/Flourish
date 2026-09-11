@@ -51,7 +51,7 @@ describe('CreateUserForm', () => {
     const user = userEvent.setup();
     server.use(
       mswHttp.post(usersUrl, () =>
-        HttpResponse.json({ message: 'Email already taken' }, { status: 409 }),
+        HttpResponse.json({ error: { message: 'Email already taken' } }, { status: 409 }),
       ),
     );
 

@@ -14,7 +14,7 @@ describe('SessionGate', () => {
     server.use(
       mswHttp.get(meUrl, () =>
         HttpResponse.json({
-          accessToken: 'restored',
+          access_token: 'restored',
           user: { id: crypto.randomUUID(), email: 'ada@example.com' },
         }),
       ),
@@ -32,9 +32,11 @@ describe('SessionGate', () => {
 
   it('renders children when there is no session', async () => {
     server.use(
-      mswHttp.get(meUrl, () => HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })),
+      mswHttp.get(meUrl, () =>
+        HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 }),
+      ),
       mswHttp.post(`${env.API_URL}/auth/refresh`, () =>
-        HttpResponse.json({ message: 'Expired' }, { status: 401 }),
+        HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 }),
       ),
     );
 
