@@ -1,13 +1,19 @@
 import { screen } from '@testing-library/react';
+import { HttpResponse, http as mswHttp } from 'msw';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { describe, expect, it } from 'vitest';
-import { paths } from '@/app/router/paths';
 import { routes } from '@/app/router/routes';
-import { renderWithProviders } from '@/test/render';
-import { useAuthStore } from '../store/auth.store';
-import { server } from '@/test/server';
-import { http as mswHttp, HttpResponse } from 'msw';
 import { env } from '@/config/env';
+import { renderWithProviders } from '@/test/render';
+import { server } from '@/test/server';
+import { useAuthStore } from '../store/auth.store';
+
+const testOrg = {
+  id: crypto.randomUUID(),
+  name: 'Acme',
+  created_at: '2026-09-11T11:12:20Z',
+  updated_at: '2026-09-11T11:12:20Z',
+};
 
 function renderAt(path: string) {
   const router = createMemoryRouter(routes, { initialEntries: [path] });
@@ -16,18 +22,19 @@ function renderAt(path: string) {
 
 describe('RequireAuth', () => {
   it('redirects anonymous users to login', async () => {
-    renderAt(paths.users);
+    renderAt('/users');
+
     expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeInTheDocument();
   });
 
-  it('renders the protected page when a session exists', async () => {
+  it('renders the protected page when there is a session', async () => {
     useAuthStore
       .getState()
-      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token');
+      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg);
 
     server.use(mswHttp.get(`${env.API_URL}/users`, () => HttpResponse.json([])));
 
-    renderAt(paths.users);
+    renderAt('/users');
 
     expect(await screen.findByRole('heading', { name: 'Users' })).toBeInTheDocument();
   });
