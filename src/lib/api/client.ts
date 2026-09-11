@@ -4,6 +4,10 @@ import { ApiError, apiErrorResponseSchema } from './errors';
 import { refreshResponseSchema } from '@/features/auth/schemas/auth.schema';
 import { notifyUnauthorized } from './session';
 
+type RetryConfig = InternalAxiosRequestConfig & {
+  _retry?: boolean;
+};
+
 let access_token: string | null = null;
 let refreshPromise: Promise<string> | null = null;
 
@@ -85,14 +89,15 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error: unknown): Promise<never> => {
     const apiError = toApiError(error);
-    const originalRequest = axios.isAxiosError(error) ? error.config : undefined;
-    const alreadyRetrieved = originalRequest?.headers['X-Retry'] === '1';
+    const originalRequest = axios.isAxiosError(error)
+      ? (error.config as RetryConfig | undefined)
+      : undefined;
 
-    if (apiError.status === 401 && originalRequest && !alreadyRetrieved) {
+    if (apiError.status === 401 && originalRequest && !originalRequest._retry) {
       try {
         const token = await refreshAccessToken();
+        originalRequest._retry = true;
         originalRequest.headers.Authorization = `Bearer ${token}`;
-        originalRequest.headers['X-Retry'] = '1';
         return await apiClient.request(originalRequest);
       } catch {
         notifyUnauthorized();
