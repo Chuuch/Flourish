@@ -19,10 +19,10 @@ describe('useLogout', () => {
     server.use(
       mswHttp.post(`${env.API_URL}/auth/logout`, () => new HttpResponse(null, { status: 204 })),
       mswHttp.get(`${env.API_URL}/auth/me`, () =>
-        HttpResponse.json({ message: 'Unauthorized' }, { status: 401 }),
+        HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 }),
       ),
       mswHttp.post(`${env.API_URL}/auth/refresh`, () =>
-        HttpResponse.json({ message: 'Expired' }, { status: 401 }),
+        HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 }),
       ),
     );
 

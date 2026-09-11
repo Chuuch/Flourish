@@ -36,7 +36,7 @@ describe('UserList', () => {
   it('renders the API error message', async () => {
     server.use(
       mswHttp.get(usersUrl, () =>
-        HttpResponse.json({ message: 'Database unavailable' }, { status: 503 }),
+        HttpResponse.json({ error: { message: 'Database unavailable' } }, { status: 503 }),
       ),
     );
 
