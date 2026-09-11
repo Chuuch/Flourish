@@ -9,12 +9,19 @@ import { renderWithProviders } from '@/test/render';
 import { server } from '@/test/server';
 import { useAuthStore } from '../store/auth.store';
 
+const testOrg = {
+  id: crypto.randomUUID(),
+  name: 'Acme',
+  created_at: '2026-09-11T11:12:20Z',
+  updated_at: '2026-09-11T11:12:20Z',
+};
+
 describe('useLogout', () => {
   it('clears the session after a successful logout', async () => {
     const user = userEvent.setup();
     useAuthStore
       .getState()
-      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token');
+      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg);
 
     server.use(
       mswHttp.post(`${env.API_URL}/auth/logout`, () => new HttpResponse(null, { status: 204 })),
@@ -33,5 +40,6 @@ describe('useLogout', () => {
 
     expect(await screen.findByRole('link', { name: 'Sign in' })).toBeInTheDocument();
     expect(useAuthStore.getState().user).toBeNull();
+    expect(useAuthStore.getState().organization).toBeNull();
   });
 });

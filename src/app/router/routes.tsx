@@ -5,7 +5,7 @@ import { RouteErrorBoundary } from '@/components/feedback/RouteErrorBoundary';
 import { HomePage } from '@/features/home/pages/HomePage';
 import { NotFound } from '@/components/feedback/NotFound';
 import { PageLoader } from '@/components/feedback/PageLoader';
-import { RequireAuth } from '@/features/auth';
+import { GuestOnly, RequireAuth } from '@/features/auth';
 import { UsersPage } from '@/features/users';
 
 export const routes: RouteObject[] = [
@@ -21,7 +21,31 @@ export const routes: RouteObject[] = [
         HydrateFallback: PageLoader,
         lazy: async () => {
           const { LoginPage } = await import('@/features/auth');
-          return { Component: LoginPage };
+          return {
+            Component: function LoginRoute() {
+              return (
+                <GuestOnly>
+                  <LoginPage />
+                </GuestOnly>
+              );
+            },
+          };
+        },
+      },
+      {
+        path: 'register',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { RegisterPage } = await import('@/features/auth');
+          return {
+            Component: function RegisterRoute() {
+              return (
+                <GuestOnly>
+                  <RegisterPage />
+                </GuestOnly>
+              );
+            },
+          };
         },
       },
       {
