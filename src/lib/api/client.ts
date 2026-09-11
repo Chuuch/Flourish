@@ -4,14 +4,14 @@ import { ApiError, apiErrorResponseSchema } from './errors';
 import { refreshResponseSchema } from '@/features/auth/schemas/auth.schema';
 import { notifyUnauthorized } from './session';
 
-let accessToken: string | null = null;
+let access_token: string | null = null;
 let refreshPromise: Promise<string> | null = null;
 
 export const setAccessToken = (token: string | null): void => {
-  accessToken = token;
+  access_token = token;
 };
 
-export const getAccessToken = (): string | null => accessToken;
+export const getAccessToken = (): string | null => access_token;
 
 export const apiClient = axios.create({
   baseURL: env.API_URL,
@@ -36,7 +36,12 @@ function toApiError(error: unknown): ApiError {
     const parsed = apiErrorResponseSchema.safeParse(error.response?.data);
 
     if (parsed.success) {
-      return new ApiError(parsed.data.message, status, parsed.data.code, parsed.data.details);
+      return new ApiError(
+        parsed.data.error.message,
+        status,
+        parsed.data.error.code,
+        parsed.data.error.details,
+      );
     }
 
     return new ApiError(error.message, status, error.code);
@@ -59,8 +64,8 @@ async function refreshAccessToken(): Promise<string> {
           throw new ApiError('Response validation failed ', response.status, 'INVALID_RESPONSE');
         }
 
-        setAccessToken(parsed.data.accessToken);
-        return parsed.data.accessToken;
+        setAccessToken(parsed.data.access_token);
+        return parsed.data.access_token;
       })
       .finally(() => {
         refreshPromise = null;
@@ -70,8 +75,8 @@ async function refreshAccessToken(): Promise<string> {
 }
 
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`;
+  if (access_token) {
+    config.headers.Authorization = `Bearer ${access_token}`;
   }
   return config;
 });

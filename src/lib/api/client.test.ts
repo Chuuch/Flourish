@@ -24,11 +24,16 @@ describe('apiClient refresh', () => {
       mswHttp.get(pingUrl, ({ request }) => {
         pingCalls += 1;
         if (request.headers.get('Authorization') == 'Bearer expired') {
-          return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 });
+          return HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 });
         }
         return HttpResponse.json({ ok: true });
       }),
-      mswHttp.post(refreshUrl, () => HttpResponse.json({ accessToken: 'fresh' })),
+      mswHttp.post(refreshUrl, () =>
+        HttpResponse.json({
+          access_token: 'fresh',
+          user: { id: crypto.randomUUID(), email: 'a@b.com' },
+        }),
+      ),
     );
 
     const response = await apiClient.get('/ping');
@@ -45,13 +50,16 @@ describe('apiClient refresh', () => {
     server.use(
       mswHttp.get(pingUrl, ({ request }) => {
         if (request.headers.get('Authorization') === 'Bearer expired') {
-          return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 });
+          return HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 });
         }
         return HttpResponse.json({ ok: true });
       }),
       mswHttp.post(refreshUrl, () => {
         refreshCalls += 1;
-        return HttpResponse.json({ accessToken: 'fresh' });
+        return HttpResponse.json({
+          access_token: 'fresh',
+          user: { id: crypto.randomUUID(), email: 'a@b.com' },
+        });
       }),
     );
 
@@ -65,8 +73,12 @@ describe('apiClient refresh', () => {
     onUnauthorized(unauthorized);
 
     server.use(
-      mswHttp.get(pingUrl, () => HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })),
-      mswHttp.post(refreshUrl, () => HttpResponse.json({ message: 'Expired' }, { status: 401 })),
+      mswHttp.get(pingUrl, () =>
+        HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 }),
+      ),
+      mswHttp.post(refreshUrl, () =>
+        HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 }),
+      ),
     );
 
     await expect(apiClient.get('/ping')).rejects.toBeInstanceOf(ApiError);
