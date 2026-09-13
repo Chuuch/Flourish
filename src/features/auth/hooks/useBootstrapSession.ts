@@ -10,7 +10,7 @@ export function useBootstrapSession() {
     queryKey: authKeys.session(),
     queryFn: async () => {
       const session = await fetchSession();
-      setSession(session.user, session.access_token, session.organization);
+      setSession(session.user, session.access_token, session.organization, session.role);
       return session.user;
     },
     retry: false,

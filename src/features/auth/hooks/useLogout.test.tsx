@@ -21,7 +21,7 @@ describe('useLogout', () => {
     const user = userEvent.setup();
     useAuthStore
       .getState()
-      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg);
+      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
 
     server.use(
       mswHttp.post(`${env.API_URL}/auth/logout`, () => new HttpResponse(null, { status: 204 })),
@@ -41,5 +41,6 @@ describe('useLogout', () => {
     expect(await screen.findByRole('link', { name: 'Sign in' })).toBeInTheDocument();
     expect(useAuthStore.getState().user).toBeNull();
     expect(useAuthStore.getState().organization).toBeNull();
+    expect(useAuthStore.getState().role).toBeNull();
   });
 });

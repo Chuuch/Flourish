@@ -29,6 +29,7 @@ describe('SessionGate', () => {
           access_token: 'restored',
           user: sessionUser,
           organization: sessionOrg,
+          role: 'owner',
         }),
       ),
     );
@@ -42,6 +43,7 @@ describe('SessionGate', () => {
     expect(await screen.findByText('ready')).toBeInTheDocument();
     expect(useAuthStore.getState().user?.email).toBe('ada@example.com');
     expect(useAuthStore.getState().organization?.name).toBe('Acme');
+    expect(useAuthStore.getState().role).toBe('owner');
   });
 
   it('renders children when there is no session', async () => {
@@ -63,5 +65,6 @@ describe('SessionGate', () => {
     expect(await screen.findByText('ready')).toBeInTheDocument();
     expect(useAuthStore.getState().user).toBeNull();
     expect(useAuthStore.getState().organization).toBeNull();
+    expect(useAuthStore.getState().role).toBeNull();
   });
 });

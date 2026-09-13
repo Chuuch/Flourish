@@ -22,7 +22,7 @@ function renderAt(path: string) {
 
 describe('RequireAuth', () => {
   it('redirects anonymous users to login', async () => {
-    renderAt('/users');
+    renderAt('/members');
 
     expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeInTheDocument();
   });
@@ -30,12 +30,12 @@ describe('RequireAuth', () => {
   it('renders the protected page when there is a session', async () => {
     useAuthStore
       .getState()
-      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg);
+      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
 
-    server.use(mswHttp.get(`${env.API_URL}/users`, () => HttpResponse.json([])));
+    server.use(mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])));
 
-    renderAt('/users');
+    renderAt('/members');
 
-    expect(await screen.findByRole('heading', { name: 'Users' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Members' })).toBeInTheDocument();
   });
 });
