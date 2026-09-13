@@ -8,7 +8,7 @@ export function useRegister() {
   return useMutation({
     mutationFn: register,
     onSuccess: (data) => {
-      setSession(data.user, data.access_token, data.organization);
+      setSession(data.user, data.access_token, data.organization, data.role);
     },
   });
 }

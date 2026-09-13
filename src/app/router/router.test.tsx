@@ -28,15 +28,15 @@ describe('application router', () => {
     expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument();
   });
 
-  it('lazy-loads the users route', async () => {
+  it('renders the members route', async () => {
     useAuthStore
       .getState()
-      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg);
-    server.use(mswHttp.get(`${env.API_URL}/users`, () => HttpResponse.json([])));
+      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
+    server.use(mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])));
 
-    renderAt('/users');
+    renderAt('/members');
 
-    expect(await screen.findByRole('heading', { name: 'Users' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Members' })).toBeInTheDocument();
   });
 
   it('renders not found for unknown paths', async () => {

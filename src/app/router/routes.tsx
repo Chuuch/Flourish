@@ -6,7 +6,7 @@ import { HomePage } from '@/features/home/pages/HomePage';
 import { NotFound } from '@/components/feedback/NotFound';
 import { PageLoader } from '@/components/feedback/PageLoader';
 import { GuestOnly, RequireAuth } from '@/features/auth';
-import { UsersPage } from '@/features/users';
+import { MembersPage } from '@/features/members';
 
 export const routes: RouteObject[] = [
   {
@@ -49,10 +49,10 @@ export const routes: RouteObject[] = [
         },
       },
       {
-        path: 'users',
+        path: 'members',
         element: (
           <RequireAuth>
-            <UsersPage />
+            <MembersPage />
           </RequireAuth>
         ),
       },

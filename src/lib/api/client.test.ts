@@ -1,5 +1,5 @@
-import { env } from '@/config/env';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { env } from '@/config/env';
 import z from 'zod';
 import { apiClient, setAccessToken } from './client';
 import { server } from '@/test/server';
@@ -45,6 +45,7 @@ describe('apiClient refresh', () => {
           access_token: 'fresh',
           user: refreshUser,
           organization: refreshOrg,
+          role: 'owner',
         }),
       ),
     );
@@ -73,6 +74,7 @@ describe('apiClient refresh', () => {
           access_token: 'fresh',
           user: refreshUser,
           organization: refreshOrg,
+          role: 'owner',
         });
       }),
     );

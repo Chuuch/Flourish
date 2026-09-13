@@ -66,6 +66,7 @@ describe('RegisterForm', () => {
             access_token: 'token',
             user: testUser,
             organization: testOrg,
+            role: 'owner',
           },
           { status: 201 },
         );
@@ -84,6 +85,7 @@ describe('RegisterForm', () => {
     expect(screen.getByText('Acme')).toBeInTheDocument();
     expect(useAuthStore.getState().user?.email).toBe('ada@example.com');
     expect(useAuthStore.getState().organization?.name).toBe('Acme');
+    expect(useAuthStore.getState().role).toBe('owner');
   });
 
   it('shows an API error', async () => {
@@ -112,5 +114,6 @@ describe('RegisterForm', () => {
     expect(await screen.findByText('Email already exists')).toBeInTheDocument();
     expect(useAuthStore.getState().user).toBeNull();
     expect(useAuthStore.getState().organization).toBeNull();
+    expect(useAuthStore.getState().role).toBeNull();
   });
 });

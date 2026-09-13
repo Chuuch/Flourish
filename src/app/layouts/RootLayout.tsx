@@ -19,8 +19,8 @@ export function RootLayout() {
           <NavLink to={paths.home} className={navLinkClass} end>
             Home
           </NavLink>
-          <NavLink to={paths.users} className={navLinkClass}>
-            Users
+          <NavLink to={paths.members} className={navLinkClass}>
+            Members
           </NavLink>
           {user ? (
             <>
