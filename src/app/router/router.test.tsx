@@ -52,6 +52,18 @@ describe('application router', () => {
     expect(await screen.findByRole('heading', { name: 'Clients' })).toBeInTheDocument();
   });
 
+  it('renders the projects route', async () => {
+    signIn();
+    const clientId = crypto.randomUUID();
+    server.use(
+      mswHttp.get(`${env.API_URL}/clients/${clientId}/projects`, () => HttpResponse.json([])),
+    );
+
+    renderAt(`/clients/${clientId}/projects`);
+
+    expect(await screen.findByRole('heading', { name: 'Projects' })).toBeInTheDocument();
+  });
+
   it('renders not found for unknown paths', async () => {
     renderAt('/does-not-exist');
 

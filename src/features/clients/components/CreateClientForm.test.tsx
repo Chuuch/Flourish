@@ -10,6 +10,7 @@ import { createClientSchema, type Client } from '../schemas/client.schema';
 import { makeClient } from '@/test/factories/client';
 import { ClientsPage } from '../pages/ClientsPage';
 import { useAuthStore } from '@/features/auth';
+import { MemoryRouter } from 'react-router';
 
 const clientsUrl = `${env.API_URL}/clients`;
 
@@ -59,7 +60,11 @@ describe('CreateClientForm', () => {
       }),
     );
 
-    renderWithProviders(<ClientsPage />);
+    renderWithProviders(
+      <MemoryRouter>
+        <ClientsPage />
+      </MemoryRouter>,
+    );
     expect(await screen.findByText('No clients yet.')).toBeInTheDocument();
 
     await user.type(screen.getByLabelText('Name'), 'Northwind');
