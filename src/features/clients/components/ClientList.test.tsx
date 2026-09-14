@@ -6,29 +6,40 @@ import { renderWithProviders } from '@/test/render';
 import { ClientList } from './ClientList';
 import { screen } from '@testing-library/react';
 import { makeClient } from '@/test/factories/client';
+import { MemoryRouter } from 'react-router';
 
 const clientsUrl = `${env.API_URL}/clients`;
 
 describe('ClientList', () => {
   it('renders clients returned by the API', async () => {
+    const northWind = makeClient({ name: 'Northwind', notes: 'Retail' });
+
     server.use(
       mswHttp.get(clientsUrl, () =>
-        HttpResponse.json([
-          makeClient({ name: 'Northwind', notes: 'Retail' }),
-          makeClient({ name: 'Contoso', notes: '' }),
-        ]),
+        HttpResponse.json([northWind, makeClient({ name: 'Contoso', notes: '' })]),
       ),
     );
 
-    renderWithProviders(<ClientList />);
+    renderWithProviders(
+      <MemoryRouter>
+        <ClientList />
+      </MemoryRouter>,
+    );
 
-    expect(await screen.findByText('Northwind - Retail')).toBeInTheDocument();
-    expect(screen.getByText('Contoso')).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'Northwind - Retail' })).toHaveAttribute(
+      'href',
+      `/clients/${northWind.id}/projects`,
+    );
+    expect(screen.getByRole('link', { name: 'Contoso' })).toBeInTheDocument();
   });
 
   it('renders and empty state', async () => {
     server.use(mswHttp.get(clientsUrl, () => HttpResponse.json([])));
-    renderWithProviders(<ClientList />);
+    renderWithProviders(
+      <MemoryRouter>
+        <ClientList />
+      </MemoryRouter>,
+    );
 
     expect(await screen.findByText('No clients yet.')).toBeInTheDocument();
   });
@@ -40,7 +51,11 @@ describe('ClientList', () => {
       ),
     );
 
-    renderWithProviders(<ClientList />);
+    renderWithProviders(
+      <MemoryRouter>
+        <ClientList />
+      </MemoryRouter>,
+    );
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Database unavailable');
   });
