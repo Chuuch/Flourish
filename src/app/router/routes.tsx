@@ -7,6 +7,7 @@ import { NotFound } from '@/components/feedback/NotFound';
 import { PageLoader } from '@/components/feedback/PageLoader';
 import { GuestOnly, RequireAuth } from '@/features/auth';
 import { MembersPage } from '@/features/members';
+import { ClientsPage } from '@/features/clients';
 
 export const routes: RouteObject[] = [
   {
@@ -53,6 +54,14 @@ export const routes: RouteObject[] = [
         element: (
           <RequireAuth>
             <MembersPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'clients',
+        element: (
+          <RequireAuth>
+            <ClientsPage />
           </RequireAuth>
         ),
       },

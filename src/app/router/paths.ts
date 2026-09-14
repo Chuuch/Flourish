@@ -3,4 +3,5 @@ export const paths = {
   login: '/login',
   register: '/register',
   members: '/members',
+  clients: '/clients',
 } as const;

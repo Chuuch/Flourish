@@ -22,6 +22,9 @@ export function RootLayout() {
           <NavLink to={paths.members} className={navLinkClass}>
             Members
           </NavLink>
+          <NavLink to={paths.clients} className={navLinkClass}>
+            Clients
+          </NavLink>
           {user ? (
             <>
               {organization ? <span>{organization.name}</span> : null}
