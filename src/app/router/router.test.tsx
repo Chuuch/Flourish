@@ -20,6 +20,12 @@ function renderAt(path: string) {
   return renderWithProviders(<RouterProvider router={router} />);
 }
 
+function signIn() {
+  useAuthStore
+    .getState()
+    .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
+}
+
 describe('application router', () => {
   it('renders the home route inside the layout', async () => {
     renderAt('/');
@@ -29,14 +35,21 @@ describe('application router', () => {
   });
 
   it('renders the members route', async () => {
-    useAuthStore
-      .getState()
-      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
+    signIn();
     server.use(mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])));
 
     renderAt('/members');
 
     expect(await screen.findByRole('heading', { name: 'Members' })).toBeInTheDocument();
+  });
+
+  it('renders the clients route', async () => {
+    signIn();
+    server.use(mswHttp.get(`${env.API_URL}/clients`, () => HttpResponse.json([])));
+
+    renderAt('/clients');
+
+    expect(await screen.findByRole('heading', { name: 'Clients' })).toBeInTheDocument();
   });
 
   it('renders not found for unknown paths', async () => {
