@@ -43,7 +43,7 @@ describe('RegisterForm', () => {
     await user.click(screen.getByRole('button', { name: 'Create account' }));
 
     expect(
-      await screen.findByText('Organization name must be at least 2 characters'),
+      await screen.findByText('Organization name must be at least 4 characters'),
     ).toBeInTheDocument();
     expect(called).toBe(false);
   });

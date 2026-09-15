@@ -1,5 +1,7 @@
 import { Alert } from '@/components/ui';
 import { useProjects } from '../hooks/useProjects';
+import { projectTasksPath } from '@/app/router/paths';
+import { Link } from 'react-router';
 
 export function ProjectList({ clientId }: { clientId: string }) {
   const { data, isPending, isError, error, refetch } = useProjects(clientId);
@@ -27,7 +29,9 @@ export function ProjectList({ clientId }: { clientId: string }) {
     <ul>
       {data.map((project) => (
         <li key={project.id}>
-          {project.notes ? `${project.name} - ${project.notes}` : project.name}
+          <Link to={projectTasksPath(clientId, project.id)}>
+            {project.notes ? `${project.name} - ${project.notes}` : project.name}
+          </Link>
         </li>
       ))}
     </ul>

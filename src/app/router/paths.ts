@@ -5,8 +5,13 @@ export const paths = {
   members: '/members',
   clients: '/clients',
   projects: '/projects',
+  tasks: '/tasks',
 } as const;
 
 export function clientProjectsPath(clientId: string): string {
   return `${paths.clients}/${clientId}/projects`;
+}
+
+export function projectTasksPath(clientId: string, projectId: string): string {
+  return `${paths.clients}/${clientId}/projects/${projectId}/tasks`;
 }

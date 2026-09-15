@@ -9,6 +9,7 @@ import { GuestOnly, RequireAuth } from '@/features/auth';
 import { MembersPage } from '@/features/members';
 import { ClientsPage } from '@/features/clients';
 import { ProjectsPage } from '@/features/projects';
+import { TasksPage } from '@/features/tasks';
 
 export const routes: RouteObject[] = [
   {
@@ -71,6 +72,14 @@ export const routes: RouteObject[] = [
         element: (
           <RequireAuth>
             <ProjectsPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'clients/:clientId/projects/:projectId/tasks',
+        element: (
+          <RequireAuth>
+            <TasksPage />
           </RequireAuth>
         ),
       },
