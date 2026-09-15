@@ -6,31 +6,44 @@ import { renderWithProviders } from '@/test/render';
 import { ProjectList } from './ProjectList';
 import { screen } from '@testing-library/react';
 import { makeProject } from '@/test/factories/project';
+import { MemoryRouter } from 'react-router';
 
 const clientId = '44444444-4444-4444-4444-444444444444';
 const projectsUrl = `${env.API_URL}/clients/${clientId}/projects`;
 
 describe('ProjectList', () => {
   it('renders projects returned by the API', async () => {
+    const website = makeProject({
+      client_id: clientId,
+      name: 'Website',
+      notes: 'Launch',
+    });
     server.use(
       mswHttp.get(projectsUrl, () =>
-        HttpResponse.json([
-          makeProject({ name: 'Website', notes: 'Launch' }),
-          makeProject({ name: 'Brand', notes: '' }),
-        ]),
+        HttpResponse.json([website, makeProject({ name: 'Brand', notes: '' })]),
       ),
     );
 
-    renderWithProviders(<ProjectList clientId={clientId} />);
+    renderWithProviders(
+      <MemoryRouter>
+        <ProjectList clientId={clientId} />
+      </MemoryRouter>,
+    );
 
-    expect(await screen.findByText('Website - Launch')).toBeInTheDocument();
-    expect(screen.getByText('Brand')).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'Website - Launch' })).toHaveAttribute(
+      'href',
+      `/clients/${clientId}/projects/${website.id}/tasks`,
+    );
+    expect(screen.getByRole('link', { name: 'Brand' })).toBeInTheDocument();
   });
 
   it('renders an empty state', async () => {
     server.use(mswHttp.get(projectsUrl, () => HttpResponse.json([])));
-    renderWithProviders(<ProjectList clientId={clientId} />);
-
+    renderWithProviders(
+      <MemoryRouter>
+        <ProjectList clientId={clientId} />
+      </MemoryRouter>,
+    );
     expect(await screen.findByText('No projects yet.')).toBeInTheDocument();
   });
 
@@ -41,7 +54,11 @@ describe('ProjectList', () => {
       ),
     );
 
-    renderWithProviders(<ProjectList clientId={clientId} />);
+    renderWithProviders(
+      <MemoryRouter>
+        <ProjectList clientId={clientId} />
+      </MemoryRouter>,
+    );
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Database unavailable');
   });

@@ -22,7 +22,7 @@ export const loginInputSchema = z.object({
 export const registerInputSchema = z.object({
   email: z.email('Enter a valid email address'),
   password: z.string().min(1, 'Password is required'),
-  organization_name: z.string().min(2, 'Organization name must be at least 2 characters').max(100),
+  organization_name: z.string().min(4, 'Organization name must be at least 4 characters').max(100),
 });
 
 export const authResponseSchema = z.object({

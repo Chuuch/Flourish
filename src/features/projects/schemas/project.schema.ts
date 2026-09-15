@@ -13,7 +13,7 @@ export const projectSchema = z.object({
 export const projectsSchema = z.array(projectSchema);
 
 export const createProjectSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 4 characters').max(100),
+  name: z.string().min(4, 'Name must be at least 4 characters').max(100),
   notes: z.string().max(2000),
 });
 
