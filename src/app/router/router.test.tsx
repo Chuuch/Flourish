@@ -64,6 +64,33 @@ describe('application router', () => {
     expect(await screen.findByRole('heading', { name: 'Projects' })).toBeInTheDocument();
   });
 
+  it('renders the tasks route', async () => {
+    signIn();
+    const clientId = crypto.randomUUID();
+    const projectId = crypto.randomUUID();
+    server.use(
+      mswHttp.get(`${env.API_URL}/projects/${projectId}/tasks`, () => HttpResponse.json([])),
+    );
+
+    renderAt(`/clients/${clientId}/projects/${projectId}/tasks`);
+
+    expect(await screen.findByRole('heading', { name: 'Tasks' })).toBeInTheDocument();
+  });
+
+  it('renders the time entries route', async () => {
+    signIn();
+    const clientId = crypto.randomUUID();
+    const projectId = crypto.randomUUID();
+    const taskId = crypto.randomUUID();
+    server.use(
+      mswHttp.get(`${env.API_URL}/tasks/${taskId}/time-entries`, () => HttpResponse.json([])),
+    );
+
+    renderAt(`/clients/${clientId}/projects/${projectId}/tasks/${taskId}/time-entries`);
+
+    expect(await screen.findByRole('heading', { name: 'Time entries' })).toBeInTheDocument();
+  });
+
   it('renders not found for unknown paths', async () => {
     renderAt('/does-not-exist');
 
