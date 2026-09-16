@@ -24,7 +24,7 @@ export function TasksPage() {
       </p>
       <h1>Tasks</h1>
       <CreateTaskForm projectId={projectId} />
-      <TaskList projectId={projectId} />
+      <TaskList clientId={clientId} projectId={projectId} />
     </main>
   );
 }

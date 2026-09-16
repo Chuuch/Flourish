@@ -1,7 +1,9 @@
 import { Alert } from '@/components/ui';
 import { useTasks } from '../hooks/useTasks';
+import { Link } from 'react-router';
+import { taskTimeEntriesPath } from '@/app/router/paths';
 
-export function TaskList({ projectId }: { projectId: string }) {
+export function TaskList({ projectId, clientId }: { projectId: string; clientId: string }) {
   const { data, isPending, isError, error, refetch } = useTasks(projectId);
 
   if (isPending) {
@@ -27,7 +29,9 @@ export function TaskList({ projectId }: { projectId: string }) {
     <ul>
       {data.map((task) => (
         <li key={task.id}>
-          {task.notes ? `${task.title} - ${task.notes}` : task.title} ({task.status})
+          <Link to={taskTimeEntriesPath(clientId, projectId, task.id)}>
+            {task.notes ? `${task.title} - ${task.notes}` : task.title} ({task.status})
+          </Link>
         </li>
       ))}
     </ul>

@@ -10,6 +10,7 @@ import { MembersPage } from '@/features/members';
 import { ClientsPage } from '@/features/clients';
 import { ProjectsPage } from '@/features/projects';
 import { TasksPage } from '@/features/tasks';
+import { TimeEntriesPage } from '@/features/timeentries';
 
 export const routes: RouteObject[] = [
   {
@@ -80,6 +81,14 @@ export const routes: RouteObject[] = [
         element: (
           <RequireAuth>
             <TasksPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'clients/:clientId/projects/:projectId/tasks/:taskid/time-entries',
+        element: (
+          <RequireAuth>
+            <TimeEntriesPage />
           </RequireAuth>
         ),
       },
