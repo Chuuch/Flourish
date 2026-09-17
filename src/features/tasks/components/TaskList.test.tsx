@@ -32,11 +32,11 @@ describe('TaskList', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByRole('link', { name: 'Fix login - OAuth (todo)' })).toHaveAttribute(
+    expect(await screen.findByRole('link', { name: 'Fix login - OAuth' })).toHaveAttribute(
       'href',
       `/clients/${clientId}/projects/${projectId}/tasks/${login.id}/time-entries`,
     );
-    expect(screen.getByRole('link', { name: 'Ship site (done)' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Ship site' })).toBeInTheDocument();
   });
 
   it('renders an empty state', async () => {

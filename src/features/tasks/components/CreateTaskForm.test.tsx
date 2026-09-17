@@ -82,7 +82,8 @@ describe('CreateTaskForm', () => {
     await user.selectOptions(screen.getByLabelText('Status'), 'in_progress');
     await user.click(screen.getByRole('button', { name: 'Add task' }));
 
-    expect(await screen.findByText('Fix login - OAuth (in_progress)')).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'Fix login - OAuth' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Status for Fix login')).toHaveValue('in_progress');
     expect(screen.getByLabelText('Title')).toHaveValue('');
   });
 
