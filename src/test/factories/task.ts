@@ -10,6 +10,7 @@ export function makeTask(overrides: Partial<Task> = {}): Task {
     title: 'Fix login',
     notes: '',
     status: 'todo',
+    completed_at: null,
     created_at: now,
     updated_at: now,
     ...overrides,
