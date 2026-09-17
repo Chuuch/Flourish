@@ -11,6 +11,7 @@ import { ClientsPage } from '@/features/clients';
 import { ProjectsPage } from '@/features/projects';
 import { TasksPage } from '@/features/tasks';
 import { TimeEntriesPage } from '@/features/timeentries';
+import { FilesPage } from '@/features/files';
 
 export const routes: RouteObject[] = [
   {
@@ -89,6 +90,14 @@ export const routes: RouteObject[] = [
         element: (
           <RequireAuth>
             <TimeEntriesPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'clients/:clientId/projects/:projectId/files',
+        element: (
+          <RequireAuth>
+            <FilesPage />
           </RequireAuth>
         ),
       },

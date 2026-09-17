@@ -1,6 +1,6 @@
 import { Alert } from '@/components/ui';
 import { useProjects } from '../hooks/useProjects';
-import { projectTasksPath } from '@/app/router/paths';
+import { projectTasksPath, projectFilesPath } from '@/app/router/paths';
 import { Link } from 'react-router';
 
 export function ProjectList({ clientId }: { clientId: string }) {
@@ -31,7 +31,8 @@ export function ProjectList({ clientId }: { clientId: string }) {
         <li key={project.id}>
           <Link to={projectTasksPath(clientId, project.id)}>
             {project.notes ? `${project.name} - ${project.notes}` : project.name}
-          </Link>
+          </Link>{' '}
+          <Link to={projectFilesPath(clientId, project.id)}>Files</Link>
         </li>
       ))}
     </ul>
