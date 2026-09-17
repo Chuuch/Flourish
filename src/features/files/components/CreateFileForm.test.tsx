@@ -2,14 +2,15 @@ import { env } from '@/config/env';
 import { renderWithProviders } from '@/test/render';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
+import { CreateFileForm } from './CreateFileForm';
 import { screen } from '@testing-library/react';
 import { server } from '@/test/server';
 import { HttpResponse, http as mswHttp } from 'msw';
+import { type ProjectFile } from '../schemas/file.schema';
 import { makeFile } from '@/test/factories/file';
 import { useAuthStore } from '@/features/auth';
 import { MemoryRouter, Route, Routes } from 'react-router';
-import { FilesPage, type ProjectFile } from '@/features/files';
-import { CreateFileForm } from '@/features/files/components/CreateFileForm';
+import { FilesPage } from '../pages/FilesPage';
 
 const clientId = '44444444-4444-4444-4444-444444444444';
 const projectId = '55555555-5555-5555-5555-555555555555';

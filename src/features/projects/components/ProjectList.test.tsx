@@ -35,6 +35,10 @@ describe('ProjectList', () => {
       `/clients/${clientId}/projects/${website.id}/tasks`,
     );
     expect(screen.getByRole('link', { name: 'Brand' })).toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: 'Files' })[0]).toHaveAttribute(
+      'href',
+      `/clients/${clientId}/projects/${website.id}/files`,
+    );
   });
 
   it('renders an empty state', async () => {
