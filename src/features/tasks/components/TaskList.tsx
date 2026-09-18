@@ -1,7 +1,7 @@
 import { Alert } from '@/components/ui';
 import { useTasks } from '../hooks/useTasks';
 import { Link } from 'react-router';
-import { taskTimeEntriesPath } from '@/app/router/paths';
+import { taskCommentsPath, taskTimeEntriesPath } from '@/app/router/paths';
 import { useUpdateTask } from '../hooks/useUpdateTask';
 import { taskStatusSchema, type TaskStatus } from '../schemas/task.schema';
 
@@ -37,6 +37,7 @@ export function TaskList({ projectId, clientId }: { projectId: string; clientId:
             <Link to={taskTimeEntriesPath(clientId, projectId, task.id)}>
               {task.notes ? `${task.title} - ${task.notes}` : task.title}
             </Link>{' '}
+            <Link to={taskCommentsPath(clientId, projectId, task.id)}>Comments</Link>{' '}
             <label>
               Status for {task.title}
               <select

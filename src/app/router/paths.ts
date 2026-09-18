@@ -23,3 +23,7 @@ export function projectFilesPath(clientId: string, projectId: string): string {
 export function taskTimeEntriesPath(clientId: string, projectId: string, taskId: string): string {
   return `${paths.clients}/${clientId}/projects/${projectId}/tasks/${taskId}/time-entries`;
 }
+
+export function taskCommentsPath(clientId: string, projectId: string, taskId: string): string {
+  return `${paths.clients}/${clientId}/projects/${projectId}/tasks/${taskId}/comments`;
+}

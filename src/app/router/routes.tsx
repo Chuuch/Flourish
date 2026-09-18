@@ -12,6 +12,7 @@ import { ProjectsPage } from '@/features/projects';
 import { TasksPage } from '@/features/tasks';
 import { TimeEntriesPage } from '@/features/timeentries';
 import { FilesPage } from '@/features/files';
+import { CommentsPage } from '@/features/comments';
 
 export const routes: RouteObject[] = [
   {
@@ -90,6 +91,14 @@ export const routes: RouteObject[] = [
         element: (
           <RequireAuth>
             <TimeEntriesPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'clients/:clientId/projects/:projectId/tasks/:taskid/comments',
+        element: (
+          <RequireAuth>
+            <CommentsPage />
           </RequireAuth>
         ),
       },

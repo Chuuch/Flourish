@@ -37,6 +37,10 @@ describe('TaskList', () => {
       `/clients/${clientId}/projects/${projectId}/tasks/${login.id}/time-entries`,
     );
     expect(screen.getByRole('link', { name: 'Ship site' })).toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: 'Comments' })[0]).toHaveAttribute(
+      'href',
+      `/clients/${clientId}/projects/${projectId}/tasks/${login.id}/comments`,
+    );
   });
 
   it('renders an empty state', async () => {
