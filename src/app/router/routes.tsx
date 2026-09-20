@@ -13,6 +13,7 @@ import { TasksPage } from '@/features/tasks';
 import { TimeEntriesPage } from '@/features/timeentries';
 import { FilesPage } from '@/features/files';
 import { CommentsPage } from '@/features/comments';
+import { ClientUsersPage } from '@/features/clientusers';
 
 export const routes: RouteObject[] = [
   {
@@ -67,6 +68,14 @@ export const routes: RouteObject[] = [
         element: (
           <RequireAuth>
             <ClientsPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'clients/:clientId/users',
+        element: (
+          <RequireAuth>
+            <ClientUsersPage />
           </RequireAuth>
         ),
       },

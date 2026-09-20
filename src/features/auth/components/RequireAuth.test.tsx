@@ -15,6 +15,8 @@ const testOrg = {
   updated_at: '2026-09-11T11:12:20Z',
 };
 
+const clientId = '44444444-4444-4444-4444-444444444444';
+
 function renderAt(path: string) {
   const router = createMemoryRouter(routes, { initialEntries: [path] });
   return renderWithProviders(<RouterProvider router={router} />);
@@ -57,5 +59,27 @@ describe('RequireAuth', () => {
     renderAt('/clients');
 
     expect(await screen.findByRole('heading', { name: 'Clients' })).toBeInTheDocument();
+  });
+});
+
+describe('RequireAuth', () => {
+  it('redirects anonymous users to login', async () => {
+    renderAt(`/clients/${clientId}/users`);
+
+    expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeInTheDocument();
+  });
+
+  it('renders the protected page when there is a session', async () => {
+    useAuthStore
+      .getState()
+      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
+
+    server.use(
+      mswHttp.get(`${env.API_URL}/clients/${clientId}/users`, () => HttpResponse.json([])),
+    );
+
+    renderAt(`/clients/${clientId}/users`);
+
+    expect(await screen.findByRole('heading', { name: 'Client users' })).toBeInTheDocument();
   });
 });
