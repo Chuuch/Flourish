@@ -14,8 +14,6 @@ import { TimeEntriesPage } from '@/features/timeentries';
 import { FilesPage } from '@/features/files';
 import { CommentsPage } from '@/features/comments';
 import { ClientUsersPage } from '@/features/clientusers';
-import { GuestOnly, LoginPage, RequireAuth } from '@/features/auth';
-import { UsersPage } from '@/features/users';
 
 export const routes: RouteObject[] = [
   {
