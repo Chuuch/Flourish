@@ -31,6 +31,10 @@ describe('ClientList', () => {
       `/clients/${northWind.id}/projects`,
     );
     expect(screen.getByRole('link', { name: 'Contoso' })).toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: 'Users' })[0]).toHaveAttribute(
+      'href',
+      `/clients/${northWind.id}/users`,
+    );
   });
 
   it('renders and empty state', async () => {
