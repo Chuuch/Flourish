@@ -4,7 +4,7 @@ import { redirectFrom } from './redirect';
 
 describe('redirectFrom', () => {
   it('returns an internal path', () => {
-    expect(redirectFrom({ from: { pathname: '/users' } })).toBe('/users');
+    expect(redirectFrom({ from: { pathname: '/members' } })).toBe('/members');
   });
 
   it('rejects protocol-relative URLs', () => {

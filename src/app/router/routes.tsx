@@ -5,8 +5,15 @@ import { RouteErrorBoundary } from '@/components/feedback/RouteErrorBoundary';
 import { HomePage } from '@/features/home/pages/HomePage';
 import { NotFound } from '@/components/feedback/NotFound';
 import { PageLoader } from '@/components/feedback/PageLoader';
-import { GuestOnly, LoginPage, RequireAuth } from '@/features/auth';
-import { UsersPage } from '@/features/users';
+import { GuestOnly, RequireAuth } from '@/features/auth';
+import { MembersPage } from '@/features/members';
+import { ClientsPage } from '@/features/clients';
+import { ProjectsPage } from '@/features/projects';
+import { TasksPage } from '@/features/tasks';
+import { TimeEntriesPage } from '@/features/timeentries';
+import { FilesPage } from '@/features/files';
+import { CommentsPage } from '@/features/comments';
+import { ClientUsersPage } from '@/features/clientusers';
 
 export const routes: RouteObject[] = [
   {
@@ -18,17 +25,97 @@ export const routes: RouteObject[] = [
       { index: true, element: <HomePage /> },
       {
         path: 'login',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { LoginPage } = await import('@/features/auth');
+          return {
+            Component: function LoginRoute() {
+              return (
+                <GuestOnly>
+                  <LoginPage />
+                </GuestOnly>
+              );
+            },
+          };
+        },
+      },
+      {
+        path: 'register',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { RegisterPage } = await import('@/features/auth');
+          return {
+            Component: function RegisterRoute() {
+              return (
+                <GuestOnly>
+                  <RegisterPage />
+                </GuestOnly>
+              );
+            },
+          };
+        },
+      },
+      {
+        path: 'members',
         element: (
-          <GuestOnly>
-            <LoginPage />
-          </GuestOnly>
+          <RequireAuth>
+            <MembersPage />
+          </RequireAuth>
         ),
       },
       {
-        path: 'users',
+        path: 'clients',
         element: (
           <RequireAuth>
-            <UsersPage />
+            <ClientsPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'clients/:clientId/users',
+        element: (
+          <RequireAuth>
+            <ClientUsersPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'clients/:clientId/projects',
+        element: (
+          <RequireAuth>
+            <ProjectsPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'clients/:clientId/projects/:projectId/tasks',
+        element: (
+          <RequireAuth>
+            <TasksPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'clients/:clientId/projects/:projectId/tasks/:taskid/time-entries',
+        element: (
+          <RequireAuth>
+            <TimeEntriesPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'clients/:clientId/projects/:projectId/tasks/:taskid/comments',
+        element: (
+          <RequireAuth>
+            <CommentsPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'clients/:clientId/projects/:projectId/files',
+        element: (
+          <RequireAuth>
+            <FilesPage />
           </RequireAuth>
         ),
       },

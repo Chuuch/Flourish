@@ -1,5 +1,5 @@
-import { env } from '@/config/env';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { env } from '@/config/env';
 import z from 'zod';
 import { apiClient, setAccessToken } from './client';
 import { server } from '@/test/server';
@@ -10,6 +10,18 @@ import { ApiError } from './errors';
 const pingSchema = z.object({ ok: z.boolean() });
 const pingUrl = `${env.API_URL}/ping`;
 const refreshUrl = `${env.API_URL}/auth/refresh`;
+
+const refreshUser = {
+  id: crypto.randomUUID(),
+  email: 'a@b.com',
+};
+
+const refreshOrg = {
+  id: crypto.randomUUID(),
+  name: 'Acme',
+  created_at: '2026-09-11T11:12:20Z',
+  updated_at: '2026-09-11T11:12:20Z',
+};
 
 afterEach(() => {
   setAccessToken(null);
@@ -23,7 +35,7 @@ describe('apiClient refresh', () => {
     server.use(
       mswHttp.get(pingUrl, ({ request }) => {
         pingCalls += 1;
-        if (request.headers.get('Authorization') == 'Bearer expired') {
+        if (request.headers.get('Authorization') === 'Bearer expired') {
           return HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 });
         }
         return HttpResponse.json({ ok: true });
@@ -31,7 +43,9 @@ describe('apiClient refresh', () => {
       mswHttp.post(refreshUrl, () =>
         HttpResponse.json({
           access_token: 'fresh',
-          user: { id: crypto.randomUUID(), email: 'a@b.com' },
+          user: refreshUser,
+          organization: refreshOrg,
+          role: 'owner',
         }),
       ),
     );
@@ -58,7 +72,9 @@ describe('apiClient refresh', () => {
         refreshCalls += 1;
         return HttpResponse.json({
           access_token: 'fresh',
-          user: { id: crypto.randomUUID(), email: 'a@b.com' },
+          user: refreshUser,
+          organization: refreshOrg,
+          role: 'owner',
         });
       }),
     );

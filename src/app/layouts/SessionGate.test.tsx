@@ -9,13 +9,27 @@ import { SessionGate } from './SessionGate';
 
 const meUrl = `${env.API_URL}/auth/me`;
 
+const sessionUser = {
+  id: crypto.randomUUID(),
+  email: 'ada@example.com',
+};
+
+const sessionOrg = {
+  id: crypto.randomUUID(),
+  name: 'Acme',
+  created_at: '2026-09-11T11:12:20Z',
+  updated_at: '2026-09-11T11:12:20Z',
+};
+
 describe('SessionGate', () => {
   it('restores the session from /auth/me', async () => {
     server.use(
       mswHttp.get(meUrl, () =>
         HttpResponse.json({
           access_token: 'restored',
-          user: { id: crypto.randomUUID(), email: 'ada@example.com' },
+          user: sessionUser,
+          organization: sessionOrg,
+          role: 'owner',
         }),
       ),
     );
@@ -28,6 +42,8 @@ describe('SessionGate', () => {
 
     expect(await screen.findByText('ready')).toBeInTheDocument();
     expect(useAuthStore.getState().user?.email).toBe('ada@example.com');
+    expect(useAuthStore.getState().organization?.name).toBe('Acme');
+    expect(useAuthStore.getState().role).toBe('owner');
   });
 
   it('renders children when there is no session', async () => {
@@ -48,5 +64,7 @@ describe('SessionGate', () => {
 
     expect(await screen.findByText('ready')).toBeInTheDocument();
     expect(useAuthStore.getState().user).toBeNull();
+    expect(useAuthStore.getState().organization).toBeNull();
+    expect(useAuthStore.getState().role).toBeNull();
   });
 });

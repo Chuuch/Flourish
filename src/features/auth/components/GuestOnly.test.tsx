@@ -9,6 +9,13 @@ import { paths } from '@/app/router/paths';
 import { screen } from '@testing-library/react';
 import { useAuthStore } from '../store/auth.store';
 
+const testOrg = {
+  id: crypto.randomUUID(),
+  name: 'Acme',
+  created_at: '2026-09-11T11:12:20Z',
+  updated_at: '2026-09-11T11:12:20Z',
+};
+
 function renderAt(path: string) {
   const router = createMemoryRouter(routes, { initialEntries: [path] });
   return renderWithProviders(<RouterProvider router={router} />);
@@ -18,10 +25,10 @@ describe('GuestOnly', () => {
   it('shows login for anonymous users', async () => {
     server.use(
       mswHttp.get(`${env.API_URL}/auth/me`, () =>
-        HttpResponse.json({ message: 'Unauthorized' }, { status: 401 }),
+        HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 }),
       ),
       mswHttp.post(`${env.API_URL}/auth/refresh`, () =>
-        HttpResponse.json({ message: 'Expired' }, { status: 401 }),
+        HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 }),
       ),
     );
 
@@ -32,7 +39,7 @@ describe('GuestOnly', () => {
   it('redirects authenticated users home', async () => {
     useAuthStore
       .getState()
-      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token');
+      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
 
     renderAt(paths.login);
     expect(await screen.findByText('Flourish')).toBeInTheDocument();

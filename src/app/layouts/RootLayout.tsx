@@ -9,6 +9,7 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 export function RootLayout() {
   const user = useAuthStore((state) => state.user);
+  const organization = useAuthStore((state) => state.organization);
   const logout = useLogout();
 
   return (
@@ -18,23 +19,34 @@ export function RootLayout() {
           <NavLink to={paths.home} className={navLinkClass} end>
             Home
           </NavLink>
-          <NavLink to={paths.users} className={navLinkClass}>
-            Users
+          <NavLink to={paths.members} className={navLinkClass}>
+            Members
+          </NavLink>
+          <NavLink to={paths.clients} className={navLinkClass}>
+            Clients
           </NavLink>
           {user ? (
-            <Button
-              type="button"
-              onClick={() => {
-                logout.mutate();
-              }}
-              disabled={logout.isPending}
-            >
-              Sign out
-            </Button>
+            <>
+              {organization ? <span>{organization.name}</span> : null}
+              <Button
+                type="button"
+                onClick={() => {
+                  logout.mutate();
+                }}
+                disabled={logout.isPending}
+              >
+                Sign out
+              </Button>
+            </>
           ) : (
-            <NavLink to={paths.login} className={navLinkClass}>
-              Sign in
-            </NavLink>
+            <>
+              <NavLink to={paths.login} className={navLinkClass}>
+                Sign in
+              </NavLink>
+              <NavLink to={paths.register} className={navLinkClass}>
+                Create account
+              </NavLink>
+            </>
           )}
         </nav>
       </header>
