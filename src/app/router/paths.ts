@@ -6,6 +6,8 @@ export const paths = {
   clients: '/clients',
   projects: '/projects',
   tasks: '/tasks',
+  portal: '/portal',
+  portalLogin: '/portal/login',
 } as const;
 
 export function clientProjectsPath(clientId: string): string {
