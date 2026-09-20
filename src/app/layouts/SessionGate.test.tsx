@@ -8,6 +8,7 @@ import { server } from '@/test/server';
 import { SessionGate } from './SessionGate';
 
 const meUrl = `${env.API_URL}/auth/me`;
+const portalMeUrl = `${env.API_URL}/client-auth/me`;
 
 const sessionUser = {
   id: crypto.randomUUID(),
@@ -17,6 +18,15 @@ const sessionUser = {
 const sessionOrg = {
   id: crypto.randomUUID(),
   name: 'Acme',
+  created_at: '2026-09-11T11:12:20Z',
+  updated_at: '2026-09-11T11:12:20Z',
+};
+
+const sessionClient = {
+  id: crypto.randomUUID(),
+  organization_id: sessionOrg.id,
+  name: 'Northwind',
+  notes: '',
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
 };
@@ -46,12 +56,49 @@ describe('SessionGate', () => {
     expect(useAuthStore.getState().role).toBe('owner');
   });
 
+  it('restores the session from /client-auth/me', async () => {
+    server.use(
+      mswHttp.get(meUrl, () =>
+        HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 }),
+      ),
+      mswHttp.post(`${env.API_URL}/auth/refresh`, () =>
+        HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 }),
+      ),
+      mswHttp.get(portalMeUrl, () =>
+        HttpResponse.json({
+          access_token: 'restored',
+          user: { id: crypto.randomUUID(), email: 'pat@example.com' },
+          organization: sessionOrg,
+          client: sessionClient,
+          role: 'client',
+        }),
+      ),
+    );
+
+    renderWithProviders(
+      <SessionGate>
+        <p>ready</p>
+      </SessionGate>,
+    );
+
+    expect(await screen.findByText('ready')).toBeInTheDocument();
+    expect(useAuthStore.getState().user?.email).toBe('pat@example.com');
+    expect(useAuthStore.getState().client?.name).toBe('Northwind');
+    expect(useAuthStore.getState().role).toBe('client');
+  });
+
   it('renders children when there is no session', async () => {
     server.use(
       mswHttp.get(meUrl, () =>
         HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 }),
       ),
       mswHttp.post(`${env.API_URL}/auth/refresh`, () =>
+        HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 }),
+      ),
+      mswHttp.get(portalMeUrl, () =>
+        HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 }),
+      ),
+      mswHttp.post(`${env.API_URL}/client-auth/refresh`, () =>
         HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 }),
       ),
     );
@@ -65,6 +112,7 @@ describe('SessionGate', () => {
     expect(await screen.findByText('ready')).toBeInTheDocument();
     expect(useAuthStore.getState().user).toBeNull();
     expect(useAuthStore.getState().organization).toBeNull();
+    expect(useAuthStore.getState().client).toBeNull();
     expect(useAuthStore.getState().role).toBeNull();
   });
 });

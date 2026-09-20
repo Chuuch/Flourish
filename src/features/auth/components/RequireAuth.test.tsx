@@ -15,6 +15,15 @@ const testOrg = {
   updated_at: '2026-09-11T11:12:20Z',
 };
 
+const testClient = {
+  id: crypto.randomUUID(),
+  organization_id: testOrg.id,
+  name: 'Northwind',
+  notes: '',
+  created_at: '2026-09-11T11:12:20Z',
+  updated_at: '2026-09-11T11:12:20Z',
+};
+
 const clientId = '44444444-4444-4444-4444-444444444444';
 
 function renderAt(path: string) {
@@ -39,6 +48,22 @@ describe('RequireAuth', () => {
     renderAt('/members');
 
     expect(await screen.findByRole('heading', { name: 'Members' })).toBeInTheDocument();
+  });
+
+  it('sends a client session to the portal', async () => {
+    useAuthStore
+      .getState()
+      .setPortalSession(
+        { id: crypto.randomUUID(), email: 'pat@example.com' },
+        'token',
+        testOrg,
+        testClient,
+        'client',
+      );
+
+    renderAt('/members');
+
+    expect(await screen.findByRole('heading', { name: 'Portal' })).toBeInTheDocument();
   });
 });
 

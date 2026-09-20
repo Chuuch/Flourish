@@ -3,12 +3,16 @@ import { env } from '@/config/env';
 import { ApiError, apiErrorResponseSchema } from './errors';
 import { refreshResponseSchema } from '@/features/auth/schemas/auth.schema';
 import { notifyUnauthorized } from './session';
+import { portalAuthResponseSchema } from '@/features/portal/schemas/portal-auth.schema';
 
 type RetryConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
 };
 
+export type AuthRealm = 'agency' | 'portal';
+
 let access_token: string | null = null;
+let authRealm: AuthRealm | null = null;
 let refreshPromise: Promise<string> | null = null;
 
 export const setAccessToken = (token: string | null): void => {
@@ -16,6 +20,12 @@ export const setAccessToken = (token: string | null): void => {
 };
 
 export const getAccessToken = (): string | null => access_token;
+
+export const setAuthRealm = (realm: AuthRealm | null): void => {
+  authRealm = realm;
+};
+
+export const getAuthRealm = (): AuthRealm | null => authRealm;
 
 export const apiClient = axios.create({
   baseURL: env.API_URL,
@@ -59,10 +69,13 @@ function toApiError(error: unknown): ApiError {
 
 async function refreshAccessToken(): Promise<string> {
   if (!refreshPromise) {
+    const refreshPath = authRealm === 'portal' ? '/client-auth/refresh' : '/auth/refresh';
+    const schema = authRealm === 'portal' ? portalAuthResponseSchema : refreshResponseSchema;
+
     refreshPromise = refreshClient
-      .post('/auth/refresh')
+      .post(refreshPath)
       .then((response) => {
-        const parsed = refreshResponseSchema.safeParse(response.data);
+        const parsed = schema.safeParse(response.data);
 
         if (!parsed.success) {
           throw new ApiError('Response validation failed ', response.status, 'INVALID_RESPONSE');

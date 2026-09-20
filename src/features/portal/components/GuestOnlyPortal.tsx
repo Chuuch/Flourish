@@ -1,17 +1,17 @@
-import type { ReactNode } from 'react';
-import { useAuthStore } from '../store/auth.store';
-import { Navigate } from 'react-router';
 import { paths } from '@/app/router/paths';
+import { useAuthStore } from '@/features/auth';
+import type { ReactNode } from 'react';
+import { Navigate } from 'react-router';
 
-interface GuestOnlyProps {
+interface GuestOnlyPortalProps {
   children: ReactNode;
 }
 
-export function GuestOnly({ children }: GuestOnlyProps) {
+export function GuestOnlyPortal({ children }: GuestOnlyPortalProps) {
   const user = useAuthStore((state) => state.user);
   const role = useAuthStore((state) => state.role);
 
-  if (role == 'client') {
+  if (role === 'client') {
     return <Navigate to={paths.portal} replace />;
   }
 
