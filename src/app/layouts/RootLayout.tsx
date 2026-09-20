@@ -10,24 +10,37 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 export function RootLayout() {
   const user = useAuthStore((state) => state.user);
   const organization = useAuthStore((state) => state.organization);
+  const client = useAuthStore((state) => state.client);
+  const role = useAuthStore((state) => state.role);
   const logout = useLogout();
+  const isPortal = role === 'client';
 
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b px-6 py-4">
         <nav aria-label="Main" className="flex gap-6">
-          <NavLink to={paths.home} className={navLinkClass} end>
+          <NavLink to={isPortal ? paths.portal : paths.home} className={navLinkClass} end>
             Home
           </NavLink>
-          <NavLink to={paths.members} className={navLinkClass}>
-            Members
-          </NavLink>
-          <NavLink to={paths.clients} className={navLinkClass}>
-            Clients
-          </NavLink>
+          {isPortal ? null : (
+            <>
+              <NavLink to={paths.members} className={navLinkClass}>
+                Members
+              </NavLink>
+              <NavLink to={paths.clients} className={navLinkClass}>
+                Clients
+              </NavLink>
+            </>
+          )}
           {user ? (
             <>
-              {organization ? <span>{organization.name}</span> : null}
+              {isPortal ? (
+                client ? (
+                  <span>{client.name}</span>
+                ) : null
+              ) : organization ? (
+                <span>{organization.name}</span>
+              ) : null}
               <Button
                 type="button"
                 onClick={() => {
@@ -45,6 +58,9 @@ export function RootLayout() {
               </NavLink>
               <NavLink to={paths.register} className={navLinkClass}>
                 Create account
+              </NavLink>
+              <NavLink to={paths.portalLogin} className={navLinkClass}>
+                Client sign in
               </NavLink>
             </>
           )}

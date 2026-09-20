@@ -14,6 +14,7 @@ import { TimeEntriesPage } from '@/features/timeentries';
 import { FilesPage } from '@/features/files';
 import { CommentsPage } from '@/features/comments';
 import { ClientUsersPage } from '@/features/clientusers';
+import { PortalHomePage, RequirePortalAuth } from '@/features/portal';
 
 export const routes: RouteObject[] = [
   {
@@ -54,6 +55,30 @@ export const routes: RouteObject[] = [
             },
           };
         },
+      },
+      {
+        path: 'portal/login',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { GuestOnlyPortal, PortalLoginPage } = await import('@/features/portal');
+          return {
+            Component: function PortalLoginRoute() {
+              return (
+                <GuestOnlyPortal>
+                  <PortalLoginPage />
+                </GuestOnlyPortal>
+              );
+            },
+          };
+        },
+      },
+      {
+        path: 'portal',
+        element: (
+          <RequirePortalAuth>
+            <PortalHomePage />
+          </RequirePortalAuth>
+        ),
       },
       {
         path: 'members',
