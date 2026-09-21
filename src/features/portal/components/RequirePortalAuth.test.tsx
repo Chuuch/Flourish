@@ -1,8 +1,11 @@
 import { screen } from '@testing-library/react';
+import { HttpResponse, http as mswHttp } from 'msw';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { describe, expect, it } from 'vitest';
 import { routes } from '@/app/router/routes';
+import { env } from '@/config/env';
 import { renderWithProviders } from '@/test/render';
+import { server } from '@/test/server';
 import { useAuthStore } from '@/features/auth';
 
 const testOrg = {
@@ -43,6 +46,8 @@ describe('RequirePortalAuth', () => {
         testClient,
         'client',
       );
+
+    server.use(mswHttp.get(`${env.API_URL}/client-auth/tickets`, () => HttpResponse.json([])));
 
     renderAt('/portal');
 

@@ -11,6 +11,7 @@ import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router';
 import { routes } from '@/app/router/routes';
 
 const loginUrl = `${env.API_URL}/client-auth/login`;
+const ticketsUrl = `${env.API_URL}/client-auth/tickets`;
 
 const testOrg = {
   id: crypto.randomUUID(),
@@ -78,6 +79,7 @@ describe('PortalLoginForm', () => {
           role: 'client',
         });
       }),
+      mswHttp.get(ticketsUrl, () => HttpResponse.json([])),
     );
 
     const router = createMemoryRouter(routes, { initialEntries: ['/portal/login'] });

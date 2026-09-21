@@ -1,4 +1,5 @@
 import { useAuthStore } from '@/features/auth';
+import { CreateTicketForm, TicketList } from '@/features/tickets';
 
 export function PortalHomePage() {
   const user = useAuthStore((state) => state.user);
@@ -9,6 +10,9 @@ export function PortalHomePage() {
       <h1>Portal</h1>
       {user ? <p>{user.email}</p> : null}
       {client ? <p>{client.name}</p> : null}
+      <h2>Tickets</h2>
+      <CreateTicketForm />
+      <TicketList />
     </main>
   );
 }
