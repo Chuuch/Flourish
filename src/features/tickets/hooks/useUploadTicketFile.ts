@@ -1,15 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { uploadPortalTicketFile } from '../api/ticket-files.api';
+import { uploadTicketFile, type TicketFileSource } from '../api/ticket-files.api';
 import { ticketFileKeys } from '../api/ticket-files.queries';
 
-export function useUploadTicketFile(ticketId: string) {
+export function useUploadTicketFile(ticketId: string, source: TicketFileSource = 'portal') {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (file: File) => uploadPortalTicketFile(ticketId, file),
+    mutationFn: (file: File) => uploadTicketFile(ticketId, file, source),
     onSuccess: () =>
       queryClient.invalidateQueries({
-        queryKey: ticketFileKeys.lists(ticketId),
+        queryKey: ticketFileKeys.lists(ticketId, source),
       }),
   });
 }

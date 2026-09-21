@@ -4,3 +4,4 @@ export { ticketKeys } from './api/tickets.queries';
 export { useTickets } from './hooks/useTickets';
 export { TicketList } from './components/TicketList';
 export { CreateTicketForm } from './components/CreateTicketForm';
+export { AgencyTicketsPage } from './pages/AgencyTicketsPage';

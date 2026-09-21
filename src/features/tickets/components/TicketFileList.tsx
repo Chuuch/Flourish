@@ -1,8 +1,15 @@
 import { Alert } from '@/components/ui';
 import { useTicketFiles } from '../hooks/useTicketFiles';
+import type { TicketFileSource } from '../api/ticket-files.api';
 
-export function TicketFileList({ ticketId }: { ticketId: string }) {
-  const { data, isPending, isError, error, refetch } = useTicketFiles(ticketId);
+export function TicketFileList({
+  ticketId,
+  source = 'portal',
+}: {
+  ticketId: string;
+  source?: TicketFileSource;
+}) {
+  const { data, isPending, isError, error, refetch } = useTicketFiles(ticketId, source);
 
   if (isPending) {
     return <p role="status">Loading attachments...</p>;

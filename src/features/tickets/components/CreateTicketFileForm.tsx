@@ -2,9 +2,16 @@ import { useRef, useState } from 'react';
 import { useUploadTicketFile } from '../hooks/useUploadTicketFile';
 import { isAllowedTicketFile, MAX_TICKET_FILE_SIZE_BYTES } from '../schemas/ticket-file.schema';
 import { Alert, Button } from '@/components/ui';
+import type { TicketFileSource } from '../api/ticket-files.api';
 
-export function CreateTicketFileForm({ ticketId }: { ticketId: string }) {
-  const uploadFile = useUploadTicketFile(ticketId);
+export function CreateTicketFileForm({
+  ticketId,
+  source = 'portal',
+}: {
+  ticketId: string;
+  source?: TicketFileSource;
+}) {
+  const uploadFile = useUploadTicketFile(ticketId, source);
   const inputRef = useRef<HTMLInputElement>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
 
