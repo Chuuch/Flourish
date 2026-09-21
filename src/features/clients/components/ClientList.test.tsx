@@ -35,6 +35,10 @@ describe('ClientList', () => {
       'href',
       `/clients/${northWind.id}/users`,
     );
+    expect(screen.getAllByRole('link', { name: 'Tickets' })[0]).toHaveAttribute(
+      'href',
+      `/clients/${northWind.id}/tickets`,
+    );
   });
 
   it('renders and empty state', async () => {

@@ -18,6 +18,10 @@ export function clientUsersPath(clientId: string): string {
   return `${paths.clients}/${clientId}/users`;
 }
 
+export function clientTicketsPath(clientId: string): string {
+  return `${paths.clients}/${clientId}/tickets`;
+}
+
 export function projectTasksPath(clientId: string, projectId: string): string {
   return `${paths.clients}/${clientId}/projects/${projectId}/tasks`;
 }

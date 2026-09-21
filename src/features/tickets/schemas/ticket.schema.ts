@@ -24,7 +24,12 @@ export const createTicketSchema = z.object({
   body: z.string().min(1, 'Body is required').max(2000),
 });
 
+export const updateTicketSchema = z.object({
+  status: ticketStatusSchema,
+});
+
 export type Ticket = z.infer<typeof ticketSchema>;
 export type TicketKind = z.infer<typeof ticketKindSchema>;
 export type TicketStatus = z.infer<typeof ticketStatusSchema>;
 export type CreateTicketInput = z.infer<typeof createTicketSchema>;
+export type UpdateTicketInput = z.infer<typeof updateTicketSchema>;

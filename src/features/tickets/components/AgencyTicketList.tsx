@@ -1,0 +1,68 @@
+import { Alert } from '@/components/ui';
+import { useStaffTickets } from '../hooks/useStaffTickets';
+import { useUpdateTicket } from '../hooks/useUpdateTicket';
+import { ticketStatusSchema, type TicketStatus } from '../schemas/ticket.schema';
+import { TicketFileList } from './TicketFileList';
+import { CreateTicketFileForm } from './CreateTicketFileForm';
+
+export function AgencyTicketList({ clientId }: { clientId: string }) {
+  const { data, isPending, isError, error, refetch } = useStaffTickets(clientId);
+  const updateTicket = useUpdateTicket(clientId);
+
+  if (isPending) {
+    return <p role="status">Loading tickets...</p>;
+  }
+
+  if (isError) {
+    return (
+      <Alert>
+        <p>Could not load tickets: {error.message}</p>
+        <button type="button" onClick={() => void refetch()}>
+          Retry
+        </button>
+      </Alert>
+    );
+  }
+
+  if (data.length === 0) {
+    return <p>No tickets yet.</p>;
+  }
+
+  return (
+    <>
+      {updateTicket.isError ? <Alert>{updateTicket.error.message}</Alert> : null}
+      <ul>
+        {data.map((ticket) => (
+          <li key={ticket.id}>
+            <p>{`${ticket.title} (${ticket.kind})`}</p>
+            <p>{ticket.body}</p>
+            <label>
+              Status for {ticket.title}
+              <select
+                value={ticket.status}
+                disabled={updateTicket.isPending}
+                onChange={(event) => {
+                  const parsed = ticketStatusSchema.safeParse(event.currentTarget.value);
+
+                  if (!parsed.success) {
+                    return;
+                  }
+
+                  const status: TicketStatus = parsed.data;
+                  updateTicket.mutate({ ticketId: ticket.id, input: { status } });
+                }}
+              >
+                <option value="open">Open</option>
+                <option value="in_progress">In progress</option>
+                <option value="resolved">Resolved</option>
+                <option value="closed">Closed</option>
+              </select>
+            </label>
+            <TicketFileList ticketId={ticket.id} source="staff" />
+            <CreateTicketFileForm ticketId={ticket.id} source="staff" />
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}

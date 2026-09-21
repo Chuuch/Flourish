@@ -15,6 +15,7 @@ import { FilesPage } from '@/features/files';
 import { CommentsPage } from '@/features/comments';
 import { ClientUsersPage } from '@/features/clientusers';
 import { PortalHomePage, RequirePortalAuth } from '@/features/portal';
+import { AgencyTicketsPage } from '@/features/tickets';
 
 export const routes: RouteObject[] = [
   {
@@ -101,6 +102,14 @@ export const routes: RouteObject[] = [
         element: (
           <RequireAuth>
             <ClientUsersPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'clients/:clientId/tickets',
+        element: (
+          <RequireAuth>
+            <AgencyTicketsPage />
           </RequireAuth>
         ),
       },

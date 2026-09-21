@@ -7,6 +7,24 @@ import {
 } from '../schemas/ticket-file.schema';
 import { ApiError } from '@/lib/api/errors';
 
+export type TicketFileSource = 'portal' | 'staff';
+
+function filesPath(ticketId: string, source: TicketFileSource): string {
+  if (source === 'staff') {
+    return `/tickets/${ticketId}/files`;
+  }
+  return `/client-auth/tickets/${ticketId}/files`;
+}
+
+export const fetchTicketFiles = (ticketId: string, source: TicketFileSource = 'portal') =>
+  http.get(filesPath(ticketId, source), ticketFilesSchema);
+
+export const createTicketFile = (
+  ticketId: string,
+  input: CreateTicketFileInput,
+  source: TicketFileSource = 'portal',
+) => http.post(filesPath(ticketId, source), ticketFileSchema, input);
+
 export const fetchPortalTicketFiles = (ticketId: string) =>
   http.get(`/client-auth/tickets/${ticketId}/files`, ticketFilesSchema);
 
@@ -26,16 +44,23 @@ export async function putTicketObject(uploadUrl: string, file: File): Promise<vo
     throw new ApiError('Upload failed', response.status, 'UPLOAD_FAILED');
   }
 }
-
-export async function uploadPortalTicketFile(ticketId: string, file: File): Promise<TicketFile> {
-  const created = await createPortalTicketFile(ticketId, {
-    filename: file.name,
-    content_type: file.type as CreateTicketFileInput['content_type'],
-    size: file.size,
-  });
+export async function uploadTicketFile(
+  ticketId: string,
+  file: File,
+  source: TicketFileSource = 'portal',
+): Promise<TicketFile> {
+  const created = await createTicketFile(
+    ticketId,
+    {
+      filename: file.name,
+      content_type: file.type as CreateTicketFileInput['content_type'],
+      size: file.size,
+    },
+    source,
+  );
 
   if (!created.upload_url) {
-    throw new ApiError('Upload URL missing', 0, 'INVALID_RESPONSE');
+    throw new ApiError('Uploda URL missing', 0, 'INVALID_RESPONSE');
   }
 
   await putTicketObject(created.upload_url, file);
