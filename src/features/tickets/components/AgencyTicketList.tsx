@@ -4,8 +4,12 @@ import { useUpdateTicket } from '../hooks/useUpdateTicket';
 import { ticketStatusSchema, type TicketStatus } from '../schemas/ticket.schema';
 import { TicketFileList } from './TicketFileList';
 import { CreateTicketFileForm } from './CreateTicketFileForm';
+import { useAuthStore } from '@/features/auth';
+import { canManageTasks } from '@/features/tasks/schemas/task.schema';
+import { ConvertTicketForm } from './ConvertTicketForm';
 
 export function AgencyTicketList({ clientId }: { clientId: string }) {
+  const role = useAuthStore((state) => state.role);
   const { data, isPending, isError, error, refetch } = useStaffTickets(clientId);
   const updateTicket = useUpdateTicket(clientId);
 
@@ -58,6 +62,13 @@ export function AgencyTicketList({ clientId }: { clientId: string }) {
                 <option value="closed">Closed</option>
               </select>
             </label>
+            {canManageTasks(role) ? (
+              <ConvertTicketForm
+                clientId={clientId}
+                ticketId={ticket.id}
+                ticketTitle={ticket.title}
+              />
+            ) : null}
             <TicketFileList ticketId={ticket.id} source="staff" />
             <CreateTicketFileForm ticketId={ticket.id} source="staff" />
           </li>

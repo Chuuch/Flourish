@@ -6,6 +6,7 @@ export const taskSchema = z.object({
   id: z.uuid(),
   organization_id: z.string(),
   project_id: z.string(),
+  ticket_id: z.string().nullable(),
   title: z.string().min(1),
   notes: z.string(),
   status: taskStatusSchema,

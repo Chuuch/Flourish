@@ -28,8 +28,13 @@ export const updateTicketSchema = z.object({
   status: ticketStatusSchema,
 });
 
+export const convertTicketSchema = z.object({
+  project_id: z.string().min(1, 'Project is required'),
+});
+
 export type Ticket = z.infer<typeof ticketSchema>;
 export type TicketKind = z.infer<typeof ticketKindSchema>;
 export type TicketStatus = z.infer<typeof ticketStatusSchema>;
 export type CreateTicketInput = z.infer<typeof createTicketSchema>;
 export type UpdateTicketInput = z.infer<typeof updateTicketSchema>;
+export type ConverTicketInput = z.infer<typeof convertTicketSchema>;
