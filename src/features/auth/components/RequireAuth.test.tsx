@@ -61,6 +61,8 @@ describe('RequireAuth', () => {
         'client',
       );
 
+    server.use(mswHttp.get(`${env.API_URL}/client-auth/tickets`, () => HttpResponse.json([])));
+
     renderAt('/members');
 
     expect(await screen.findByRole('heading', { name: 'Portal' })).toBeInTheDocument();
