@@ -1,7 +1,7 @@
 import { Alert } from '@/components/ui';
 import { useClients } from '../hooks/useClients';
 import { Link } from 'react-router';
-import { clientProjectsPath, clientUsersPath } from '@/app/router/paths';
+import { clientProjectsPath, clientTicketsPath, clientUsersPath } from '@/app/router/paths';
 
 export function ClientList() {
   const { data, isPending, isError, error, refetch } = useClients();
@@ -33,6 +33,7 @@ export function ClientList() {
             {client.notes ? `${client.name} - ${client.notes}` : client.name}
           </Link>
           <Link to={clientUsersPath(client.id)}>Users</Link>
+          <Link to={clientTicketsPath(client.id)}>Tickets</Link>
         </li>
       ))}
     </ul>
