@@ -12,6 +12,7 @@ export const ticketSchema = z.object({
   status: ticketStatusSchema,
   title: z.string().min(1),
   body: z.string(),
+  version: z.int().min(1),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -26,6 +27,7 @@ export const createTicketSchema = z.object({
 
 export const updateTicketSchema = z.object({
   status: ticketStatusSchema,
+  version: z.int().min(1),
 });
 
 export const convertTicketSchema = z.object({
