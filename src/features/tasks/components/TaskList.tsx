@@ -51,7 +51,10 @@ export function TaskList({ projectId, clientId }: { projectId: string; clientId:
                   }
 
                   const status: TaskStatus = parsed.data;
-                  updateTask.mutate({ taskId: task.id, input: { status } });
+                  updateTask.mutate({
+                    taskId: task.id,
+                    input: { status, version: task.version },
+                  });
                 }}
               >
                 <option value="todo">Todo</option>

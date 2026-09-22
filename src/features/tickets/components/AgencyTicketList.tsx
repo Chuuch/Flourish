@@ -53,7 +53,10 @@ export function AgencyTicketList({ clientId }: { clientId: string }) {
                   }
 
                   const status: TicketStatus = parsed.data;
-                  updateTicket.mutate({ ticketId: ticket.id, input: { status } });
+                  updateTicket.mutate({
+                    ticketId: ticket.id,
+                    input: { status, version: ticket.version },
+                  });
                 }}
               >
                 <option value="open">Open</option>

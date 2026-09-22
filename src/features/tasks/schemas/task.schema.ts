@@ -11,6 +11,7 @@ export const taskSchema = z.object({
   notes: z.string(),
   status: taskStatusSchema,
   completed_at: z.string().nullable(),
+  version: z.int().min(1),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -25,6 +26,7 @@ export const createTaskSchema = z.object({
 
 export const updateTaskSchema = z.object({
   status: taskStatusSchema,
+  version: z.int().min(1),
 });
 
 export type Task = z.infer<typeof taskSchema>;
