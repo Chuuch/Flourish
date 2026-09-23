@@ -1,8 +1,14 @@
-import { Alert } from '@/components/ui';
+import { Alert, Button } from '@/components/ui';
 import { useClientUsers } from '../hooks/useClientUsers';
+import { useAuthStore } from '@/features/auth';
+import { canManageClientUsers } from '../schemas/client-user.schema';
+import { useDeleteClientUser } from '../hooks/useDeleteClientUser';
 
 export function ClientUserList({ clientId }: { clientId: string }) {
+  const role = useAuthStore((state) => state.role);
+  const canManage = canManageClientUsers(role);
   const { data, isPending, isError, error, refetch } = useClientUsers(clientId);
+  const deleteClientUser = useDeleteClientUser(clientId);
 
   if (isPending) {
     return <p role="status">Loading client users...</p>;
@@ -24,10 +30,26 @@ export function ClientUserList({ clientId }: { clientId: string }) {
   }
 
   return (
-    <ul>
-      {data.map((clientUser) => (
-        <li key={clientUser.user_id}>{clientUser.email}</li>
-      ))}
-    </ul>
+    <>
+      {deleteClientUser.isError ? <Alert>{deleteClientUser.error.message}</Alert> : null}
+      <ul>
+        {data.map((clientUser) => (
+          <li key={clientUser.user_id}>
+            {clientUser.email}
+            {canManage ? (
+              <Button
+                type="button"
+                disabled={deleteClientUser.isPending}
+                onClick={() => {
+                  deleteClientUser.mutate(clientUser.user_id);
+                }}
+              >
+                {`Remove ${clientUser.email}`}
+              </Button>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }
