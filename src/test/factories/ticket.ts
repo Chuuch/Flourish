@@ -12,6 +12,7 @@ export function makeTicket(overrides: Partial<Ticket> = {}): Ticket {
     status: 'open',
     title: 'Login button broken',
     body: 'Clicking Sign in does nothing on mobile.',
+    version: 1,
     created_at: now,
     updated_at: now,
     ...overrides,

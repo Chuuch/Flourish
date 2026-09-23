@@ -18,8 +18,13 @@ export const createMemberSchema = z.object({
   role: assignableRoleSchema,
 });
 
+export const updateMemberSchema = z.object({
+  role: assignableRoleSchema,
+});
+
 export type Member = z.infer<typeof memberSchema>;
 export type CreateMemberInput = z.infer<typeof createMemberSchema>;
+export type UpdateMemberInput = z.infer<typeof updateMemberSchema>;
 export type MemberRole = z.infer<typeof memberRoleSchema>;
 
 export function canManageMembers(role: string | null | undefined): boolean {

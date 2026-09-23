@@ -22,5 +22,25 @@ export const createTimeEntrySchema = z.object({
   notes: z.string().max(2000),
 });
 
+export const updateTimeEntrySchema = createTimeEntrySchema;
+
 export type TimeEntry = z.infer<typeof timeEntrySchema>;
 export type CreateTimeEntryInput = z.infer<typeof createTimeEntrySchema>;
+export type UpdateTimeEntryInput = z.infer<typeof updateTimeEntrySchema>;
+
+export function timeEntryLabel(entry: TimeEntry): string {
+  const label = `${String(entry.minutes)} min`;
+  return entry.notes ? `${label} - ${entry.notes}` : label;
+}
+
+export function canMutateTimeEntry(
+  role: string | null | undefined,
+  actorUserId: string | null | undefined,
+  entryUserId: string,
+): boolean {
+  if (role === 'owner' || role === 'admin') {
+    return true;
+  }
+
+  return role === 'member' && actorUserId === entryUserId;
+}

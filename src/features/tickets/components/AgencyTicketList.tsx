@@ -7,6 +7,8 @@ import { CreateTicketFileForm } from './CreateTicketFileForm';
 import { useAuthStore } from '@/features/auth';
 import { canManageTasks } from '@/features/tasks/schemas/task.schema';
 import { ConvertTicketForm } from './ConvertTicketForm';
+import { TicketCommentList } from './TicketCommentList';
+import { CreateTicketCommentForm } from './CreateTicketCommentForm';
 
 export function AgencyTicketList({ clientId }: { clientId: string }) {
   const role = useAuthStore((state) => state.role);
@@ -53,7 +55,10 @@ export function AgencyTicketList({ clientId }: { clientId: string }) {
                   }
 
                   const status: TicketStatus = parsed.data;
-                  updateTicket.mutate({ ticketId: ticket.id, input: { status } });
+                  updateTicket.mutate({
+                    ticketId: ticket.id,
+                    input: { status, version: ticket.version },
+                  });
                 }}
               >
                 <option value="open">Open</option>
@@ -71,6 +76,8 @@ export function AgencyTicketList({ clientId }: { clientId: string }) {
             ) : null}
             <TicketFileList ticketId={ticket.id} source="staff" />
             <CreateTicketFileForm ticketId={ticket.id} source="staff" />
+            <TicketCommentList ticketId={ticket.id} source="staff" />
+            <CreateTicketCommentForm ticketId={ticket.id} source="staff" />
           </li>
         ))}
       </ul>

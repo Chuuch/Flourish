@@ -36,8 +36,24 @@ export const createFileInputSchema = z.object({
 export type ProjectFile = z.infer<typeof fileSchema>;
 export type CreateFileInput = z.infer<typeof createFileInputSchema>;
 
+export function fileLabel(file: ProjectFile): string {
+  return `${file.filename} (${String(file.size)} bytes)`;
+}
+
 export function canManageFiles(role: string | null | undefined): boolean {
   return role === 'owner' || role === 'admin';
+}
+
+export function canMutateFile(
+  role: string | null | undefined,
+  actorUserId: string | null | undefined,
+  uploadedBy: string,
+): boolean {
+  if (role === 'owner' || role === 'admin') {
+    return true;
+  }
+
+  return role === 'member' && actorUserId === uploadedBy;
 }
 
 export function isAllowedFile(file: File): boolean {

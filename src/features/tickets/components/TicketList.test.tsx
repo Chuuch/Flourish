@@ -26,6 +26,7 @@ describe('TicketList', () => {
         ]),
       ),
       mswHttp.get(`${ticketsUrl}/:ticketId/files`, () => HttpResponse.json([])),
+      mswHttp.get(`${ticketsUrl}/:ticketId/comments`, () => HttpResponse.json([])),
     );
 
     renderWithProviders(<TicketList />);

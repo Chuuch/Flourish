@@ -33,6 +33,7 @@ describe('AgencyTicketList', () => {
         ]),
       ),
       mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
     );
 
     renderWithProviders(<AgencyTicketList clientId={clientId} />);
@@ -43,23 +44,26 @@ describe('AgencyTicketList', () => {
     expect(screen.getByLabelText('Status for Login button broken')).toHaveValue('open');
   });
 
-  it('updates ticket status', async () => {
+  it('updates ticket status with the last-seen version', async () => {
     const user = userEvent.setup();
     let ticket: Ticket = makeTicket({
       client_id: clientId,
       title: 'Login button broken',
       kind: 'bug',
       status: 'open',
+      version: 1,
     });
 
     server.use(
       mswHttp.get(ticketsUrl, () => HttpResponse.json([ticket])),
       mswHttp.patch(`${env.API_URL}/tickets/${ticket.id}`, async ({ request }) => {
         const input = updateTicketSchema.parse(await request.json());
-        ticket = { ...ticket, status: input.status };
+        expect(input.version).toBe(1);
+        ticket = { ...ticket, status: input.status, version: input.version + 1 };
         return HttpResponse.json(ticket);
       }),
       mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
     );
 
     renderWithProviders(
@@ -79,6 +83,53 @@ describe('AgencyTicketList', () => {
 
     expect(await screen.findByLabelText('Status for Login button broken')).toHaveValue(
       'in_progress',
+    );
+  });
+
+  it('renders a version conflict on update', async () => {
+    const user = userEvent.setup();
+    const ticket = makeTicket({
+      client_id: clientId,
+      title: 'Login button broken',
+      kind: 'bug',
+      status: 'open',
+      version: 1,
+    });
+
+    server.use(
+      mswHttp.get(ticketsUrl, () => HttpResponse.json([ticket])),
+      mswHttp.patch(`${env.API_URL}/tickets/${ticket.id}`, () =>
+        HttpResponse.json(
+          {
+            error: {
+              code: 'ticket_version_mismatch',
+              message: 'ticket was updated by someone else',
+            },
+          },
+          { status: 409 },
+        ),
+      ),
+      mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
+    );
+
+    renderWithProviders(
+      <MemoryRouter initialEntries={[`/clients/${clientId}/tickets`]}>
+        <Routes>
+          <Route path="/clients/:clientId/tickets" element={<AgencyTicketsPage />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByLabelText('Status for Login button broken')).toHaveValue('open');
+
+    await user.selectOptions(
+      screen.getByLabelText('Status for Login button broken'),
+      'in_progress',
+    );
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'ticket was updated by someone else',
     );
   });
 
