@@ -33,6 +33,7 @@ describe('AgencyTicketList', () => {
         ]),
       ),
       mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
     );
 
     renderWithProviders(<AgencyTicketList clientId={clientId} />);
@@ -62,6 +63,7 @@ describe('AgencyTicketList', () => {
         return HttpResponse.json(ticket);
       }),
       mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
     );
 
     renderWithProviders(
@@ -108,6 +110,7 @@ describe('AgencyTicketList', () => {
         ),
       ),
       mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
     );
 
     renderWithProviders(
