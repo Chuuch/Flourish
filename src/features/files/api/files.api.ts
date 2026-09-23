@@ -6,12 +6,15 @@ import {
   type ProjectFile,
 } from '../schemas/file.schema';
 import { ApiError } from '@/lib/api/errors';
+import z from 'zod';
 
 export const fetchFiles = (projectId: string) =>
   http.get(`/projects/${projectId}/files`, filesSchema);
 
 export const createFile = (projectId: string, input: CreateFileInput) =>
   http.post(`/projects/${projectId}/files`, fileSchema, input);
+
+export const deleteFile = (fileId: string) => http.delete(`/files/${fileId}`, z.unknown());
 
 export async function putObject(uploadUrl: string, file: File): Promise<void> {
   const response = await fetch(uploadUrl, {
