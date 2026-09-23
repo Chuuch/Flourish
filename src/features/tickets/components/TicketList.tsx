@@ -2,6 +2,8 @@ import { Alert } from '@/components/ui';
 import { useTickets } from '../hooks/useTickets';
 import { CreateTicketFileForm } from './CreateTicketFileForm';
 import { TicketFileList } from './TicketFileList';
+import { TicketCommentList } from './TicketCommentList';
+import { CreateTicketCommentForm } from './CreateTicketCommentForm';
 
 export function TicketList() {
   const { data, isPending, isError, error, refetch } = useTickets();
@@ -33,6 +35,8 @@ export function TicketList() {
           <p>{ticket.body}</p>
           <TicketFileList ticketId={ticket.id} />
           <CreateTicketFileForm ticketId={ticket.id} />
+          <TicketCommentList ticketId={ticket.id} />
+          <CreateTicketCommentForm ticketId={ticket.id} />
         </li>
       ))}
     </ul>
