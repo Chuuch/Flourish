@@ -17,8 +17,11 @@ export const createProjectSchema = z.object({
   notes: z.string().max(2000),
 });
 
+export const updateProjectSchema = createProjectSchema;
+
 export type Project = z.infer<typeof projectSchema>;
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;
+export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
 
 export function canManageProjects(role: string | null | undefined): boolean {
   return role === 'owner' || role === 'admin';
