@@ -1,4 +1,4 @@
-import { Alert } from '@/components/ui';
+import { Alert, Button } from '@/components/ui';
 import { useStaffTickets } from '../hooks/useStaffTickets';
 import { useUpdateTicket } from '../hooks/useUpdateTicket';
 import { ticketStatusSchema, type TicketStatus } from '../schemas/ticket.schema';
@@ -9,11 +9,14 @@ import { canManageTasks } from '@/features/tasks/schemas/task.schema';
 import { ConvertTicketForm } from './ConvertTicketForm';
 import { TicketCommentList } from './TicketCommentList';
 import { CreateTicketCommentForm } from './CreateTicketCommentForm';
+import { useDeleteTicket } from '../hooks/useDeleteTicket';
 
 export function AgencyTicketList({ clientId }: { clientId: string }) {
   const role = useAuthStore((state) => state.role);
+  const canManage = canManageTasks(role);
   const { data, isPending, isError, error, refetch } = useStaffTickets(clientId);
   const updateTicket = useUpdateTicket(clientId);
+  const deleteTicket = useDeleteTicket(clientId);
 
   if (isPending) {
     return <p role="status">Loading tickets...</p>;
@@ -37,6 +40,7 @@ export function AgencyTicketList({ clientId }: { clientId: string }) {
   return (
     <>
       {updateTicket.isError ? <Alert>{updateTicket.error.message}</Alert> : null}
+      {deleteTicket.isError ? <Alert>{deleteTicket.error.message}</Alert> : null}
       <ul>
         {data.map((ticket) => (
           <li key={ticket.id}>
@@ -67,7 +71,18 @@ export function AgencyTicketList({ clientId }: { clientId: string }) {
                 <option value="closed">Closed</option>
               </select>
             </label>
-            {canManageTasks(role) ? (
+            {canManage ? (
+              <Button
+                type="button"
+                disabled={deleteTicket.isPending}
+                onClick={() => {
+                  deleteTicket.mutate(ticket.id);
+                }}
+              >
+                {`Remove ${ticket.title}`}
+              </Button>
+            ) : null}
+            {canManage ? (
               <ConvertTicketForm
                 clientId={clientId}
                 ticketId={ticket.id}

@@ -11,9 +11,24 @@ import { MemoryRouter, Route, Routes } from 'react-router';
 import { AgencyTicketsPage } from '../pages/AgencyTicketsPage';
 import type { Ticket } from '../schemas/ticket.schema';
 import { updateTicketSchema } from '../schemas/ticket.schema';
+import { useAuthStore } from '@/features/auth';
 
 const clientId = '44444444-4444-4444-4444-444444444444';
 const ticketsUrl = `${env.API_URL}/clients/${clientId}/tickets`;
+const projectsUrl = `${env.API_URL}/clients/${clientId}/projects`;
+
+const testOrg = {
+  id: crypto.randomUUID(),
+  name: 'Acme',
+  created_at: '2026-09-11T11:12:20Z',
+  updated_at: '2026-09-11T11:12:20Z',
+};
+
+function signInAs(role: 'owner' | 'admin' | 'member') {
+  useAuthStore
+    .getState()
+    .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, role);
+}
 
 describe('AgencyTicketList', () => {
   it('renders tickets returned by the API', async () => {
@@ -150,5 +165,120 @@ describe('AgencyTicketList', () => {
     renderWithProviders(<AgencyTicketList clientId={clientId} />);
 
     expect(await screen.findByRole('alert')).toHaveTextContent('client not found');
+  });
+
+  it('hides remove for members', async () => {
+    signInAs('member');
+    server.use(
+      mswHttp.get(ticketsUrl, () =>
+        HttpResponse.json([
+          makeTicket({
+            client_id: clientId,
+            title: 'Login button broken',
+            kind: 'bug',
+            status: 'open',
+            body: 'Clicking Sign in does nothing on mobile.',
+          }),
+        ]),
+      ),
+      mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
+    );
+
+    renderWithProviders(<AgencyTicketList clientId={clientId} />);
+
+    expect(await screen.findByLabelText('Status for Login button broken')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Remove Login button broken' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('removes a ticket', async () => {
+    const user = userEvent.setup();
+    signInAs('admin');
+    const ticket = makeTicket({
+      client_id: clientId,
+      title: 'Login button broken',
+      kind: 'bug',
+      status: 'open',
+      body: 'Clicking Sign in does nothing on mobile.',
+    });
+    let tickets: Ticket[] = [ticket];
+
+    server.use(
+      mswHttp.get(ticketsUrl, () => HttpResponse.json(tickets)),
+      mswHttp.get(projectsUrl, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
+      mswHttp.delete(`${env.API_URL}/tickets/${ticket.id}`, () => {
+        tickets = [];
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+
+    renderWithProviders(<AgencyTicketList clientId={clientId} />);
+
+    await user.click(await screen.findByRole('button', { name: 'Remove Login button broken' }));
+
+    expect(await screen.findByText('No tickets yet.')).toBeInTheDocument();
+  });
+
+  it('shows a forbidden error from the API', async () => {
+    const user = userEvent.setup();
+    signInAs('owner');
+    const ticket = makeTicket({
+      client_id: clientId,
+      title: 'Login button broken',
+      kind: 'bug',
+      status: 'open',
+      body: 'Clicking Sign in does nothing on mobile.',
+    });
+
+    server.use(
+      mswHttp.get(ticketsUrl, () => HttpResponse.json([ticket])),
+      mswHttp.get(projectsUrl, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
+      mswHttp.delete(`${env.API_URL}/tickets/${ticket.id}`, () =>
+        HttpResponse.json({ error: { code: 'forbidden', message: 'forbidden' } }, { status: 403 }),
+      ),
+    );
+
+    renderWithProviders(<AgencyTicketList clientId={clientId} />);
+
+    await user.click(await screen.findByRole('button', { name: 'Remove Login button broken' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('forbidden');
+  });
+
+  it('shows a not-found error from the API', async () => {
+    const user = userEvent.setup();
+    signInAs('owner');
+    const ticket = makeTicket({
+      client_id: clientId,
+      title: 'Login button broken',
+      kind: 'bug',
+      status: 'open',
+      body: 'Clicking Sign in does nothing on mobile.',
+    });
+
+    server.use(
+      mswHttp.get(ticketsUrl, () => HttpResponse.json([ticket])),
+      mswHttp.get(projectsUrl, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
+      mswHttp.delete(`${env.API_URL}/tickets/${ticket.id}`, () =>
+        HttpResponse.json(
+          { error: { code: 'ticket_not_found', message: 'ticket not found' } },
+          { status: 404 },
+        ),
+      ),
+    );
+
+    renderWithProviders(<AgencyTicketList clientId={clientId} />);
+
+    await user.click(await screen.findByRole('button', { name: 'Remove Login button broken' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('ticket not found');
   });
 });
