@@ -1,6 +1,9 @@
-import { Alert } from '@/components/ui';
+import { Alert, Button } from '@/components/ui';
 import { useTicketFiles } from '../hooks/useTicketFiles';
 import type { TicketFileSource } from '../api/ticket-files.api';
+import { useAuthStore } from '@/features/auth';
+import { useDeleteTicketFile } from '../hooks/useDeleteTicketFile';
+import { canMutateTicketFile, ticketFileLabel } from '../schemas/ticket-file.schema';
 
 export function TicketFileList({
   ticketId,
@@ -9,7 +12,10 @@ export function TicketFileList({
   ticketId: string;
   source?: TicketFileSource;
 }) {
+  const role = useAuthStore((state) => state.role);
+  const actorUserId = useAuthStore((state) => state.user?.id);
   const { data, isPending, isError, error, refetch } = useTicketFiles(ticketId, source);
+  const deleteTicketFile = useDeleteTicketFile(ticketId, source);
 
   if (isPending) {
     return <p role="status">Loading attachments...</p>;
@@ -31,16 +37,30 @@ export function TicketFileList({
   }
 
   return (
-    <ul>
-      {data.map((file) => {
-        const label = `${file.filename} (${String(file.size)} bytes)`;
+    <>
+      {deleteTicketFile.isError ? <Alert>{deleteTicketFile.error.message}</Alert> : null}
+      <ul>
+        {data.map((file) => {
+          const label = ticketFileLabel(file);
 
-        return (
-          <li key={file.id}>
-            {file.download_url ? <a href={file.download_url}>{label}</a> : label}
-          </li>
-        );
-      })}
-    </ul>
+          return (
+            <li key={file.id}>
+              {file.download_url ? <a href={file.download_url}>{label}</a> : label}
+              {canMutateTicketFile(role, actorUserId, file.uploaded_by) ? (
+                <Button
+                  type="button"
+                  disabled={deleteTicketFile.isPending}
+                  onClick={() => {
+                    deleteTicketFile.mutate(file.id);
+                  }}
+                >
+                  {`Remove ${label}`}
+                </Button>
+              ) : null}
+            </li>
+          );
+        })}
+      </ul>
+    </>
   );
 }

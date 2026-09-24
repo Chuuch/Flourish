@@ -6,6 +6,7 @@ import {
   type TicketFile,
 } from '../schemas/ticket-file.schema';
 import { ApiError } from '@/lib/api/errors';
+import z from 'zod';
 
 export type TicketFileSource = 'portal' | 'staff';
 
@@ -16,6 +17,13 @@ function filesPath(ticketId: string, source: TicketFileSource): string {
   return `/client-auth/tickets/${ticketId}/files`;
 }
 
+function deletePath(fileId: string, source: TicketFileSource): string {
+  if (source === 'staff') {
+    return `/ticket-files/${fileId}`;
+  }
+  return `/client-auth/ticket-files/${fileId}`;
+}
+
 export const fetchTicketFiles = (ticketId: string, source: TicketFileSource = 'portal') =>
   http.get(filesPath(ticketId, source), ticketFilesSchema);
 
@@ -24,6 +32,9 @@ export const createTicketFile = (
   input: CreateTicketFileInput,
   source: TicketFileSource = 'portal',
 ) => http.post(filesPath(ticketId, source), ticketFileSchema, input);
+
+export const deleteTicketFile = (fileId: string, source: TicketFileSource = 'portal') =>
+  http.delete(deletePath(fileId, source), z.unknown());
 
 export const fetchPortalTicketFiles = (ticketId: string) =>
   http.get(`/client-auth/tickets/${ticketId}/files`, ticketFilesSchema);

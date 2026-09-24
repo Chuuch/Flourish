@@ -36,6 +36,22 @@ export const createTicketFileInputSchema = z.object({
 export type TicketFile = z.infer<typeof ticketFileSchema>;
 export type CreateTicketFileInput = z.infer<typeof createTicketFileInputSchema>;
 
+export function ticketFileLabel(file: TicketFile): string {
+  return `${file.filename} (${String(file.size)} bytes)`;
+}
+
+export function canMutateTicketFile(
+  role: string | null | undefined,
+  actorUserId: string | null | undefined,
+  uploadedBy: string,
+): boolean {
+  if (role === 'owner' || role === 'admin') {
+    return true;
+  }
+
+  return (role === 'member' || role === 'client') && actorUserId === uploadedBy;
+}
+
 export function isAllowedTicketFile(file: File): boolean {
   return allowedTicketContentTypes.some((type) => type === file.type);
 }
