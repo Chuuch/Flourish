@@ -1,13 +1,18 @@
-import { Alert } from '@/components/ui';
+import { Alert, Button } from '@/components/ui';
 import { useTasks } from '../hooks/useTasks';
 import { Link } from 'react-router';
 import { taskCommentsPath, taskTimeEntriesPath } from '@/app/router/paths';
 import { useUpdateTask } from '../hooks/useUpdateTask';
-import { taskStatusSchema, type TaskStatus } from '../schemas/task.schema';
+import { canManageTasks, taskStatusSchema, type TaskStatus } from '../schemas/task.schema';
+import { useAuthStore } from '@/features/auth';
+import { useDeleteTask } from '../hooks/useDeleteTask';
 
 export function TaskList({ projectId, clientId }: { projectId: string; clientId: string }) {
+  const role = useAuthStore((state) => state.role);
+  const canManage = canManageTasks(role);
   const { data, isPending, isError, error, refetch } = useTasks(projectId);
   const updateTask = useUpdateTask(projectId);
+  const deleteTask = useDeleteTask(projectId);
 
   if (isPending) {
     return <p role="status">Loading tasks ....</p>;
@@ -31,6 +36,7 @@ export function TaskList({ projectId, clientId }: { projectId: string; clientId:
   return (
     <>
       {updateTask.isError ? <Alert>{updateTask.error.message}</Alert> : null}
+      {deleteTask.isError ? <Alert>{deleteTask.error.message}</Alert> : null}
       <ul>
         {data.map((task) => (
           <li key={task.id}>
@@ -63,6 +69,17 @@ export function TaskList({ projectId, clientId }: { projectId: string; clientId:
               </select>
             </label>
             {task.completed_at ? <span> Completed {task.completed_at}</span> : null}
+            {canManage ? (
+              <Button
+                type="button"
+                disabled={deleteTask.isPending}
+                onClick={() => {
+                  deleteTask.mutate(task.id);
+                }}
+              >
+                {`Remove ${task.title}`}
+              </Button>
+            ) : null}
           </li>
         ))}
       </ul>
