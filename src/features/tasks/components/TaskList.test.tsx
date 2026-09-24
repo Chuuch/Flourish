@@ -10,10 +10,24 @@ import { MemoryRouter } from 'react-router';
 import userEvent from '@testing-library/user-event';
 import type { Task } from '../schemas/task.schema';
 import { updateTaskSchema } from '../schemas/task.schema';
+import { useAuthStore } from '@/features/auth';
 
 const clientId = '44444444-4444-4444-4444-444444444444';
 const projectId = '55555555-5555-5555-5555-555555555555';
 const tasksUrl = `${env.API_URL}/projects/${projectId}/tasks`;
+
+const testOrg = {
+  id: crypto.randomUUID(),
+  name: 'Acme',
+  created_at: '2026-09-11T11:12:20Z',
+  updated_at: '2026-09-11T11:12:20Z',
+};
+
+function signInAs(role: 'owner' | 'admin' | 'member') {
+  useAuthStore
+    .getState()
+    .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, role);
+}
 
 describe('TaskList', () => {
   it('renders tasks returned by the API', async () => {
@@ -135,5 +149,119 @@ describe('TaskList', () => {
     );
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Database unavailable');
+  });
+
+  it('hides remove for members', async () => {
+    signInAs('member');
+    server.use(
+      mswHttp.get(tasksUrl, () =>
+        HttpResponse.json([
+          makeTask({
+            project_id: projectId,
+            title: 'Fix login',
+            notes: 'OAuth',
+            status: 'todo',
+          }),
+        ]),
+      ),
+    );
+
+    renderWithProviders(
+      <MemoryRouter>
+        <TaskList clientId={clientId} projectId={projectId} />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByLabelText('Status for Fix login')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Remove Fix login' })).not.toBeInTheDocument();
+  });
+
+  it('removes a task', async () => {
+    const user = userEvent.setup();
+    signInAs('admin');
+    const task = makeTask({
+      project_id: projectId,
+      title: 'Fix login',
+      notes: 'OAuth',
+      status: 'todo',
+    });
+    let tasks: Task[] = [task];
+
+    server.use(
+      mswHttp.get(tasksUrl, () => HttpResponse.json(tasks)),
+      mswHttp.delete(`${env.API_URL}/tasks/${task.id}`, () => {
+        tasks = [];
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+
+    renderWithProviders(
+      <MemoryRouter>
+        <TaskList clientId={clientId} projectId={projectId} />
+      </MemoryRouter>,
+    );
+
+    await user.click(await screen.findByRole('button', { name: 'Remove Fix login' }));
+
+    expect(await screen.findByText('No tasks yet.')).toBeInTheDocument();
+  });
+
+  it('shows a forbidden error from the API', async () => {
+    const user = userEvent.setup();
+    signInAs('owner');
+    const task = makeTask({
+      project_id: projectId,
+      title: 'Fix login',
+      notes: 'OAuth',
+      status: 'todo',
+    });
+
+    server.use(
+      mswHttp.get(tasksUrl, () => HttpResponse.json([task])),
+      mswHttp.delete(`${env.API_URL}/tasks/${task.id}`, () =>
+        HttpResponse.json({ error: { code: 'forbidden', message: 'forbidden' } }, { status: 403 }),
+      ),
+    );
+
+    renderWithProviders(
+      <MemoryRouter>
+        <TaskList clientId={clientId} projectId={projectId} />
+      </MemoryRouter>,
+    );
+
+    await user.click(await screen.findByRole('button', { name: 'Remove Fix login' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('forbidden');
+  });
+
+  it('shows a not-found error from the API', async () => {
+    const user = userEvent.setup();
+    signInAs('owner');
+    const task = makeTask({
+      project_id: projectId,
+      title: 'Fix login',
+      notes: 'OAuth',
+      status: 'todo',
+    });
+
+    server.use(
+      mswHttp.get(tasksUrl, () => HttpResponse.json([task])),
+      mswHttp.delete(`${env.API_URL}/tasks/${task.id}`, () =>
+        HttpResponse.json(
+          { error: { code: 'task_not_found', message: 'task not found' } },
+          { status: 404 },
+        ),
+      ),
+    );
+
+    renderWithProviders(
+      <MemoryRouter>
+        <TaskList clientId={clientId} projectId={projectId} />
+      </MemoryRouter>,
+    );
+
+    await user.click(await screen.findByRole('button', { name: 'Remove Fix login' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('task not found');
   });
 });
