@@ -30,11 +30,11 @@ function signInAs(role: 'owner' | 'admin' | 'member') {
 }
 
 describe('CreateTaskForm', () => {
-  it('hides the form for members', () => {
+  it('shows the form for members', () => {
     signInAs('member');
     renderWithProviders(<CreateTaskForm projectId={projectId} />);
 
-    expect(screen.queryByRole('button', { name: 'Add task' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Add task' })).toBeInTheDocument();
   });
 
   it('shows a validation error without calling the API', async () => {
@@ -49,7 +49,7 @@ describe('CreateTaskForm', () => {
 
   it('creates a task and refreshes the list', async () => {
     const user = userEvent.setup();
-    signInAs('owner');
+    signInAs('member');
     const tasks: Task[] = [];
 
     server.use(

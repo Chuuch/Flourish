@@ -2,7 +2,7 @@ import { useAuthStore } from '@/features/auth';
 import { useProjects } from '@/features/projects';
 import { useConvertTicket } from '../hooks/useConvertTicket';
 import { useState } from 'react';
-import { canManageTasks } from '@/features/tasks/schemas/task.schema';
+import { canCreateTasks } from '@/features/tasks/schemas/task.schema';
 import { Alert, Button } from '@/components/ui';
 import { Link } from 'react-router';
 import { projectTasksPath } from '@/app/router/paths';
@@ -22,7 +22,7 @@ export function ConvertTicketForm({
   const [projectId, setProjectId] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  if (!canManageTasks(role)) {
+  if (!canCreateTasks(role)) {
     return null;
   }
 

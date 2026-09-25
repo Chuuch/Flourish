@@ -1,7 +1,7 @@
 import { useAuthStore } from '@/features/auth';
 import { useCreateTask } from '../hooks/useCreateTask';
 import { useForm } from 'react-hook-form';
-import { canManageTasks, createTaskSchema, type CreateTaskInput } from '../schemas/task.schema';
+import { canCreateTasks, createTaskSchema, type CreateTaskInput } from '../schemas/task.schema';
 import { Alert, Button, TextField } from '@/components/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -19,7 +19,7 @@ export function CreateTaskForm({ projectId }: { projectId: string }) {
     defaultValues: { title: '', notes: '', status: 'todo' },
   });
 
-  if (!canManageTasks(role)) {
+  if (!canCreateTasks(role)) {
     return null;
   }
 
