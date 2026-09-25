@@ -58,6 +58,22 @@ export const routes: RouteObject[] = [
         },
       },
       {
+        path: 'accept-invite',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { AcceptInvitePage } = await import('@/features/auth');
+          return {
+            Component: function AccpetInviteRoute() {
+              return (
+                <GuestOnly>
+                  <AcceptInvitePage />
+                </GuestOnly>
+              );
+            },
+          };
+        },
+      },
+      {
         path: 'portal/login',
         HydrateFallback: PageLoader,
         lazy: async () => {

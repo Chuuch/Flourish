@@ -25,6 +25,14 @@ export const registerInputSchema = z.object({
   organization_name: z.string().min(4, 'Organization name must be at least 4 characters').max(100),
 });
 
+export const acceptInviteFormSchema = z.object({
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+export const accpetInviteInputSchema = acceptInviteFormSchema.extend({
+  token: z.string().min(1, 'Invite token is required'),
+});
+
 export const authResponseSchema = z.object({
   access_token: z.string().min(1),
   user: sessionUserSchema,
@@ -42,3 +50,5 @@ export type SessionOrganization = z.infer<typeof sessionOrganizationSchema>;
 export type SessionRole = z.infer<typeof sessionRoleSchema>;
 export type LoginInput = z.infer<typeof loginInputSchema>;
 export type RegisterInput = z.infer<typeof registerInputSchema>;
+export type AcceptInviteFormInput = z.infer<typeof acceptInviteFormSchema>;
+export type AccpetInviteInput = z.infer<typeof accpetInviteInputSchema>;

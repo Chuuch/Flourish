@@ -20,7 +20,7 @@ export function CreateMemberForm() {
     formState: { errors },
   } = useForm<CreateMemberInput>({
     resolver: zodResolver(createMemberSchema),
-    defaultValues: { email: '', password: '', role: 'member' },
+    defaultValues: { email: '', role: 'member' },
   });
 
   if (!canManageMembers(role)) {
@@ -48,14 +48,6 @@ export function CreateMemberForm() {
         {...register('email')}
       />
 
-      <TextField
-        label="Password"
-        type="password"
-        autoComplete="new-password"
-        error={errors.password?.message}
-        {...register('password')}
-      />
-
       <div>
         <label htmlFor="role">Role</label>
         <select id="role" className="block rounded border px-2 py-1" {...register('role')}>
@@ -68,7 +60,7 @@ export function CreateMemberForm() {
       {createMember.isError ? <Alert>{createMember.error.message}</Alert> : null}
 
       <Button type="submit" disabled={createMember.isPending}>
-        Add member
+        Invite member
       </Button>
     </form>
   );
