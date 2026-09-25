@@ -20,7 +20,7 @@ export function CreateClientUserForm({ clientId }: { clientId: string }) {
     formState: { errors },
   } = useForm<CreateClientUserInput>({
     resolver: zodResolver(createClientUserSchema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { email: '' },
   });
 
   if (!canManageClientUsers(role)) {
@@ -48,18 +48,10 @@ export function CreateClientUserForm({ clientId }: { clientId: string }) {
         {...register('email')}
       />
 
-      <TextField
-        label="Password"
-        type="password"
-        autoComplete="password"
-        error={errors.password?.message}
-        {...register('password')}
-      />
-
       {createClientUser.isError ? <Alert>{createClientUser.error.message}</Alert> : null}
 
       <Button type="submit" disabled={createClientUser.isPending}>
-        Add client user
+        Invite client user
       </Button>
     </form>
   );
