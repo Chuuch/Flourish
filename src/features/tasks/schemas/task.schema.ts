@@ -37,3 +37,7 @@ export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 export function canManageTasks(role: string | null | undefined): boolean {
   return role === 'owner' || role === 'admin';
 }
+
+export function canCreateTasks(role: string | null | undefined): boolean {
+  return role === 'owner' || role === 'admin' || role === 'member';
+}

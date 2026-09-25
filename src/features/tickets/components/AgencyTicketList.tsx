@@ -82,13 +82,11 @@ export function AgencyTicketList({ clientId }: { clientId: string }) {
                 {`Remove ${ticket.title}`}
               </Button>
             ) : null}
-            {canManage ? (
-              <ConvertTicketForm
-                clientId={clientId}
-                ticketId={ticket.id}
-                ticketTitle={ticket.title}
-              />
-            ) : null}
+            <ConvertTicketForm
+              clientId={clientId}
+              ticketId={ticket.id}
+              ticketTitle={ticket.title}
+            />
             <TicketFileList ticketId={ticket.id} source="staff" />
             <CreateTicketFileForm ticketId={ticket.id} source="staff" />
             <TicketCommentList ticketId={ticket.id} source="staff" />

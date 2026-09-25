@@ -6,6 +6,7 @@ import { renderWithProviders } from '@/test/render';
 import { AgencyTicketList } from './AgencyTicketList';
 import { screen } from '@testing-library/react';
 import { makeTicket } from '@/test/factories/ticket';
+import { makeProject } from '@/test/factories/project';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { AgencyTicketsPage } from '../pages/AgencyTicketsPage';
@@ -167,7 +168,7 @@ describe('AgencyTicketList', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('client not found');
   });
 
-  it('hides remove for members', async () => {
+  it('hides remove for members and shows convert', async () => {
     signInAs('member');
     server.use(
       mswHttp.get(ticketsUrl, () =>
@@ -181,13 +182,16 @@ describe('AgencyTicketList', () => {
           }),
         ]),
       ),
+      mswHttp.get(projectsUrl, () =>
+        HttpResponse.json([makeProject({ client_id: clientId, name: 'Website' })]),
+      ),
       mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
     );
 
     renderWithProviders(<AgencyTicketList clientId={clientId} />);
 
-    expect(await screen.findByLabelText('Status for Login button broken')).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Convert to task' })).toBeInTheDocument();
     expect(
       screen.queryByRole('button', { name: 'Remove Login button broken' }),
     ).not.toBeInTheDocument();
