@@ -41,6 +41,9 @@ export function RootLayout() {
               ) : organization ? (
                 <span>{organization.name}</span>
               ) : null}
+              <NavLink to={isPortal ? paths.portalAccount : paths.account} className={navLinkClass}>
+                Account
+              </NavLink>
               <Button
                 type="button"
                 onClick={() => {

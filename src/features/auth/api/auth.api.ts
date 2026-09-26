@@ -4,6 +4,7 @@ import {
   registerResponseSchema,
   sessionResponseSchema,
   type AccpetInviteInput,
+  type ChangePasswordInput,
   type ForgotPasswordInput,
   type LoginInput,
   type RegisterInput,
@@ -24,6 +25,9 @@ export const forgotPassword = (input: ForgotPasswordInput) =>
 
 export const resetPassword = (input: ResetPasswordInput) =>
   http.post('/auth/reset-password', z.unknown(), input);
+
+export const changePassword = (input: ChangePasswordInput) =>
+  http.post('/auth/change-password', z.unknown(), input);
 
 export const fetchSession = () => http.get('/auth/me', sessionResponseSchema);
 
