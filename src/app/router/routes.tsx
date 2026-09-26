@@ -5,7 +5,7 @@ import { RouteErrorBoundary } from '@/components/feedback/RouteErrorBoundary';
 import { HomePage } from '@/features/home/pages/HomePage';
 import { NotFound } from '@/components/feedback/NotFound';
 import { PageLoader } from '@/components/feedback/PageLoader';
-import { GuestOnly, RequireAuth } from '@/features/auth';
+import { ChangePasswordPage, GuestOnly, RequireAuth } from '@/features/auth';
 import { MembersPage } from '@/features/members';
 import { ClientsPage } from '@/features/clients';
 import { ProjectsPage } from '@/features/projects';
@@ -106,6 +106,14 @@ export const routes: RouteObject[] = [
         },
       },
       {
+        path: 'account',
+        element: (
+          <RequireAuth>
+            <ChangePasswordPage />
+          </RequireAuth>
+        ),
+      },
+      {
         path: 'portal/login',
         HydrateFallback: PageLoader,
         lazy: async () => {
@@ -126,6 +134,14 @@ export const routes: RouteObject[] = [
         element: (
           <RequirePortalAuth>
             <PortalHomePage />
+          </RequirePortalAuth>
+        ),
+      },
+      {
+        path: 'portal/account',
+        element: (
+          <RequirePortalAuth>
+            <ChangePasswordPage />
           </RequirePortalAuth>
         ),
       },
