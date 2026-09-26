@@ -1,1 +1,43 @@
 @import 'tailwindcss';
+
+:root,
+[data-theme='light'] {
+  --canvas: #fafafa;
+  --ink: #171717;
+  --line: #d4d4d4;
+  --surface: #ffffff;
+}
+
+[data-theme='dark'] {
+  --canvas: #0a0a0a;
+  --ink: #f5f5f5;
+  --line: #404040;
+  --surface: #171717;
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-ink: var(--ink);
+  --color-line: var(--line);
+  --color-surface: var(--surface);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--ink);
+}
+
+input,
+textarea,
+select,
+button {
+  background-color: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}

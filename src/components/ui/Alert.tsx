@@ -6,7 +6,7 @@ interface AlertProps {
 
 export function Alert({ children }: AlertProps) {
   return (
-    <div role="alert" className="rounded border px-3 py-2">
+    <div role="alert" className="rounded border border-line bg-surface text-ink px-3 py-2">
       {children}
     </div>
   );
