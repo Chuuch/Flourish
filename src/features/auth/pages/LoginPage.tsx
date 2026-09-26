@@ -8,6 +8,9 @@ export function LoginPage() {
       <h1>Sign in</h1>
       <LoginForm />
       <p>
+        <Link to={paths.forgotPassword}>Forgot password</Link>
+      </p>
+      <p>
         <Link to={paths.portalLogin}>Client sign in</Link>
       </p>
     </main>

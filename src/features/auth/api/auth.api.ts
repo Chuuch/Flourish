@@ -4,8 +4,10 @@ import {
   registerResponseSchema,
   sessionResponseSchema,
   type AccpetInviteInput,
+  type ForgotPasswordInput,
   type LoginInput,
   type RegisterInput,
+  type ResetPasswordInput,
 } from '../schemas/auth.schema';
 import z from 'zod';
 
@@ -16,6 +18,12 @@ export const register = (input: RegisterInput) =>
 
 export const acceptInvite = (input: AccpetInviteInput) =>
   http.post('/auth/accept-invite', z.unknown(), input);
+
+export const forgotPassword = (input: ForgotPasswordInput) =>
+  http.post('/auth/forgot-password', z.unknown(), input);
+
+export const resetPassword = (input: ResetPasswordInput) =>
+  http.post('/auth/reset-password', z.unknown(), input);
 
 export const fetchSession = () => http.get('/auth/me', sessionResponseSchema);
 
