@@ -41,6 +41,11 @@ describe('GuestOnly', () => {
       .getState()
       .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
 
+    server.use(
+      mswHttp.get(`${env.API_URL}/inbox/tasks`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
+    );
+
     renderAt(paths.login);
     expect(await screen.findByText('Flourish')).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Sign in' })).not.toBeInTheDocument();

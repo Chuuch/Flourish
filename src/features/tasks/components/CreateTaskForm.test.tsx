@@ -15,6 +15,7 @@ import { TasksPage } from '../pages/TasksPage';
 const clientId = '44444444-4444-4444-4444-444444444444';
 const projectId = '55555555-5555-5555-5555-555555555555';
 const tasksUrl = `${env.API_URL}/projects/${projectId}/tasks`;
+const membersUrl = `${env.API_URL}/members`;
 
 const testOrg = {
   id: crypto.randomUUID(),
@@ -32,6 +33,7 @@ function signInAs(role: 'owner' | 'admin' | 'member') {
 describe('CreateTaskForm', () => {
   it('shows the form for members', () => {
     signInAs('member');
+    server.use(mswHttp.get(membersUrl, () => HttpResponse.json([])));
     renderWithProviders(<CreateTaskForm projectId={projectId} />);
 
     expect(screen.getByRole('button', { name: 'Add task' })).toBeInTheDocument();
@@ -40,6 +42,7 @@ describe('CreateTaskForm', () => {
   it('shows a validation error without calling the API', async () => {
     const user = userEvent.setup();
     signInAs('owner');
+    server.use(mswHttp.get(membersUrl, () => HttpResponse.json([])));
     renderWithProviders(<CreateTaskForm projectId={projectId} />);
 
     await user.click(screen.getByRole('button', { name: 'Add task' }));
@@ -53,6 +56,7 @@ describe('CreateTaskForm', () => {
     const tasks: Task[] = [];
 
     server.use(
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.get(tasksUrl, () => HttpResponse.json(tasks)),
       mswHttp.post(tasksUrl, async ({ request }) => {
         const input = createTaskSchema.parse(await request.json());
@@ -61,6 +65,7 @@ describe('CreateTaskForm', () => {
           title: input.title,
           notes: input.notes,
           status: input.status,
+          assignee_id: input.assignee_id ?? null,
         });
         tasks.push(created);
         return HttpResponse.json(created, { status: 201 });
@@ -91,6 +96,7 @@ describe('CreateTaskForm', () => {
     const user = userEvent.setup();
     signInAs('admin');
     server.use(
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.post(tasksUrl, () =>
         HttpResponse.json({ error: { message: 'task title already exists' } }, { status: 409 }),
       ),
