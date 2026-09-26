@@ -3,6 +3,7 @@ import { paths } from '../router/paths';
 import { useAuthStore } from '@/features/auth';
 import { useLogout } from '@/features/auth/hooks/useLogout';
 import { Button } from '@/components/ui';
+import { ThemeToggle } from '@/features/theme';
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   isActive ? 'font-semibold underline' : 'hover:underline';
@@ -16,8 +17,8 @@ export function RootLayout() {
   const isPortal = role === 'client';
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="border-b px-6 py-4">
+    <div className="bg-canvas text-ink min-h-screen flex flex-col">
+      <header className="border-b border-line px-6 py-4">
         <nav aria-label="Main" className="flex gap-6">
           <NavLink to={isPortal ? paths.portal : paths.home} className={navLinkClass} end>
             Home
@@ -67,6 +68,7 @@ export function RootLayout() {
               </NavLink>
             </>
           )}
+          <ThemeToggle />
         </nav>
       </header>
 

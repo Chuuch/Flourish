@@ -7,7 +7,7 @@ export function Button({ type = 'button', disabled, children, ...props }: Button
     <button
       type={type}
       disabled={disabled}
-      className="rounded border px-3 py-1.5 disabled:opacity-50"
+      className="rounded border border-line bg-surface text-ink px-3 py-1.5 disabled:opacity-50"
       {...props}
     >
       {children}
