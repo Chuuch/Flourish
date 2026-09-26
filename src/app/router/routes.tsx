@@ -74,6 +74,38 @@ export const routes: RouteObject[] = [
         },
       },
       {
+        path: 'forgot-password',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { ForgotPasswordPage } = await import('@/features/auth');
+          return {
+            Component: function ForgotPasswordRoute() {
+              return (
+                <GuestOnly>
+                  <ForgotPasswordPage />
+                </GuestOnly>
+              );
+            },
+          };
+        },
+      },
+      {
+        path: 'reset-password',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { ResetPasswordPage } = await import('@/features/auth');
+          return {
+            Component: function ResetPasswordRoute() {
+              return (
+                <GuestOnly>
+                  <ResetPasswordPage />
+                </GuestOnly>
+              );
+            },
+          };
+        },
+      },
+      {
         path: 'portal/login',
         HydrateFallback: PageLoader,
         lazy: async () => {

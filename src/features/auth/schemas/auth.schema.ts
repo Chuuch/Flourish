@@ -33,6 +33,18 @@ export const accpetInviteInputSchema = acceptInviteFormSchema.extend({
   token: z.string().min(1, 'Invite token is required'),
 });
 
+export const forgotPasswordInputSchema = z.object({
+  email: z.email('Enter a valid email address'),
+});
+
+export const resetPasswordFormSchema = z.object({
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+export const resetPasswordInputSchema = resetPasswordFormSchema.extend({
+  token: z.string().min(1, 'Reset token is required'),
+});
+
 export const authResponseSchema = z.object({
   access_token: z.string().min(1),
   user: sessionUserSchema,
@@ -52,3 +64,6 @@ export type LoginInput = z.infer<typeof loginInputSchema>;
 export type RegisterInput = z.infer<typeof registerInputSchema>;
 export type AcceptInviteFormInput = z.infer<typeof acceptInviteFormSchema>;
 export type AccpetInviteInput = z.infer<typeof accpetInviteInputSchema>;
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordInputSchema>;
+export type ResetPasswordFormInput = z.infer<typeof resetPasswordFormSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordInputSchema>;

@@ -3,6 +3,8 @@ export const paths = {
   login: '/login',
   register: '/register',
   acceptInvite: '/accept-invite',
+  forgotPassword: '/forgot-password',
+  resetPassword: '/reset-password',
   members: '/members',
   clients: '/clients',
   projects: '/projects',
