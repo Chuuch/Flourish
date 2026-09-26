@@ -1,38 +1,40 @@
 services:
-  traefik:
-    image: traefik:v3.6
-    command:
-      - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
-      - --entrypoints.web.address=:80
-      - --api.dashboard=true
-      - --api.insecure=true
-      - --log.level=INFO
-      - --accesslog=true
+  caddy:
+    image: caddy:2.10-alpine
+    container_name: flourish-caddy
+    restart: unless-stopped
     ports:
       - '80:80'
-      - '8080:8080'
+      - '443:443/udp'
+    environment:
+      CADDY_EMAIL: ${CADDY_EMAIL:-noreply@localhost}
+      FLOURISH_HOST: ${FLOURISH_HOST:-flourish.localhost}
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
     networks:
       - edge
+    depends_on:
+      - web
 
   web:
     build:
       context: .
     image: flourish-web:local
+    container_name: flourish-web
     environment:
-      APP_API_URL: http://localhost:8080/api/v1
+      APP_API_URL: ${APP_API_URL:-http://flourish.localhost/api/v1}
       APP_ENV: production
     networks:
       - edge
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.web.rule=Host(`flourish.localhost`)
-      - traefik.http.routers.web.entrypoints=web
-      - traefik.http.services.web.loadbalancer.server.port=8080
-      - traefik.http.services.web.loadbalancer.healthcheck.path=/healthz
-      - traefik.http.services.web.loadbalancer.healthcheck.interval=10s
+    expose:
+      - '8080'
 
 networks:
   edge:
+    name: flourish-edge
+
+volumes:
+  caddy_data:
+  caddy_config:

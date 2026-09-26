@@ -1,0 +1,15 @@
+{
+  email ($CADDY_EMAIL)
+}
+
+{$FLOURISH_HOST} {
+    encode gzip
+
+    handle /api/* {
+      reverse_proxy gorest-api:8080
+    }
+
+    handle {
+      reverse_proxy web:8080
+    }
+}
