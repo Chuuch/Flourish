@@ -9,7 +9,7 @@ services:
       - '443:443/udp'
     environment:
       CADDY_EMAIL: ${CADDY_EMAIL:-noreply@localhost}
-      FLOURISH_HOST: ${FLOURISH_HOST:-flourish.localhost}
+      FLOURISH_SITE: ${FLOURISH_SITE:-flourish.localhost}
     volumes:
       - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data

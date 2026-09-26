@@ -1,8 +1,8 @@
 {
-  email ($CADDY_EMAIL)
+  email {$CADDY_EMAIL}
 }
 
-{$FLOURISH_HOST} {
+{$FLOURISH_SITE} {
     encode gzip
 
     handle /api/* {
