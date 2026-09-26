@@ -6,6 +6,7 @@ import { useUpdateTask } from '../hooks/useUpdateTask';
 import { canManageTasks, taskStatusSchema, type TaskStatus } from '../schemas/task.schema';
 import { useAuthStore } from '@/features/auth';
 import { useDeleteTask } from '../hooks/useDeleteTask';
+import { EditTaskForm } from './EditTaskForm';
 
 export function TaskList({ projectId, clientId }: { projectId: string; clientId: string }) {
   const role = useAuthStore((state) => state.role);
@@ -69,6 +70,7 @@ export function TaskList({ projectId, clientId }: { projectId: string; clientId:
               </select>
             </label>
             {task.completed_at ? <span> Completed {task.completed_at}</span> : null}
+            <EditTaskForm task={task} projectId={projectId} />
             {canManage ? (
               <Button
                 type="button"

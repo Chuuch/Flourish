@@ -10,6 +10,8 @@ import z from 'zod';
 export const fetchTasks = (projectId: string) =>
   http.get(`/projects/${projectId}/tasks`, tasksSchema);
 
+export const fetchInbox = () => http.get('/inbox/tasks', tasksSchema);
+
 export const createTask = (projectId: string, input: CreateTaskInput) =>
   http.post(`/projects/${projectId}/tasks`, taskSchema, input);
 

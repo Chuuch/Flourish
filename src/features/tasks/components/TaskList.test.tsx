@@ -37,7 +37,10 @@ describe('TaskList', () => {
       notes: 'OAuth',
       status: 'todo',
     });
+
+    const membersUrl = `${env.API_URL}/members`;
     server.use(
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.get(tasksUrl, () =>
         HttpResponse.json([login, makeTask({ title: 'Ship site', notes: '', status: 'done' })]),
       ),
@@ -69,7 +72,9 @@ describe('TaskList', () => {
       version: 1,
     });
 
+    const membersUrl = `${env.API_URL}/members`;
     server.use(
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.get(tasksUrl, () => HttpResponse.json([task])),
       mswHttp.patch(`${env.API_URL}/tasks/${task.id}`, async ({ request }) => {
         const input = updateTaskSchema.parse(await request.json());
@@ -94,6 +99,7 @@ describe('TaskList', () => {
 
   it('renders a version conflict on update', async () => {
     const user = userEvent.setup();
+    const membersUrl = `${env.API_URL}/members`;
     const task = makeTask({
       project_id: projectId,
       title: 'Fix login',
@@ -102,6 +108,7 @@ describe('TaskList', () => {
     });
 
     server.use(
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.get(tasksUrl, () => HttpResponse.json([task])),
       mswHttp.patch(`${env.API_URL}/tasks/${task.id}`, () =>
         HttpResponse.json(
