@@ -1,15 +1,18 @@
+import { useI18n } from '@/features/i18n';
+
 interface ErrorFallbackProps {
   onRetry: () => void;
 }
 
 export function ErrorFallback({ onRetry }: ErrorFallbackProps) {
+  const { t } = useI18n();
   return (
     <main role="alert">
-      <h1>Something went wrong</h1>
+      <h1>{t('error.title')}</h1>
 
-      <p>An unexpected error occurred. Please try again.</p>
+      <p>{t('error.body')}</p>
       <button type="button" onClick={onRetry}>
-        Try again
+        {t('error.tryAgain')}
       </button>
     </main>
   );

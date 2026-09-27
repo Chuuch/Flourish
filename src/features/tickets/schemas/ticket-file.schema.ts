@@ -1,3 +1,4 @@
+import { t } from '@/features/i18n';
 import z from 'zod';
 
 export const MAX_TICKET_FILE_SIZE_BYTES = 10 * 1024 * 1024;
@@ -37,7 +38,7 @@ export type TicketFile = z.infer<typeof ticketFileSchema>;
 export type CreateTicketFileInput = z.infer<typeof createTicketFileInputSchema>;
 
 export function ticketFileLabel(file: TicketFile): string {
-  return `${file.filename} (${String(file.size)} bytes)`;
+  return t('files.label', { filename: file.filename, size: file.size });
 }
 
 export function canMutateTicketFile(

@@ -3,9 +3,11 @@ import { useChangePassword } from '../hooks/useChangePassword';
 import { changePasswordInputSchema, type ChangePasswordInput } from '../schemas/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, TextField } from '@/components/ui';
+import { useI18n } from '@/features/i18n';
 
 export function ChangePasswordForm() {
   const changePassword = useChangePassword();
+  const { t } = useI18n();
 
   const {
     register,
@@ -17,7 +19,7 @@ export function ChangePasswordForm() {
   });
 
   if (changePassword.isSuccess) {
-    return <p>Password updated.</p>;
+    return <p>{t('auth.passwordUpdated')}</p>;
   }
 
   return (
@@ -30,7 +32,7 @@ export function ChangePasswordForm() {
       noValidate
     >
       <TextField
-        label="Current password"
+        label={t('auth.currentPassword')}
         type="password"
         autoComplete="current-password"
         error={errors.current_password?.message}
@@ -38,7 +40,7 @@ export function ChangePasswordForm() {
       />
 
       <TextField
-        label="New password"
+        label={t('auth.newPassword')}
         type="password"
         autoComplete="new-password"
         error={errors.password?.message}
@@ -48,7 +50,7 @@ export function ChangePasswordForm() {
       {changePassword.isError ? <Alert>{changePassword.error.message}</Alert> : null}
 
       <Button type="submit" disabled={changePassword.isPending}>
-        Change password
+        {t('auth.changePassword')}
       </Button>
     </form>
   );

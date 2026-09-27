@@ -3,12 +3,14 @@ import { useUploadFIle } from '../hooks/useUploadFile';
 import { useRef, useState } from 'react';
 import { canManageFiles, isAllowedFile, MAX_FILE_SIZE_BYTES } from '../schemas/file.schema';
 import { Alert, Button } from '@/components/ui';
+import { useI18n } from '@/features/i18n';
 
 export function CreateFileForm({ projectId }: { projectId: string }) {
   const role = useAuthStore((state) => state.role);
   const uploadFile = useUploadFIle(projectId);
   const inputRef = useRef<HTMLInputElement>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const { t } = useI18n();
 
   if (!canManageFiles(role)) {
     return null;
@@ -20,15 +22,15 @@ export function CreateFileForm({ projectId }: { projectId: string }) {
         event.preventDefault();
         const file = inputRef.current?.files?.[0];
         if (!file) {
-          setValidationError('File is required');
+          setValidationError(t('validation.fileRequired'));
           return;
         }
         if (!isAllowedFile(file)) {
-          setValidationError('Unsupported file type');
+          setValidationError(t('validation.fileType'));
           return;
         }
         if (file.size < 1 || file.size > MAX_FILE_SIZE_BYTES) {
-          setValidationError('File is too large');
+          setValidationError(t('validation.fileTooLarge'));
           return;
         }
         setValidationError(null);
@@ -43,7 +45,7 @@ export function CreateFileForm({ projectId }: { projectId: string }) {
       noValidate
     >
       <div>
-        <label htmlFor="file">File</label>
+        <label htmlFor="file">{t('files.file')}</label>
         <input
           id="file"
           ref={inputRef}
@@ -57,7 +59,7 @@ export function CreateFileForm({ projectId }: { projectId: string }) {
       {uploadFile.isError ? <Alert>{uploadFile.error.message}</Alert> : null}
 
       <Button type="submit" disabled={uploadFile.isPending}>
-        Upload
+        {t('common.upload')}
       </Button>
     </form>
   );

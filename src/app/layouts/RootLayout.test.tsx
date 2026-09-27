@@ -25,14 +25,15 @@ function renderLayout() {
 }
 
 describe('RootLayout', () => {
-  it('shows the theme toggle for guests', () => {
+  it('shows the theme toggle and language switcher for guests', () => {
     renderLayout();
 
     expect(screen.getByRole('button', { name: 'Use dark theme' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Language')).toHaveValue('en');
     expect(screen.getByText('page')).toBeInTheDocument();
   });
 
-  it('shows the theme toggle when signed in', () => {
+  it('shows the theme toggle and language switcher when signed in', () => {
     useAuthStore
       .getState()
       .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
@@ -40,6 +41,7 @@ describe('RootLayout', () => {
     renderLayout();
 
     expect(screen.getByRole('button', { name: 'Use dark theme' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Language')).toHaveValue('en');
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument();
   });
 });

@@ -1,3 +1,4 @@
+import { t } from '@/features/i18n';
 import z from 'zod';
 
 export const taskStatusSchema = z.enum(['todo', 'in_progress', 'done']);
@@ -21,14 +22,20 @@ export const taskSchema = z.object({
 export const tasksSchema = z.array(taskSchema);
 
 export const createTaskSchema = z.object({
-  title: z.string().min(4, 'Title must be at least 4 characters').max(100),
+  title: z
+    .string()
+    .min(4, { error: () => t('validation.titleMin') })
+    .max(100),
   notes: z.string().max(2000),
   status: taskStatusSchema,
   assignee_id: z.uuid().nullable().optional(),
 });
 
 export const createTaskFormSchema = z.object({
-  title: z.string().min(4, 'Title must be at least 4 characters').max(100),
+  title: z
+    .string()
+    .min(4, { error: () => t('validation.titleMin') })
+    .max(100),
   notes: z.string().max(2000),
   status: taskStatusSchema,
   assignee_id: z.string(),
@@ -43,7 +50,10 @@ export const updateTaskSchema = z.object({
 });
 
 export const editTaskFormSchema = z.object({
-  title: z.string().min(4, 'Title must be at least 4 characters').max(100),
+  title: z
+    .string()
+    .min(4, { error: () => t('validation.titleMin') })
+    .max(100),
   notes: z.string().max(2000),
   assignee_id: z.string(),
 });

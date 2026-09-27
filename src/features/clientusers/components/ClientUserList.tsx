@@ -3,30 +3,32 @@ import { useClientUsers } from '../hooks/useClientUsers';
 import { useAuthStore } from '@/features/auth';
 import { canManageClientUsers } from '../schemas/client-user.schema';
 import { useDeleteClientUser } from '../hooks/useDeleteClientUser';
+import { useI18n } from '@/features/i18n';
 
 export function ClientUserList({ clientId }: { clientId: string }) {
   const role = useAuthStore((state) => state.role);
   const canManage = canManageClientUsers(role);
   const { data, isPending, isError, error, refetch } = useClientUsers(clientId);
   const deleteClientUser = useDeleteClientUser(clientId);
+  const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">Loading client users...</p>;
+    return <p role="status">{t('clientUsers.loading')}</p>;
   }
 
   if (isError) {
     return (
       <Alert>
-        <p>Could not load client users: {error.message}</p>
+        <p>{t('clientUsers.loadError', { message: error.message })}</p>
         <button type="button" onClick={() => void refetch()}>
-          Retry
+          {t('common.retry')}
         </button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>No client users yet.</p>;
+    return <p>{t('clientUsers.empty')}</p>;
   }
 
   return (
@@ -44,7 +46,7 @@ export function ClientUserList({ clientId }: { clientId: string }) {
                   deleteClientUser.mutate(clientUser.user_id);
                 }}
               >
-                {`Remove ${clientUser.email}`}
+                {t('clientUsers.remove', { email: clientUser.email })}
               </Button>
             ) : null}
           </li>

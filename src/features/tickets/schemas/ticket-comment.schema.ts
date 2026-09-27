@@ -1,3 +1,4 @@
+import { t } from '@/features/i18n';
 import z from 'zod';
 
 export const ticketCommentSchema = z.object({
@@ -13,7 +14,10 @@ export const ticketCommentSchema = z.object({
 export const ticketCommentsSchema = z.array(ticketCommentSchema);
 
 export const createTicketCommentSchema = z.object({
-  body: z.string().min(1, 'Body is required').max(2000),
+  body: z
+    .string()
+    .min(1, { error: () => t('validation.bodyRequired') })
+    .max(2000),
 });
 
 export const updateTicketCommentSchema = createTicketCommentSchema;

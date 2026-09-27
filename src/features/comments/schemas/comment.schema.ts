@@ -1,3 +1,4 @@
+import { t } from '@/features/i18n';
 import z from 'zod';
 
 export const commentSchema = z.object({
@@ -13,11 +14,17 @@ export const commentSchema = z.object({
 export const commentsSchema = z.array(commentSchema);
 
 export const createCommentSchema = z.object({
-  body: z.string().min(1, 'Body is required').max(2000),
+  body: z
+    .string()
+    .min(1, { error: () => t('validation.bodyRequired') })
+    .max(2000),
 });
 
 export const updateCommentSchema = z.object({
-  body: z.string().min(1, 'Body is required').max(2000),
+  body: z
+    .string()
+    .min(1, { error: () => t('validation.bodyRequired') })
+    .max(2000),
 });
 
 export type Comment = z.infer<typeof commentSchema>;

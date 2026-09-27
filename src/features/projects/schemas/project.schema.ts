@@ -1,3 +1,4 @@
+import { t } from '@/features/i18n';
 import z from 'zod';
 
 export const projectSchema = z.object({
@@ -13,7 +14,10 @@ export const projectSchema = z.object({
 export const projectsSchema = z.array(projectSchema);
 
 export const createProjectSchema = z.object({
-  name: z.string().min(4, 'Name must be at least 4 characters').max(100),
+  name: z
+    .string()
+    .min(4, { error: () => t('validation.nameMin') })
+    .max(100),
   notes: z.string().max(2000),
 });
 

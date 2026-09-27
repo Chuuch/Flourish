@@ -8,10 +8,12 @@ import {
 } from '../schemas/client-user.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, TextField } from '@/components/ui';
+import { useI18n } from '@/features/i18n';
 
 export function CreateClientUserForm({ clientId }: { clientId: string }) {
   const role = useAuthStore((state) => state.role);
   const createClientUser = useCreateClientUser(clientId);
+  const { t } = useI18n();
 
   const {
     register,
@@ -41,7 +43,7 @@ export function CreateClientUserForm({ clientId }: { clientId: string }) {
       noValidate
     >
       <TextField
-        label="Email"
+        label={t('auth.email')}
         type="email"
         autoComplete="email"
         error={errors.email?.message}
@@ -51,7 +53,7 @@ export function CreateClientUserForm({ clientId }: { clientId: string }) {
       {createClientUser.isError ? <Alert>{createClientUser.error.message}</Alert> : null}
 
       <Button type="submit" disabled={createClientUser.isPending}>
-        Invite client user
+        {t('clientUsers.invite')}
       </Button>
     </form>
   );
