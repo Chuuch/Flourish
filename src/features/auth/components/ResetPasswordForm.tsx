@@ -5,11 +5,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { resetPasswordFormSchema, type ResetPasswordFormInput } from '../schemas/auth.schema';
 import { Alert, Button, TextField } from '@/components/ui';
 import { paths } from '@/app/router/paths';
+import { useI18n } from '@/features/i18n';
 
 export function ResetPasswordForm() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token') ?? '';
   const resetPassword = useResetPassword();
+  const { t } = useI18n();
 
   const {
     register,
@@ -21,18 +23,18 @@ export function ResetPasswordForm() {
   });
 
   if (!token) {
-    return <Alert>This reset link is missing a token.</Alert>;
+    return <Alert>{t('auth.resetMissingToken')}</Alert>;
   }
 
   if (resetPassword.isSuccess) {
     return (
       <div>
-        <p>Password updated. Sign in with the password you just set.</p>
+        <p>{t('auth.resetSuccess')}</p>
         <p>
-          <Link to={paths.login}>Staff sign in</Link>
+          <Link to={paths.login}>{t('auth.staffSignIn')}</Link>
         </p>
         <p>
-          <Link to={paths.portalLogin}>Client sign in</Link>
+          <Link to={paths.portalLogin}>{t('auth.clientSignIn')}</Link>
         </p>
       </div>
     );
@@ -48,7 +50,7 @@ export function ResetPasswordForm() {
       noValidate
     >
       <TextField
-        label="Password"
+        label={t('auth.password')}
         type="password"
         autoComplete="new-password"
         error={errors.password?.message}
@@ -58,7 +60,7 @@ export function ResetPasswordForm() {
       {resetPassword.isError ? <Alert>{resetPassword.error.message}</Alert> : null}
 
       <Button type="submit" disabled={resetPassword.isPending}>
-        Set password
+        {t('auth.setPasswordAction')}
       </Button>
     </form>
   );

@@ -5,10 +5,12 @@ import { loginInputSchema, type LoginInput } from '@/features/auth/schemas/auth.
 import { zodResolver } from '@hookform/resolvers/zod';
 import { paths } from '@/app/router/paths';
 import { Alert, Button, TextField } from '@/components/ui';
+import { useI18n } from '@/features/i18n';
 
 export function PortalLoginForm() {
   const login = usePortalLogin();
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const {
     register,
@@ -33,7 +35,7 @@ export function PortalLoginForm() {
       noValidate
     >
       <TextField
-        label="Email"
+        label={t('auth.email')}
         type="email"
         autoComplete="email"
         error={errors.email?.message}
@@ -41,7 +43,7 @@ export function PortalLoginForm() {
       />
 
       <TextField
-        label="Password"
+        label={t('auth.password')}
         type="password"
         autoComplete="current-password"
         error={errors.password?.message}
@@ -51,7 +53,7 @@ export function PortalLoginForm() {
       {login.isError ? <Alert>{login.error.message}</Alert> : null}
 
       <Button type="submit" disabled={login.isPending}>
-        Sign in
+        {t('auth.signIn')}
       </Button>
     </form>
   );

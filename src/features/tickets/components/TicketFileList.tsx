@@ -4,6 +4,7 @@ import type { TicketFileSource } from '../api/ticket-files.api';
 import { useAuthStore } from '@/features/auth';
 import { useDeleteTicketFile } from '../hooks/useDeleteTicketFile';
 import { canMutateTicketFile, ticketFileLabel } from '../schemas/ticket-file.schema';
+import { useI18n } from '@/features/i18n';
 
 export function TicketFileList({
   ticketId,
@@ -16,24 +17,25 @@ export function TicketFileList({
   const actorUserId = useAuthStore((state) => state.user?.id);
   const { data, isPending, isError, error, refetch } = useTicketFiles(ticketId, source);
   const deleteTicketFile = useDeleteTicketFile(ticketId, source);
+  const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">Loading attachments...</p>;
+    return <p role="status">{t('tickets.attachmentsLoading')}</p>;
   }
 
   if (isError) {
     return (
       <Alert>
-        <p>Could not load attachments: {error.message}</p>
+        <p>{t('tickets.attachmentsLoadError', { message: error.message })}</p>
         <button type="button" onClick={() => void refetch()}>
-          Retry
+          {t('common.retry')}
         </button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>No attachments yet.</p>;
+    return <p>{t('tickets.attachmentsEmpty')}</p>;
   }
 
   return (
@@ -54,7 +56,7 @@ export function TicketFileList({
                     deleteTicketFile.mutate(file.id);
                   }}
                 >
-                  {`Remove ${label}`}
+                  {t('tickets.removeLabel', { label })}
                 </Button>
               ) : null}
             </li>

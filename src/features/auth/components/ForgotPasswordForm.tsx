@@ -5,9 +5,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router';
 import { paths } from '@/app/router/paths';
 import { Alert, Button, TextField } from '@/components/ui';
+import { useI18n } from '@/features/i18n';
 
 export function ForgotPasswordForm() {
   const forgotPassword = useForgotPassword();
+  const { t } = useI18n();
 
   const {
     register,
@@ -21,12 +23,12 @@ export function ForgotPasswordForm() {
   if (forgotPassword.isSuccess) {
     return (
       <div>
-        <p>If that email is registered, we sent a reset link.</p>
+        <p>{t('auth.resetSent')}</p>
         <p>
-          <Link to={paths.login}>Staff sign in</Link>
+          <Link to={paths.login}>{t('auth.staffSignIn')}</Link>
         </p>
         <p>
-          <Link to={paths.portalLogin}>Client sign in</Link>
+          <Link to={paths.portalLogin}>{t('auth.clientSignIn')}</Link>
         </p>
       </div>
     );
@@ -42,7 +44,7 @@ export function ForgotPasswordForm() {
       noValidate
     >
       <TextField
-        label="Email"
+        label={t('auth.email')}
         type="email"
         autoComplete="email"
         error={errors.email?.message}
@@ -52,7 +54,7 @@ export function ForgotPasswordForm() {
       {forgotPassword.isError ? <Alert>{forgotPassword.error.message}</Alert> : null}
 
       <Button type="submit" disabled={forgotPassword.isPending}>
-        Send reset link
+        {t('auth.sendResetLink')}
       </Button>
     </form>
   );

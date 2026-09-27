@@ -3,30 +3,32 @@ import { useFiles } from '../hooks/useFiles';
 import { useAuthStore } from '@/features/auth';
 import { useDeleteFile } from '../hooks/useDeleteFile';
 import { canMutateFile, fileLabel } from '../schemas/file.schema';
+import { useI18n } from '@/features/i18n';
 
 export function FileList({ projectId }: { projectId: string }) {
   const role = useAuthStore((state) => state.role);
   const actorUserId = useAuthStore((state) => state.user?.id);
   const { data, isPending, isError, error, refetch } = useFiles(projectId);
   const deleteFile = useDeleteFile(projectId);
+  const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">Loading files...</p>;
+    return <p role="status">{t('files.loading')}</p>;
   }
 
   if (isError) {
     return (
       <Alert>
-        <p>Could not load files: {error.message}</p>
+        <p>{t('files.loadError', { message: error.message })}</p>
         <button type="button" onClick={() => void refetch()}>
-          Retry
+          {t('common.retry')}
         </button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>No files yet.</p>;
+    return <p>{t('files.empty')}</p>;
   }
 
   return (
@@ -47,7 +49,7 @@ export function FileList({ projectId }: { projectId: string }) {
                     deleteFile.mutate(file.id);
                   }}
                 >
-                  {`Remove ${label}`}
+                  {t('files.remove', { label })}
                 </Button>
               ) : null}
             </li>

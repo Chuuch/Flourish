@@ -4,27 +4,29 @@ import { CreateTicketFileForm } from './CreateTicketFileForm';
 import { TicketFileList } from './TicketFileList';
 import { TicketCommentList } from './TicketCommentList';
 import { CreateTicketCommentForm } from './CreateTicketCommentForm';
+import { useI18n } from '@/features/i18n';
 
 export function TicketList() {
   const { data, isPending, isError, error, refetch } = useTickets();
+  const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">Loading tickets...</p>;
+    return <p role="status">{t('tickets.loading')}</p>;
   }
 
   if (isError) {
     return (
       <Alert>
-        <p>Could not load tickets: {error.message}</p>
+        <p>{t('tickets.loadError', { message: error.message })}</p>
         <button type="button" onClick={() => void refetch()}>
-          Retry
+          {t('common.retry')}
         </button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>No tickets yet.</p>;
+    return <p>{t('tickets.empty')}</p>;
   }
 
   return (

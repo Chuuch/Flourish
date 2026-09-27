@@ -22,6 +22,20 @@
           document.documentElement.dataset.theme = 'light';
           document.documentElement.style.colorScheme = 'light';
         }
+
+        try {
+          var storedLocale = window.localStorage.getItem('flourish-locale');
+          var language = window.navigator.language.toLowerCase();
+          var locale =
+            storedLocale === 'en' || storedLocale === 'bg'
+              ? storedLocale
+              : language === 'bg' || language.indexOf('bg-') === 0
+                ? 'bg'
+                : 'en';
+          document.documentElement.lang = locale;
+        } catch (error) {
+          document.documentElement.lang = 'en';
+        }
       })();
     </script>
   </head>

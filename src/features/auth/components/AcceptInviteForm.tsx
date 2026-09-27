@@ -5,11 +5,13 @@ import { acceptInviteFormSchema, type AcceptInviteFormInput } from '../schemas/a
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, TextField } from '@/components/ui';
 import { paths } from '@/app/router/paths';
+import { useI18n } from '@/features/i18n';
 
 export function AcceptInviteForm() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token') ?? '';
   const acceptInvite = useAcceptInvite();
+  const { t } = useI18n();
 
   const {
     register,
@@ -21,18 +23,18 @@ export function AcceptInviteForm() {
   });
 
   if (!token) {
-    return <Alert>This invite link is missing a token.</Alert>;
+    return <Alert>{t('auth.inviteMissingToken')}</Alert>;
   }
 
   if (acceptInvite.isSuccess) {
     return (
       <div>
-        <p>Invite accepted. Sign in with the password you just set.</p>
+        <p>{t('auth.inviteSuccess')}</p>
         <p>
-          <Link to={paths.login}>Staff sign in</Link>
+          <Link to={paths.login}>{t('auth.staffSignIn')}</Link>
         </p>
         <p>
-          <Link to={paths.portalLogin}>Client sign in</Link>
+          <Link to={paths.portalLogin}>{t('auth.clientSignIn')}</Link>
         </p>
       </div>
     );
@@ -48,7 +50,7 @@ export function AcceptInviteForm() {
       noValidate
     >
       <TextField
-        label="Password"
+        label={t('auth.password')}
         type="password"
         autoComplete="new-password"
         error={errors.password?.message}
@@ -58,7 +60,7 @@ export function AcceptInviteForm() {
       {acceptInvite.isError ? <Alert>{acceptInvite.error.message}</Alert> : null}
 
       <Button type="submit" disabled={acceptInvite.isPending}>
-        Set password
+        {t('auth.setPasswordAction')}
       </Button>
     </form>
   );

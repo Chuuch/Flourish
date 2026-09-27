@@ -10,10 +10,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, TextField } from '@/components/ui';
 import { AssigneeSelect } from './AssigneeSelect';
+import { useI18n } from '@/features/i18n';
 
 export function EditTaskForm({ task, projectId }: { task: Task; projectId?: string }) {
   const members = useMembers();
   const updateTask = useUpdateTask(projectId);
+  const { t } = useI18n();
 
   const {
     register,
@@ -47,14 +49,14 @@ export function EditTaskForm({ task, projectId }: { task: Task; projectId?: stri
       noValidate
     >
       <TextField
-        label={`Title for ${task.title}`}
+        label={t('tasks.titleFor', { title: task.title })}
         autoComplete="off"
         error={errors.title?.message}
         {...register('title')}
       />
 
       <div>
-        <label htmlFor={`notes-${task.id}`}>Notes for {task.title}</label>
+        <label htmlFor={`notes-${task.id}`}>{t('tasks.notesFor', { title: task.title })}</label>
         <textarea
           id={`notes-${task.id}`}
           className="block rounded border px-2 py-1"
@@ -65,7 +67,7 @@ export function EditTaskForm({ task, projectId }: { task: Task; projectId?: stri
 
       <AssigneeSelect
         id={`assignee-${task.id}`}
-        label={`Assignee for ${task.title}`}
+        label={t('tasks.assigneeFor', { title: task.title })}
         members={members.data ?? []}
         error={errors.assignee_id?.message}
         registration={register('assignee_id')}
@@ -74,7 +76,7 @@ export function EditTaskForm({ task, projectId }: { task: Task; projectId?: stri
       {updateTask.isError ? <Alert>{updateTask.error.message}</Alert> : null}
 
       <Button type="submit" disabled={updateTask.isPending}>
-        {`Save ${task.title}`}
+        {t('tasks.save', { title: task.title })}
       </Button>
     </form>
   );

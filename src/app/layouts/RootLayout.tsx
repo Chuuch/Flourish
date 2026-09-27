@@ -4,6 +4,7 @@ import { useAuthStore } from '@/features/auth';
 import { useLogout } from '@/features/auth/hooks/useLogout';
 import { Button } from '@/components/ui';
 import { ThemeToggle } from '@/features/theme';
+import { LocaleSwitcher, useI18n } from '@/features/i18n';
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   isActive ? 'font-semibold underline' : 'hover:underline';
@@ -15,21 +16,22 @@ export function RootLayout() {
   const role = useAuthStore((state) => state.role);
   const logout = useLogout();
   const isPortal = role === 'client';
+  const { t } = useI18n();
 
   return (
     <div className="bg-canvas text-ink min-h-screen flex flex-col">
       <header className="border-b border-line px-6 py-4">
-        <nav aria-label="Main" className="flex gap-6">
+        <nav aria-label={t('nav.main')} className="flex gap-6">
           <NavLink to={isPortal ? paths.portal : paths.home} className={navLinkClass} end>
-            Home
+            {t('nav.home')}
           </NavLink>
           {isPortal ? null : (
             <>
               <NavLink to={paths.members} className={navLinkClass}>
-                Members
+                {t('nav.members')}
               </NavLink>
               <NavLink to={paths.clients} className={navLinkClass}>
-                Clients
+                {t('nav.clients')}
               </NavLink>
             </>
           )}
@@ -43,7 +45,7 @@ export function RootLayout() {
                 <span>{organization.name}</span>
               ) : null}
               <NavLink to={isPortal ? paths.portalAccount : paths.account} className={navLinkClass}>
-                Account
+                {t('nav.account')}
               </NavLink>
               <Button
                 type="button"
@@ -52,23 +54,24 @@ export function RootLayout() {
                 }}
                 disabled={logout.isPending}
               >
-                Sign out
+                {t('nav.signOut')}
               </Button>
             </>
           ) : (
             <>
               <NavLink to={paths.login} className={navLinkClass}>
-                Sign in
+                {t('nav.signIn')}
               </NavLink>
               <NavLink to={paths.register} className={navLinkClass}>
-                Create account
+                {t('nav.createAccount')}
               </NavLink>
               <NavLink to={paths.portalLogin} className={navLinkClass}>
-                Client sign in
+                {t('nav.clientSignIn')}
               </NavLink>
             </>
           )}
           <ThemeToggle />
+          <LocaleSwitcher />
         </nav>
       </header>
 

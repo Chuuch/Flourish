@@ -13,6 +13,7 @@ import { useDeleteTicketComment } from '../hooks/useDeleteTicketComment';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthStore } from '@/features/auth';
+import { useI18n } from '@/features/i18n';
 
 function TicketCommentManageForm({
   ticketId,
@@ -26,6 +27,7 @@ function TicketCommentManageForm({
   const updateComment = useUpdateTicketComment(ticketId, source);
   const deleteComment = useDeleteTicketComment(ticketId, source);
   const label = ticketCommentLabel(comment);
+  const { t } = useI18n();
 
   const {
     register,
@@ -49,7 +51,9 @@ function TicketCommentManageForm({
         noValidate
       >
         <div>
-          <label htmlFor={`ticket-comment-edit-${comment.id}`}>Comment for {label}</label>
+          <label htmlFor={`ticket-comment-edit-${comment.id}`}>
+            {t('tickets.commentFor', { label })}
+          </label>
           <textarea
             id={`ticket-comment-edit-${comment.id}`}
             className="block rounded border px-2 py-1"
@@ -59,7 +63,7 @@ function TicketCommentManageForm({
         </div>
 
         <Button type="submit" disabled={updateComment.isPending}>
-          {`Save ${label}`}
+          {t('tickets.save', { label })}
         </Button>
       </form>
       <Button
@@ -69,7 +73,7 @@ function TicketCommentManageForm({
           deleteComment.mutate(comment.id);
         }}
       >
-        {`Remove ${label}`}
+        {t('tickets.removeLabel', { label })}
       </Button>
     </>
   );
@@ -85,24 +89,25 @@ export function TicketCommentList({
   const role = useAuthStore((state) => state.role);
   const actorUserId = useAuthStore((state) => state.user?.id);
   const { data, isPending, error, isError, refetch } = useTicketComments(ticketId, source);
+  const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">Loading comments...</p>;
+    return <p role="status">{t('comments.loading')}</p>;
   }
 
   if (isError) {
     return (
       <Alert>
-        <p>Could not load comments: {error.message}</p>
+        <p>{t('comments.loadError', { message: error.message })}</p>
         <button type="button" onClick={() => void refetch()}>
-          Retry
+          {t('common.retry')}
         </button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>No comments yet.</p>;
+    return <p>{t('comments.empty')}</p>;
   }
 
   return (
