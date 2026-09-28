@@ -1,3 +1,4 @@
+import { cn } from '@/lib/cn';
 import { useId, type InputHTMLAttributes } from 'react';
 
 interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -5,7 +6,7 @@ interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string | undefined;
 }
 
-export function TextField({ label, error, id, ...props }: TextFieldProps) {
+export function TextField({ label, error, id, className, ...props }: TextFieldProps) {
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const errorId = `${inputId}-error`;
@@ -17,7 +18,10 @@ export function TextField({ label, error, id, ...props }: TextFieldProps) {
         id={inputId}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
-        className="block rounded border border-line bg-surface text-ink px-2 py-1"
+        className={cn(
+          'block w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/20',
+          className,
+        )}
         {...props}
       />
       {error ? (

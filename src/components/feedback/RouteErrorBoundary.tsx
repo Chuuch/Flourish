@@ -2,6 +2,7 @@ import { isRouteErrorResponse, useRouteError } from 'react-router';
 
 import { logger } from '@/lib/logger/logger';
 import { useI18n } from '@/features/i18n';
+import { Button } from '@/components/ui';
 
 export function RouteErrorBoundary() {
   const error = useRouteError();
@@ -13,17 +14,15 @@ export function RouteErrorBoundary() {
     return (
       <main role="alert">
         <h1>{t('error.title')}</h1>
-
         <p>{t('error.body')}</p>
-
-        <button
+        <Button
           type="button"
           onClick={() => {
             window.location.reload();
           }}
         >
           {t('error.reload')}
-        </button>
+        </Button>
       </main>
     );
   }
@@ -34,17 +33,15 @@ export function RouteErrorBoundary() {
         <h1>
           {error.status} {error.statusText}
         </h1>
-
         <p>{t('error.pageLoad')}</p>
-
-        <button
+        <Button
           type="button"
           onClick={() => {
             window.location.reload();
           }}
         >
           {t('error.reload')}
-        </button>
+        </Button>
       </main>
     );
   }
@@ -52,17 +49,15 @@ export function RouteErrorBoundary() {
   return (
     <main role="alert">
       <h1>{t('error.title')}</h1>
-
       <p>{t('error.body')}</p>
-
-      <button
+      <Button
         type="button"
         onClick={() => {
           window.location.reload();
         }}
       >
         {t('error.reload')}
-      </button>
+      </Button>
     </main>
   );
 }

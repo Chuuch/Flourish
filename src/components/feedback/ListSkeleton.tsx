@@ -11,7 +11,7 @@ export function ListSkeleton({ label, rows = 4 }: ListSkeletonProps) {
         {Array.from({ length: rows }, (_, index) => (
           <li
             key={index}
-            className="bg-line h-10 animate-pulse rounded motion-reduce:animate-none"
+            className="bg-line h-11 animate-pulse rounded-lg motion-reduce:animate-none"
           />
         ))}
       </ul>

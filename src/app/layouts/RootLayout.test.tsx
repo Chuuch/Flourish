@@ -39,6 +39,7 @@ describe('RootLayout', () => {
 
     expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Sign in' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Members' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Use dark theme' })).toBeInTheDocument();
     expect(screen.getByLabelText('Language')).toHaveValue('en');
     expect(screen.getByText('page')).toBeInTheDocument();

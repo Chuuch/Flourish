@@ -14,14 +14,18 @@ export function HomePage() {
   }
 
   if (!user) {
-    return <div>{t('home.brand')}</div>;
+    return (
+      <main>
+        <h1>{t('home.brand')}</h1>
+      </main>
+    );
   }
 
   return (
     <main>
       <h1>{t('home.brand')}</h1>
       <h2>{t('home.inbox')}</h2>
-      <InboxList />;
+      <InboxList />
     </main>
   );
 }
