@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { applyLocale, LOCALE_STORAGE_KEY, readStoredLocale, translate } from '../lib/i18n';
 import { useI18nStore } from './i18n.store';
 
@@ -11,6 +11,12 @@ describe('readStoredLocale', () => {
 
   it('falls back to English when nothing is stored', () => {
     expect(readStoredLocale()).toBe('en');
+  });
+
+  it('detects a supported browser language', () => {
+    vi.spyOn(window.navigator, 'language', 'get').mockReturnValue('de-AT');
+
+    expect(readStoredLocale()).toBe('de');
   });
 });
 

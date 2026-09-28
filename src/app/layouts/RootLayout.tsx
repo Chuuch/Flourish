@@ -30,6 +30,9 @@ export function RootLayout() {
               <NavLink to={paths.members} className={navLinkClass}>
                 {t('nav.members')}
               </NavLink>
+              <NavLink to={paths.users} className={navLinkClass}>
+                {t('nav.users')}
+              </NavLink>
               <NavLink to={paths.clients} className={navLinkClass}>
                 {t('nav.clients')}
               </NavLink>

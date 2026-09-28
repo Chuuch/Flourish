@@ -1,3 +1,4 @@
+import { t } from '@/features/i18n';
 import z from 'zod';
 
 export const userSchema = z.object({
@@ -10,7 +11,7 @@ export const userSchema = z.object({
 export const usersSchema = z.array(userSchema);
 
 export const createUserSchema = z.object({
-  email: z.email('Enter a valid email address'),
+  email: z.email({ error: () => t('validation.email') }),
 });
 
 export type User = z.infer<typeof userSchema>;

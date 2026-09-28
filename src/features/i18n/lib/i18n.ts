@@ -22,6 +22,17 @@ export function translate(locale: Locale, key: MessageKey, vars?: TranslateVars)
   return interpolate(catalog[key], vars);
 }
 
+export function localeFromLanguage(language: string): Locale {
+  const base = language.toLowerCase().split('-')[0];
+  const parsed = localeSchema.safeParse(base);
+
+  if (parsed.success) {
+    return parsed.data;
+  }
+
+  return 'en';
+}
+
 export function readStoredLocale(): Locale {
   if (typeof window === 'undefined') {
     return 'en';
@@ -32,9 +43,7 @@ export function readStoredLocale(): Locale {
   if (parsed.success) {
     return parsed.data;
   }
-
-  const language = window.navigator.language.toLowerCase();
-  return language === 'bg' || language.startsWith('bg-') ? 'bg' : 'en';
+  return localeFromLanguage(window.navigator.language);
 }
 
 export function applyLocale(locale: Locale): void {
