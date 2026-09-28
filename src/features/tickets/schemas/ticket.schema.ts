@@ -1,3 +1,4 @@
+import { t } from '@/features/i18n';
 import z from 'zod';
 
 export const ticketKindSchema = z.enum(['bug', 'feature', 'question', 'other']);
@@ -21,8 +22,14 @@ export const ticketsSchema = z.array(ticketSchema);
 
 export const createTicketSchema = z.object({
   kind: ticketKindSchema,
-  title: z.string().min(4, 'Title must be at least 4 characters').max(100),
-  body: z.string().min(1, 'Body is required').max(2000),
+  title: z
+    .string()
+    .min(4, { error: () => t('validation.titleMin') })
+    .max(100),
+  body: z
+    .string()
+    .min(1, { error: () => t('validation.bodyRequired') })
+    .max(2000),
 });
 
 export const updateTicketSchema = z.object({
@@ -31,7 +38,7 @@ export const updateTicketSchema = z.object({
 });
 
 export const convertTicketSchema = z.object({
-  project_id: z.string().min(1, 'Project is required'),
+  project_id: z.string().min(1, { error: () => t('validation.projectRequired') }),
 });
 
 export type Ticket = z.infer<typeof ticketSchema>;

@@ -7,6 +7,7 @@ export function useCreateMember() {
 
   return useMutation({
     mutationFn: createMember,
+    meta: { successKey: 'toast.invited' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: memberKeys.lists(),

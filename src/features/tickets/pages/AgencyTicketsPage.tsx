@@ -1,15 +1,17 @@
 import { clientProjectsPath, paths } from '@/app/router/paths';
 import { Link, useParams } from 'react-router';
 import { AgencyTicketList } from '../components/AgencyTicketList';
+import { useI18n } from '@/features/i18n';
 
 export function AgencyTicketsPage() {
   const { clientId } = useParams();
+  const { t } = useI18n();
 
   if (!clientId) {
     return (
       <main>
-        <h1>Tickets</h1>
-        <p>Client not found.</p>
+        <h1>{t('tickets.title')}</h1>
+        <p>{t('clients.notFoundPeriod')}</p>
       </main>
     );
   }
@@ -17,11 +19,11 @@ export function AgencyTicketsPage() {
   return (
     <main>
       <p>
-        <Link to={paths.clients}>Clients</Link>
+        <Link to={paths.clients}>{t('common.clients')}</Link>
         {' / '}
-        <Link to={clientProjectsPath(clientId)}>Projects</Link>
+        <Link to={clientProjectsPath(clientId)}>{t('common.projects')}</Link>
       </p>
-      <h1>Tickets</h1>
+      <h1>{t('tickets.title')}</h1>
       <AgencyTicketList clientId={clientId} />
     </main>
   );

@@ -31,8 +31,12 @@ function signInAs(role: 'owner' | 'admin' | 'member') {
 }
 
 describe('ConvertTicketForm', () => {
-  it('hides the form for members', () => {
+  it('shows the form for members', async () => {
     signInAs('member');
+    const website = makeProject({ client_id: clientId, name: 'Website' });
+
+    server.use(mswHttp.get(projectsUrl, () => HttpResponse.json([website])));
+
     renderWithProviders(
       <MemoryRouter>
         <ConvertTicketForm
@@ -43,7 +47,7 @@ describe('ConvertTicketForm', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.queryByRole('button', { name: 'Convert to task' })).not.toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Convert to task' })).toBeInTheDocument();
   });
 
   it('shows a validation error without calling the API', async () => {
@@ -72,7 +76,7 @@ describe('ConvertTicketForm', () => {
 
   it('converts a ticket and links to the project tasks', async () => {
     const user = userEvent.setup();
-    signInAs('admin');
+    signInAs('member');
     const website = makeProject({ client_id: clientId, name: 'Website' });
 
     server.use(

@@ -1,3 +1,4 @@
+import { t } from '@/features/i18n';
 import { z } from 'zod';
 
 export const sessionUserSchema = z.object({
@@ -15,14 +16,42 @@ export const sessionOrganizationSchema = z.object({
 export const sessionRoleSchema = z.enum(['owner', 'admin', 'member']);
 
 export const loginInputSchema = z.object({
-  email: z.email('Enter a valid email address'),
-  password: z.string().min(1, 'Password is required'),
+  email: z.email({ error: () => t('validation.email') }),
+  password: z.string().min(1, { error: () => t('validation.passwordRequired') }),
 });
 
 export const registerInputSchema = z.object({
-  email: z.email('Enter a valid email address'),
-  password: z.string().min(1, 'Password is required'),
-  organization_name: z.string().min(4, 'Organization name must be at least 4 characters').max(100),
+  email: z.email({ error: () => t('validation.email') }),
+  password: z.string().min(1, { error: () => t('validation.passwordRequired') }),
+  organization_name: z
+    .string()
+    .min(4, { error: () => t('validation.orgNameMin') })
+    .max(100),
+});
+
+export const acceptInviteFormSchema = z.object({
+  password: z.string().min(8, { error: () => t('validation.passwordMin') }),
+});
+
+export const accpetInviteInputSchema = acceptInviteFormSchema.extend({
+  token: z.string().min(1, { error: () => t('validation.inviteToken') }),
+});
+
+export const forgotPasswordInputSchema = z.object({
+  email: z.email({ error: () => t('validation.email') }),
+});
+
+export const resetPasswordFormSchema = z.object({
+  password: z.string().min(8, { error: () => t('validation.passwordMin') }),
+});
+
+export const resetPasswordInputSchema = resetPasswordFormSchema.extend({
+  token: z.string().min(1, { error: () => t('validation.resetToken') }),
+});
+
+export const changePasswordInputSchema = z.object({
+  current_password: z.string().min(1, { error: () => t('validation.currentPassword') }),
+  password: z.string().min(8, { error: () => t('validation.passwordMin') }),
 });
 
 export const authResponseSchema = z.object({
@@ -42,3 +71,9 @@ export type SessionOrganization = z.infer<typeof sessionOrganizationSchema>;
 export type SessionRole = z.infer<typeof sessionRoleSchema>;
 export type LoginInput = z.infer<typeof loginInputSchema>;
 export type RegisterInput = z.infer<typeof registerInputSchema>;
+export type AcceptInviteFormInput = z.infer<typeof acceptInviteFormSchema>;
+export type AccpetInviteInput = z.infer<typeof accpetInviteInputSchema>;
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordInputSchema>;
+export type ResetPasswordFormInput = z.infer<typeof resetPasswordFormSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordInputSchema>;
+export type ChangePasswordInput = z.infer<typeof changePasswordInputSchema>;

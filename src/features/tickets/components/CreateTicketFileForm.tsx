@@ -3,6 +3,7 @@ import { useUploadTicketFile } from '../hooks/useUploadTicketFile';
 import { isAllowedTicketFile, MAX_TICKET_FILE_SIZE_BYTES } from '../schemas/ticket-file.schema';
 import { Alert, Button } from '@/components/ui';
 import type { TicketFileSource } from '../api/ticket-files.api';
+import { useI18n } from '@/features/i18n';
 
 export function CreateTicketFileForm({
   ticketId,
@@ -14,6 +15,7 @@ export function CreateTicketFileForm({
   const uploadFile = useUploadTicketFile(ticketId, source);
   const inputRef = useRef<HTMLInputElement>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const { t } = useI18n();
 
   return (
     <form
@@ -21,15 +23,15 @@ export function CreateTicketFileForm({
         event.preventDefault();
         const file = inputRef.current?.files?.[0];
         if (!file) {
-          setValidationError('File is required');
+          setValidationError(t('validation.fileRequired'));
           return;
         }
         if (!isAllowedTicketFile(file)) {
-          setValidationError('Unsupported file type');
+          setValidationError(t('validation.fileRequired'));
           return;
         }
         if (file.size < 1 || file.size > MAX_TICKET_FILE_SIZE_BYTES) {
-          setValidationError('File is too large');
+          setValidationError(t('validation.fileTooLarge'));
           return;
         }
         setValidationError(null);
@@ -44,7 +46,7 @@ export function CreateTicketFileForm({
       noValidate
     >
       <div>
-        <label htmlFor={`file-${ticketId}`}>Attachment</label>
+        <label htmlFor={`file-${ticketId}`}>{t('tickets.attachment')}</label>
         <input
           id={`file-${ticketId}`}
           ref={inputRef}
@@ -58,7 +60,7 @@ export function CreateTicketFileForm({
       {uploadFile.isError ? <Alert>{uploadFile.error.message}</Alert> : null}
 
       <Button type="submit" disabled={uploadFile.isPending}>
-        Upload
+        {t('common.upload')}
       </Button>
     </form>
   );

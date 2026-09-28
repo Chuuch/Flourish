@@ -13,10 +13,13 @@ import { useDeleteClient } from '../hooks/useDeleteClient';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthStore } from '@/features/auth';
+import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 function ClientManageForm({ client }: { client: Client }) {
   const updateClient = useUpdateClient();
   const deleteClient = useDeleteClient();
+  const { t } = useI18n();
 
   const {
     register,
@@ -40,14 +43,16 @@ function ClientManageForm({ client }: { client: Client }) {
         noValidate
       >
         <TextField
-          label={`Name for ${client.name}`}
+          label={t('clients.nameFor', { name: client.name })}
           autoComplete="organization"
           error={errors.name?.message}
           {...register('name')}
         />
 
         <div>
-          <label htmlFor={`notes-${client.id}`}>Notes for {client.name}</label>
+          <label htmlFor={`notes-${client.id}`}>
+            {t('clients.notesFor', { name: client.name })}
+          </label>
           <textarea
             id={`notes-${client.id}`}
             className="block rounded px-2 py-1"
@@ -57,7 +62,7 @@ function ClientManageForm({ client }: { client: Client }) {
         </div>
 
         <Button type="submit" disabled={updateClient.isPending}>
-          {`Save ${client.name}`}
+          {t('clients.save', { name: client.name })}
         </Button>
       </form>
       <Button
@@ -67,7 +72,7 @@ function ClientManageForm({ client }: { client: Client }) {
           deleteClient.mutate(client.id);
         }}
       >
-        {`Remove ${client.name}`}
+        {t('clients.remove', { name: client.name })}
       </Button>
     </>
   );
@@ -77,24 +82,25 @@ export function ClientList() {
   const role = useAuthStore((state) => state.role);
   const canManage = canManageClients(role);
   const { data, isPending, isError, error, refetch } = useClients();
+  const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">Loading clients...</p>;
+    return <ListSkeleton label={t('clients.loading')} />;
   }
 
   if (isError) {
     return (
       <Alert>
-        <p>Could not load clients: {error.message}</p>
+        <p>{t('clients.loadError', { message: error.message })}</p>
         <button type="button" onClick={() => void refetch()}>
-          Retry
+          {t('common.retry')}
         </button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>No clients yet.</p>;
+    return <p>{t('clients.empty')}</p>;
   }
 
   return (
@@ -104,8 +110,8 @@ export function ClientList() {
           <Link to={clientProjectsPath(client.id)}>
             {client.notes ? `${client.name} - ${client.notes}` : client.name}
           </Link>
-          <Link to={clientUsersPath(client.id)}>Users</Link>
-          <Link to={clientTicketsPath(client.id)}>Tickets</Link>
+          <Link to={clientUsersPath(client.id)}>{t('common.users')}</Link>
+          <Link to={clientTicketsPath(client.id)}>{t('common.tickets')}</Link>
           {canManage ? <ClientManageForm client={client} /> : null}
         </li>
       ))}

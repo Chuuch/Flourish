@@ -7,6 +7,7 @@ export function useDeleteFile(projectId: string) {
 
   return useMutation({
     mutationFn: (fileId: string) => deleteFile(fileId),
+    meta: { successKey: 'toast.deleted' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: fileKeys.lists(projectId),

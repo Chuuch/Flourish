@@ -1,3 +1,4 @@
+import { t } from '@/features/i18n';
 import z from 'zod';
 
 export const MAX_TICKET_FILE_SIZE_BYTES = 10 * 1024 * 1024;
@@ -35,6 +36,22 @@ export const createTicketFileInputSchema = z.object({
 
 export type TicketFile = z.infer<typeof ticketFileSchema>;
 export type CreateTicketFileInput = z.infer<typeof createTicketFileInputSchema>;
+
+export function ticketFileLabel(file: TicketFile): string {
+  return t('files.label', { filename: file.filename, size: file.size });
+}
+
+export function canMutateTicketFile(
+  role: string | null | undefined,
+  actorUserId: string | null | undefined,
+  uploadedBy: string,
+): boolean {
+  if (role === 'owner' || role === 'admin') {
+    return true;
+  }
+
+  return (role === 'member' || role === 'client') && actorUserId === uploadedBy;
+}
 
 export function isAllowedTicketFile(file: File): boolean {
   return allowedTicketContentTypes.some((type) => type === file.type);

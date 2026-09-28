@@ -5,10 +5,12 @@ import { registerInputSchema, type RegisterInput } from '../schemas/auth.schema'
 import { zodResolver } from '@hookform/resolvers/zod';
 import { paths } from '@/app/router/paths';
 import { Alert, Button, TextField } from '@/components/ui';
+import { useI18n } from '@/features/i18n';
 
 export function RegisterForm() {
   const registerAccount = useRegister();
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const {
     register,
@@ -33,14 +35,14 @@ export function RegisterForm() {
       noValidate
     >
       <TextField
-        label="Organization name"
+        label={t('auth.organizationName')}
         autoComplete="organization"
         error={errors.organization_name?.message}
         {...register('organization_name')}
       />
 
       <TextField
-        label="email"
+        label={t('auth.emailLower')}
         type="email"
         autoComplete="email"
         error={errors.email?.message}
@@ -48,7 +50,7 @@ export function RegisterForm() {
       />
 
       <TextField
-        label="password"
+        label={t('auth.passwordLower')}
         type="password"
         autoComplete="new-password"
         error={errors.password?.message}
@@ -58,11 +60,11 @@ export function RegisterForm() {
       {registerAccount.isError ? <Alert>{registerAccount.error.message}</Alert> : null}
 
       <Button type="submit" disabled={registerAccount.isPending}>
-        Create account
+        {t('auth.createAccount')}
       </Button>
 
       <p>
-        Already have an account? <Link to={paths.login}>Sign in</Link>
+        {t('auth.alreadyHaveAccount')} <Link to={paths.login}>{t('auth.signIn')}</Link>
       </p>
     </form>
   );

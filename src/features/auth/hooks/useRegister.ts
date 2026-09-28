@@ -7,6 +7,7 @@ export function useRegister() {
 
   return useMutation({
     mutationFn: register,
+    meta: { successKey: 'toast.signedIn' },
     onSuccess: (data) => {
       setSession(data.user, data.access_token, data.organization, data.role);
     },

@@ -1,5 +1,9 @@
 export { LoginPage } from './pages/LoginPage';
 export { RegisterPage } from './pages//RegisterPage';
+export { AcceptInvitePage } from './pages/AcceptInvitePage';
+export { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+export { ResetPasswordPage } from './pages/ResetPasswordPage';
+export { ChangePasswordPage } from './pages/ChangePasswordPage';
 export { RequireAuth } from './components/RequireAuth';
 export { GuestOnly } from './components/GuestOnly';
 export { useAuthStore } from './store/auth.store';

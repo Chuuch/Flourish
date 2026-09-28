@@ -1,3 +1,4 @@
+import { t } from '@/features/i18n';
 import { z } from 'zod';
 
 export const memberRoleSchema = z.enum(['owner', 'admin', 'member']);
@@ -13,8 +14,7 @@ export const memberSchema = z.object({
 export const membersSchema = z.array(memberSchema);
 
 export const createMemberSchema = z.object({
-  email: z.email('Enter a valid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  email: z.email({ error: () => t('validation.email') }),
   role: assignableRoleSchema,
 });
 

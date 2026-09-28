@@ -9,6 +9,7 @@ export function useUpdateTicket(clientId: string) {
   return useMutation({
     mutationFn: ({ ticketId, input }: { ticketId: string; input: UpdateTicketInput }) =>
       updateTicket(ticketId, input),
+    meta: { successKey: 'toast.updated' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: ticketKeys.staffList(clientId),

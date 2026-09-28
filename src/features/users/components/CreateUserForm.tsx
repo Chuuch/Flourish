@@ -2,9 +2,12 @@ import { useForm } from 'react-hook-form';
 import { useCreateUser } from '../hooks/useCreateUser';
 import { createUserSchema, type CreateUserInput } from '../schemas/user.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useI18n } from '@/features/i18n';
+import { Alert, Button, TextField } from '@/components/ui';
 
 export function CreateUserForm() {
   const createUser = useCreateUser();
+  const { t } = useI18n();
 
   const {
     register,
@@ -27,25 +30,19 @@ export function CreateUserForm() {
   return (
     <form onSubmit={(event) => void handleSubmit(onSubmit)(event)} noValidate>
       <label htmlFor="email">Email</label>
-      <input
-        id="email"
+      <TextField
+        label={t('auth.email')}
         type="email"
         autoComplete="email"
-        aria-invalid={errors.email ? true : undefined}
-        aria-describedby={errors.email ? 'email-error' : undefined}
+        error={errors.email?.message}
         {...register('email')}
       />
-      {errors.email && (
-        <p id="email-error" role="alert">
-          {errors.email.message}
-        </p>
-      )}
 
-      {createUser.isError && <p role="alert">{createUser.error.message}</p>}
+      {createUser.isError ? <Alert>{createUser.error.message}</Alert> : null}
 
-      <button type="submit" disabled={createUser.isPending}>
-        Create user
-      </button>
+      <Button type="submit" disabled={createUser.isPending}>
+        {t('users.add')}
+      </Button>
     </form>
   );
 }

@@ -4,6 +4,8 @@ import { useAuthStore } from '@/features/auth';
 import { assignableRoleSchema, canManageMembers, type MemberRole } from '../schemas/member.schema';
 import { useUpdateMember } from '../hooks/useUpdateMember';
 import { useDeleteMember } from '../hooks/useDeleteMember';
+import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 export function MemberList() {
   const role = useAuthStore((state) => state.role);
@@ -11,24 +13,25 @@ export function MemberList() {
   const { data, isPending, isError, error, refetch } = useMembers();
   const updateMember = useUpdateMember();
   const deleteMember = useDeleteMember();
+  const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">Loading members...</p>;
+    return <ListSkeleton label={t('members.loading')} />;
   }
 
   if (isError) {
     return (
       <Alert>
-        <p>Could not load members: {error.message}</p>
+        <p>{t('members.loadError', { message: error.message })}</p>
         <button type="button" onClick={() => void refetch()}>
-          Retry
+          {t('common.retry')}
         </button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>No members yet.</p>;
+    return <p>{t('members.empty')}</p>;
   }
 
   return (
@@ -38,12 +41,10 @@ export function MemberList() {
       <ul>
         {data.map((member) => (
           <li key={member.user_id}>
-            <p>
-              {member.email} - {member.role}
-            </p>
+            <p>{t('members.summary', { email: member.email, role: member.role })}</p>
             {canManage && member.role !== 'owner' ? (
               <label>
-                Role for {member.email}
+                {t('members.roleFor', { email: member.email })}
                 <select
                   value={member.role}
                   disabled={updateMember.isPending}
@@ -61,8 +62,8 @@ export function MemberList() {
                     });
                   }}
                 >
-                  <option value="member">Member</option>
-                  <option value="admin">Admin</option>
+                  <option value="member">{t('role.member')}</option>
+                  <option value="admin">{t('role.admin')}</option>
                 </select>
               </label>
             ) : null}
@@ -74,7 +75,7 @@ export function MemberList() {
                   deleteMember.mutate(member.user_id);
                 }}
               >
-                {`Remove ${member.email}`}
+                {t('members.remove', { email: member.email })}
               </Button>
             ) : null}
           </li>

@@ -13,10 +13,13 @@ import { useDeleteProject } from '../hooks/useDeleteProject';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthStore } from '@/features/auth';
+import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 function ProjectManageForm({ clientId, project }: { clientId: string; project: Project }) {
   const updateProject = useUpdateProject(clientId);
   const deleteProject = useDeleteProject(clientId);
+  const { t } = useI18n();
 
   const {
     register,
@@ -40,14 +43,16 @@ function ProjectManageForm({ clientId, project }: { clientId: string; project: P
         noValidate
       >
         <TextField
-          label={`Name for ${project.name}`}
+          label={t('projects.nameFor', { name: project.name })}
           autoComplete="off"
           error={errors.name?.message}
           {...register('name')}
         />
 
         <div>
-          <label htmlFor={`notes-${project.id}`}>Notes for {project.name}</label>
+          <label htmlFor={`notes-${project.id}`}>
+            {t('projects.notesFor', { name: project.name })}
+          </label>
           <textarea
             id={`notes-${project.id}`}
             className="block rounded border px-2 py-1"
@@ -57,7 +62,7 @@ function ProjectManageForm({ clientId, project }: { clientId: string; project: P
         </div>
 
         <Button type="submit" disabled={updateProject.isPending}>
-          {`Save ${project.name}`}
+          {t('projects.save', { name: project.name })}
         </Button>
       </form>
       <Button
@@ -67,7 +72,7 @@ function ProjectManageForm({ clientId, project }: { clientId: string; project: P
           deleteProject.mutate(project.id);
         }}
       >
-        {`Remove ${project.name}`}
+        {t('projects.remove', { name: project.name })}
       </Button>
     </>
   );
@@ -77,24 +82,25 @@ export function ProjectList({ clientId }: { clientId: string }) {
   const role = useAuthStore((state) => state.role);
   const canManage = canManageProjects(role);
   const { data, isPending, isError, error, refetch } = useProjects(clientId);
+  const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">Loading projects...</p>;
+    return <ListSkeleton label={t('projects.loading')} />;
   }
 
   if (isError) {
     return (
       <Alert>
-        <p>Could not load projects: {error.message}</p>
+        <p>{t('projects.loadError', { message: error.message })}</p>
         <button type="button" onClick={() => void refetch()}>
-          Retry
+          {t('common.retry')}
         </button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>No projects yet.</p>;
+    return <p>{t('projects.empty')}</p>;
   }
 
   return (
@@ -104,7 +110,7 @@ export function ProjectList({ clientId }: { clientId: string }) {
           <Link to={projectTasksPath(clientId, project.id)}>
             {project.notes ? `${project.name} - ${project.notes}` : project.name}
           </Link>{' '}
-          <Link to={projectFilesPath(clientId, project.id)}>Files</Link>
+          <Link to={projectFilesPath(clientId, project.id)}>{t('common.files')}</Link>
           {canManage ? <ProjectManageForm clientId={clientId} project={project} /> : null}
         </li>
       ))}

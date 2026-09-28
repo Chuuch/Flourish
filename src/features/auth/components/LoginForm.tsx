@@ -5,12 +5,14 @@ import { loginInputSchema, type LoginInput } from '../schemas/auth.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { redirectFrom } from '../lib/redirect';
 import { Alert, Button, TextField } from '@/components/ui';
+import { useI18n } from '@/features/i18n';
 
 export function LoginForm() {
   const login = useLogin();
   const navigate = useNavigate();
   const location = useLocation();
   const from = redirectFrom(location.state);
+  const { t } = useI18n();
 
   const {
     register,
@@ -35,7 +37,7 @@ export function LoginForm() {
       noValidate
     >
       <TextField
-        label="Email"
+        label={t('auth.email')}
         type="email"
         autoComplete="email"
         error={errors.email?.message}
@@ -43,7 +45,7 @@ export function LoginForm() {
       />
 
       <TextField
-        label="Password"
+        label={t('auth.password')}
         type="password"
         autoComplete="current-password"
         error={errors.password?.message}
@@ -53,7 +55,7 @@ export function LoginForm() {
       {login.isError ? <Alert>{login.error.message}</Alert> : null}
 
       <Button type="submit" disabled={login.isPending}>
-        Sign in
+        {t('auth.signIn')}
       </Button>
     </form>
   );

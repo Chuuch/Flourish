@@ -7,6 +7,7 @@ export function useCreateUser() {
 
   return useMutation({
     mutationFn: createUser,
+    meta: { successKey: 'toast.created' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: userKeys.lists(),

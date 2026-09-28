@@ -3,9 +3,11 @@ import { useCreateTimeEntry } from '../hooks/useCreateTimeEntry';
 import { createTimeEntrySchema, type CreateTimeEntryInput } from '../schemas/time-entry.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, TextField } from '@/components/ui';
+import { useI18n } from '@/features/i18n';
 
 export function CreateTimeEntryForm({ taskId }: { taskId: string }) {
   const createTimeEntry = useCreateTimeEntry(taskId);
+  const { t } = useI18n();
 
   const {
     register,
@@ -31,7 +33,7 @@ export function CreateTimeEntryForm({ taskId }: { taskId: string }) {
       noValidate
     >
       <TextField
-        label="Minutes"
+        label={t('time.minutes')}
         type="number"
         autoComplete="off"
         error={errors.minutes?.message}
@@ -39,14 +41,14 @@ export function CreateTimeEntryForm({ taskId }: { taskId: string }) {
       />
 
       <div>
-        <label htmlFor="notes">Notes</label>
+        <label htmlFor="notes">{t('tasks.notes')}</label>
         <textarea id="notes" className="block rounded border px-2 py-1" {...register('notes')} />
         {errors.notes ? <p role="alert">{errors.notes.message}</p> : null}
 
         {createTimeEntry.isError ? <Alert>{createTimeEntry.error.message}</Alert> : null}
 
         <Button type="submit" disabled={createTimeEntry.isPending}>
-          Add time
+          {t('time.add')}
         </Button>
       </div>
     </form>

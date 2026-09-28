@@ -7,6 +7,7 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: login,
+    meta: { successKey: 'toast.signedIn' },
     onSuccess: (data) => {
       setSession(data.user, data.access_token, data.organization, data.role);
     },

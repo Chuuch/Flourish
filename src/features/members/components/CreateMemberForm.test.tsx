@@ -31,7 +31,7 @@ describe('CreateMemberForm', () => {
     signInAs('member');
     renderWithProviders(<CreateMemberForm />);
 
-    expect(screen.queryByRole('button', { name: 'Add member' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Invite member' })).not.toBeInTheDocument();
   });
 
   it('shows a validation error without calling the API', async () => {
@@ -40,7 +40,7 @@ describe('CreateMemberForm', () => {
     renderWithProviders(<CreateMemberForm />);
 
     await user.type(screen.getByLabelText('Email'), 'not-an-email');
-    await user.click(screen.getByRole('button', { name: 'Add member' }));
+    await user.click(screen.getByRole('button', { name: 'Invite member' }));
 
     expect(await screen.findByText('Enter a valid email address')).toBeInTheDocument();
   });
@@ -64,9 +64,8 @@ describe('CreateMemberForm', () => {
     expect(await screen.findByText('No members yet.')).toBeInTheDocument();
 
     await user.type(screen.getByLabelText('Email'), 'grace@example.com');
-    await user.type(screen.getByLabelText('Password'), 'password123');
     await user.selectOptions(screen.getByLabelText('Role'), 'admin');
-    await user.click(screen.getByRole('button', { name: 'Add member' }));
+    await user.click(screen.getByRole('button', { name: 'Invite member' }));
 
     expect(await screen.findByText('grace@example.com - admin')).toBeInTheDocument();
     expect(screen.getByLabelText('Email')).toHaveValue('');
@@ -84,8 +83,7 @@ describe('CreateMemberForm', () => {
     renderWithProviders(<CreateMemberForm />);
 
     await user.type(screen.getByLabelText('Email'), 'taken@example.com');
-    await user.type(screen.getByLabelText('Password'), 'password123');
-    await user.click(screen.getByRole('button', { name: 'Add member' }));
+    await user.click(screen.getByRole('button', { name: 'Invite member' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('member already exists');
   });

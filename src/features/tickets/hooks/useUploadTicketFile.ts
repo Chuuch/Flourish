@@ -7,6 +7,7 @@ export function useUploadTicketFile(ticketId: string, source: TicketFileSource =
 
   return useMutation({
     mutationFn: (file: File) => uploadTicketFile(ticketId, file, source),
+    meta: { successKey: 'toast.uploaded' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: ticketFileKeys.lists(ticketId, source),

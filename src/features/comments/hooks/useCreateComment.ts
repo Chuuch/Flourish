@@ -8,6 +8,7 @@ export function useCreateComment(taskId: string) {
 
   return useMutation({
     mutationFn: (input: CreateCommentInput) => createComment(taskId, input),
+    meta: { successKey: 'toast.created' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: commentKeys.lists(taskId),

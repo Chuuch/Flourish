@@ -7,6 +7,7 @@ export function useDeleteTimeEntry(taskId: string) {
 
   return useMutation({
     mutationFn: (entryId: string) => deleteTimeEntry(entryId),
+    meta: { successKey: 'toast.deleted' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: timeEntryKeys.lists(taskId),

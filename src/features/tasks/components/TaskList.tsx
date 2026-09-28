@@ -1,45 +1,55 @@
-import { Alert } from '@/components/ui';
+import { Alert, Button } from '@/components/ui';
 import { useTasks } from '../hooks/useTasks';
 import { Link } from 'react-router';
 import { taskCommentsPath, taskTimeEntriesPath } from '@/app/router/paths';
 import { useUpdateTask } from '../hooks/useUpdateTask';
-import { taskStatusSchema, type TaskStatus } from '../schemas/task.schema';
+import { canManageTasks, taskStatusSchema, type TaskStatus } from '../schemas/task.schema';
+import { useAuthStore } from '@/features/auth';
+import { useDeleteTask } from '../hooks/useDeleteTask';
+import { EditTaskForm } from './EditTaskForm';
+import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 export function TaskList({ projectId, clientId }: { projectId: string; clientId: string }) {
+  const role = useAuthStore((state) => state.role);
+  const canManage = canManageTasks(role);
   const { data, isPending, isError, error, refetch } = useTasks(projectId);
   const updateTask = useUpdateTask(projectId);
+  const deleteTask = useDeleteTask(projectId);
+  const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">Loading tasks ....</p>;
+    return <ListSkeleton label={t('tasks.loading')} />;
   }
 
   if (isError) {
     return (
       <Alert>
-        <p>Could not load tasks: {error.message}</p>
+        <p>{t('tasks.loadError', { message: error.message })}</p>
         <button type="button" onClick={() => void refetch()}>
-          Retry
+          {t('common.retry')}
         </button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>No tasks yet.</p>;
+    return <p>{t('tasks.empty')}</p>;
   }
 
   return (
     <>
       {updateTask.isError ? <Alert>{updateTask.error.message}</Alert> : null}
+      {deleteTask.isError ? <Alert>{deleteTask.error.message}</Alert> : null}
       <ul>
         {data.map((task) => (
           <li key={task.id}>
             <Link to={taskTimeEntriesPath(clientId, projectId, task.id)}>
               {task.notes ? `${task.title} - ${task.notes}` : task.title}
             </Link>{' '}
-            <Link to={taskCommentsPath(clientId, projectId, task.id)}>Comments</Link>{' '}
+            <Link to={taskCommentsPath(clientId, projectId, task.id)}>{t('common.comments')}</Link>{' '}
             <label>
-              Status for {task.title}
+              {t('tasks.statusFor', { title: task.title })}
               <select
                 value={task.status}
                 disabled={updateTask.isPending}
@@ -57,12 +67,26 @@ export function TaskList({ projectId, clientId }: { projectId: string; clientId:
                   });
                 }}
               >
-                <option value="todo">Todo</option>
-                <option value="in_progress">In progress</option>
-                <option value="done">Done</option>
+                <option value="todo">{t('tasks.todo')}</option>
+                <option value="in_progress">{t('tasks.inProgress')}</option>
+                <option value="done">{t('tasks.done')}</option>
               </select>
             </label>
-            {task.completed_at ? <span> Completed {task.completed_at}</span> : null}
+            {task.completed_at ? (
+              <span>{t('tasks.completed', { completedAt: task.completed_at })}</span>
+            ) : null}
+            <EditTaskForm task={task} projectId={projectId} />
+            {canManage ? (
+              <Button
+                type="button"
+                disabled={deleteTask.isPending}
+                onClick={() => {
+                  deleteTask.mutate(task.id);
+                }}
+              >
+                {t('tasks.remove', { title: task.title })}
+              </Button>
+            ) : null}
           </li>
         ))}
       </ul>

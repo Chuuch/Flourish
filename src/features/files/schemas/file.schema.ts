@@ -1,3 +1,4 @@
+import { t } from '@/features/i18n';
 import z from 'zod';
 
 export const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
@@ -37,7 +38,7 @@ export type ProjectFile = z.infer<typeof fileSchema>;
 export type CreateFileInput = z.infer<typeof createFileInputSchema>;
 
 export function fileLabel(file: ProjectFile): string {
-  return `${file.filename} (${String(file.size)} bytes)`;
+  return t('files.label', { filename: file.filename, size: file.size });
 }
 
 export function canManageFiles(role: string | null | undefined): boolean {

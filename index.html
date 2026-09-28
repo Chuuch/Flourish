@@ -4,8 +4,48 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>flourish</title>
+    <title>Flourish</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
     <script src="/config.js"></script>
+    <script>
+      (function () {
+        try {
+          var stored = window.localStorage.getItem('flourish-theme');
+          var theme =
+            stored === 'dark' || stored === 'light'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.style.colorScheme = theme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.style.colorScheme = 'light';
+        }
+
+        try {
+          var supported = ['en', 'bg', 'de', 'fr', 'es', 'it', 'ru'];
+          var storedLocale = window.localStorage.getItem('flourish-locale');
+          var language = window.navigator.language.toLowerCase();
+          var base = language.split('-')[0];
+          var locale =
+            supported.indexOf(storedLocale) !== -1
+              ? storedLocale
+              : supported.indexOf(base) !== -1
+                ? base
+                : 'en';
+          document.documentElement.lang = locale;
+        } catch (error) {
+          document.documentElement.lang = 'en';
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

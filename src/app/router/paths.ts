@@ -2,12 +2,18 @@ export const paths = {
   home: '/',
   login: '/login',
   register: '/register',
+  acceptInvite: '/accept-invite',
+  forgotPassword: '/forgot-password',
+  resetPassword: '/reset-password',
+  account: '/account',
   members: '/members',
+  users: '/users',
   clients: '/clients',
   projects: '/projects',
   tasks: '/tasks',
   portal: '/portal',
   portalLogin: '/portal/login',
+  portalAccount: '/portal/account',
 } as const;
 
 export function clientProjectsPath(clientId: string): string {

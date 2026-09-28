@@ -3,9 +3,11 @@ import { useCreateComment } from '../hooks/useCreateComment';
 import { createCommentSchema, type CreateCommentInput } from '../schemas/comment.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button } from '@/components/ui';
+import { useI18n } from '@/features/i18n';
 
 export function CreateCommentForm({ taskId }: { taskId: string }) {
   const createComment = useCreateComment(taskId);
+  const { t } = useI18n();
 
   const {
     register,
@@ -31,14 +33,14 @@ export function CreateCommentForm({ taskId }: { taskId: string }) {
       noValidate
     >
       <div>
-        <label htmlFor="body">Body</label>
+        <label htmlFor="body">{t('comments.body')}</label>
         <textarea id="body" className="block rounded border px-2 py-1" {...register('body')} />
         {errors.body ? <p role="alert">{errors.body.message}</p> : null}
 
         {createComment.isError ? <Alert>{createComment.error.message}</Alert> : null}
 
         <Button type="submit" disabled={createComment.isPending}>
-          Add comment
+          {t('comments.add')}
         </Button>
       </div>
     </form>

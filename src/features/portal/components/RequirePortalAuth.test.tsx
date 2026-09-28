@@ -61,6 +61,11 @@ describe('RequirePortalAuth', () => {
       .getState()
       .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
 
+    server.use(
+      mswHttp.get(`${env.API_URL}/inbox/tasks`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
+    );
+
     renderAt('/portal');
 
     expect(await screen.findByText('Flourish')).toBeInTheDocument();

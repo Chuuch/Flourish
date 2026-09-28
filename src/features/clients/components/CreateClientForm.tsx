@@ -8,10 +8,12 @@ import {
 } from '../schemas/client.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, TextField } from '@/components/ui';
+import { useI18n } from '@/features/i18n';
 
 export function CreateClientForm() {
   const role = useAuthStore((state) => state.role);
   const createClient = useCreateClient();
+  const { t } = useI18n();
 
   const {
     register,
@@ -41,14 +43,14 @@ export function CreateClientForm() {
       noValidate
     >
       <TextField
-        label="Name"
+        label={t('clients.name')}
         autoComplete="organization"
         error={errors.name?.message}
         {...register('name')}
       />
 
       <div>
-        <label htmlFor="notes">Notes</label>
+        <label htmlFor="notes">{t('clients.notes')}</label>
         <textarea id="notes" className="block rounded border px-2 py-1" {...register('notes')} />
         {errors.notes ? <p role="alert">{errors.notes.message}</p> : null}
       </div>
@@ -56,7 +58,7 @@ export function CreateClientForm() {
       {createClient.isError ? <Alert>{createClient.error.message}</Alert> : null}
 
       <Button type="submit" disabled={createClient.isPending}>
-        Add client
+        {t('clients.add')}
       </Button>
     </form>
   );

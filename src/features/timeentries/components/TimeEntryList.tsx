@@ -12,11 +12,14 @@ import { useDeleteTimeEntry } from '../hooks/useDeleteTimeEntry';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthStore } from '@/features/auth';
+import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 function TimeEntryManageForm({ taskId, entry }: { taskId: string; entry: TimeEntry }) {
   const updateTimeEntry = useUpdateTimeEntry(taskId);
   const deleteTimeEntry = useDeleteTimeEntry(taskId);
   const label = timeEntryLabel(entry);
+  const { t } = useI18n();
 
   const {
     register,
@@ -40,7 +43,7 @@ function TimeEntryManageForm({ taskId, entry }: { taskId: string; entry: TimeEnt
         noValidate
       >
         <TextField
-          label={`Minutes for ${label}`}
+          label={t('time.minutesFor', { label })}
           type="number"
           autoComplete="off"
           error={errors.minutes?.message}
@@ -48,7 +51,7 @@ function TimeEntryManageForm({ taskId, entry }: { taskId: string; entry: TimeEnt
         />
 
         <div>
-          <label htmlFor={`notes-${entry.id}`}>Notes for {label}</label>
+          <label htmlFor={`notes-${entry.id}`}>{t('time.notesFor', { label })}</label>
           <textarea
             id={`notes-${entry.id}`}
             className="block rounded border px-2 py-1"
@@ -58,7 +61,7 @@ function TimeEntryManageForm({ taskId, entry }: { taskId: string; entry: TimeEnt
         </div>
 
         <Button type="submit" disabled={updateTimeEntry.isPending}>
-          {`Save ${label}`}
+          {t('time.save', { label })}
         </Button>
       </form>
       <Button
@@ -68,7 +71,7 @@ function TimeEntryManageForm({ taskId, entry }: { taskId: string; entry: TimeEnt
           deleteTimeEntry.mutate(entry.id);
         }}
       >
-        {`Remove ${label}`}
+        {t('time.remove', { label })}
       </Button>
     </>
   );
@@ -78,24 +81,25 @@ export function TimeEntryList({ taskId }: { taskId: string }) {
   const role = useAuthStore((state) => state.role);
   const actorUserId = useAuthStore((state) => state.user?.id);
   const { data, isPending, isError, error, refetch } = useTimeEntries(taskId);
+  const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">Loading time entries...</p>;
+    return <ListSkeleton label={t('time.loading')} />;
   }
 
   if (isError) {
     return (
       <Alert>
-        <p>Could not load time entries: {error.message}</p>
+        <p>{t('time.loadError', { message: error.message })}</p>
         <button type="button" onClick={() => void refetch()}>
-          Retry
+          {t('common.retry')}
         </button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>No time entries yet.</p>;
+    return <p>{t('time.empty')}</p>;
   }
 
   return (

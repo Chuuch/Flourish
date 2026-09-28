@@ -33,6 +33,8 @@ describe('useLogout', () => {
       .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
 
     server.use(
+      mswHttp.get(`${env.API_URL}/inbox/tasks`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
       mswHttp.post(`${env.API_URL}/auth/logout`, () => new HttpResponse(null, { status: 204 })),
       mswHttp.get(`${env.API_URL}/auth/me`, () =>
         HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 }),

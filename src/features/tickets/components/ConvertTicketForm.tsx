@@ -2,10 +2,12 @@ import { useAuthStore } from '@/features/auth';
 import { useProjects } from '@/features/projects';
 import { useConvertTicket } from '../hooks/useConvertTicket';
 import { useState } from 'react';
-import { canManageTasks } from '@/features/tasks/schemas/task.schema';
+import { canCreateTasks } from '@/features/tasks/schemas/task.schema';
 import { Alert, Button } from '@/components/ui';
 import { Link } from 'react-router';
 import { projectTasksPath } from '@/app/router/paths';
+import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 export function ConvertTicketForm({
   clientId,
@@ -21,25 +23,26 @@ export function ConvertTicketForm({
   const convertTicket = useConvertTicket(clientId);
   const [projectId, setProjectId] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
+  const { t } = useI18n();
 
-  if (!canManageTasks(role)) {
+  if (!canCreateTasks(role)) {
     return null;
   }
 
   if (projects.isPending) {
-    return <p role="status">Loading projects...</p>;
+    return <ListSkeleton label={t('projects.loading')} />;
   }
 
   if (projects.isError) {
     return (
       <Alert>
-        <p>Could not load projects: {projects.error.message}</p>
+        <p>{t('projects.loadError', { message: projects.error.message })}</p>
       </Alert>
     );
   }
 
   if (projects.data.length === 0) {
-    return <p>No projects yet.</p>;
+    return <p>{t('projects.empty')}</p>;
   }
 
   const created = convertTicket.data;
@@ -49,7 +52,7 @@ export function ConvertTicketForm({
       onSubmit={(event) => {
         event.preventDefault();
         if (!projectId) {
-          setValidationError('Project is required');
+          setValidationError(t('validation.projectRequired'));
           return;
         }
         setValidationError(null);
@@ -58,7 +61,9 @@ export function ConvertTicketForm({
       noValidate
     >
       <div>
-        <label htmlFor={`convert-project-${ticketId}`}>Convert {ticketTitle} on</label>
+        <label htmlFor={`convert-project-${ticketId}`}>
+          {t('tickets.convertOn', { title: ticketTitle })}
+        </label>
         <select
           id={`convert-project-${ticketId}`}
           className="block rounded px-2 py-1"
@@ -67,7 +72,7 @@ export function ConvertTicketForm({
             setProjectId(event.currentTarget.value);
           }}
         >
-          <option value="">Select a project</option>
+          <option value="">{t('tickets.selectProject')}</option>
           {projects.data.map((project) => (
             <option key={project.id} value={project.id}>
               {project.name}
@@ -80,12 +85,14 @@ export function ConvertTicketForm({
       {convertTicket.isError ? <Alert>{convertTicket.error.message}</Alert> : null}
 
       <Button type="submit" disabled={convertTicket.isPending}>
-        Convert to task
+        {t('tickets.convert')}
       </Button>
 
       {created ? (
         <p>
-          <Link to={projectTasksPath(clientId, created.project_id)}>Opened as {created.title}</Link>
+          <Link to={projectTasksPath(clientId, created.project_id)}>
+            {t('tickets.openedAs', { title: created.title })}
+          </Link>
         </p>
       ) : null}
     </form>

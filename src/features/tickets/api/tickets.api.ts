@@ -7,6 +7,7 @@ import {
   type UpdateTicketInput,
 } from '../schemas/ticket.schema';
 import { taskSchema } from '@/features/tasks/schemas/task.schema';
+import z from 'zod';
 
 export const fetchPortalTickets = () => http.get('/client-auth/tickets', ticketsSchema);
 
@@ -21,3 +22,5 @@ export const updateTicket = (ticketId: string, input: UpdateTicketInput) =>
 
 export const convertTicket = (ticketId: string, input: ConverTicketInput) =>
   http.post(`/tickets/${ticketId}/convert`, taskSchema, input);
+
+export const deleteTicket = (ticketId: string) => http.delete(`/tickets/${ticketId}`, z.unknown());

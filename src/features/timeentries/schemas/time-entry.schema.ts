@@ -1,3 +1,4 @@
+import { t } from '@/features/i18n';
 import z from 'zod';
 
 export const timeEntrySchema = z.object({
@@ -17,8 +18,8 @@ export const createTimeEntrySchema = z.object({
   minutes: z
     .number()
     .int()
-    .min(1, 'Minutes must be at least 1')
-    .max(1440, 'Minutes must be at most 1440'),
+    .min(1, { error: () => t('validation.minutesMin') })
+    .max(1440, { error: () => t('validation.minutesMax') }),
   notes: z.string().max(2000),
 });
 
@@ -29,8 +30,9 @@ export type CreateTimeEntryInput = z.infer<typeof createTimeEntrySchema>;
 export type UpdateTimeEntryInput = z.infer<typeof updateTimeEntrySchema>;
 
 export function timeEntryLabel(entry: TimeEntry): string {
-  const label = `${String(entry.minutes)} min`;
-  return entry.notes ? `${label} - ${entry.notes}` : label;
+  return entry.notes
+    ? t('time.labelWithNotes', { minutes: entry.minutes, notes: entry.notes })
+    : t('time.label', { minutes: entry.minutes });
 }
 
 export function canMutateTimeEntry(

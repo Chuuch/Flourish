@@ -12,6 +12,8 @@ export function makeTask(overrides: Partial<Task> = {}): Task {
     notes: '',
     status: 'todo',
     completed_at: null,
+    created_by: null,
+    assignee_id: null,
     version: 1,
     created_at: now,
     updated_at: now,

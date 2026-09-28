@@ -7,6 +7,7 @@ export function useUploadFIle(projectId: string) {
 
   return useMutation({
     mutationFn: (file: File) => uploadProjectFile(projectId, file),
+    meta: { successKey: 'toast.uploaded' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: fileKeys.lists(projectId),

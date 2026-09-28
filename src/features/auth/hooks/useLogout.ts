@@ -11,6 +11,7 @@ export function useLogout() {
 
   return useMutation({
     mutationFn: () => (role === 'client' ? portalLogout() : logout()),
+    meta: { successKey: 'toast.signedOut' },
     onSettled: () => {
       clearSession();
       queryClient.removeQueries({ queryKey: authKeys.all });

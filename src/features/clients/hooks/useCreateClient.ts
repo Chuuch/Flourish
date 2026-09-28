@@ -7,6 +7,7 @@ export function useCreateClient() {
 
   return useMutation({
     mutationFn: createClient,
+    meta: { successKey: 'toast.created' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: clientKeys.lists(),

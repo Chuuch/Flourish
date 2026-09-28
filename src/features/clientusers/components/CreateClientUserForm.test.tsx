@@ -33,7 +33,7 @@ describe('CreateClientUserForm', () => {
     signInAs('member');
     renderWithProviders(<CreateClientUserForm clientId={clientId} />);
 
-    expect(screen.queryByRole('button', { name: 'Add client user' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Invite client user' })).not.toBeInTheDocument();
   });
 
   it('shows a validation error without calling the API', async () => {
@@ -42,7 +42,7 @@ describe('CreateClientUserForm', () => {
     renderWithProviders(<CreateClientUserForm clientId={clientId} />);
 
     await user.type(screen.getByLabelText('Email'), 'not-an-email');
-    await user.click(screen.getByRole('button', { name: 'Add client user' }));
+    await user.click(screen.getByRole('button', { name: 'Invite client user' }));
 
     expect(await screen.findByText('Enter a valid email address')).toBeInTheDocument();
   });
@@ -73,8 +73,7 @@ describe('CreateClientUserForm', () => {
     expect(await screen.findByText('No client users yet.')).toBeInTheDocument();
 
     await user.type(screen.getByLabelText('Email'), 'pat@northwind.test');
-    await user.type(screen.getByLabelText('Password'), 'password123');
-    await user.click(screen.getByRole('button', { name: 'Add client user' }));
+    await user.click(screen.getByRole('button', { name: 'Invite client user' }));
 
     expect(await screen.findByText('pat@northwind.test')).toBeInTheDocument();
     expect(screen.getByLabelText('Email')).toHaveValue('');
@@ -92,8 +91,7 @@ describe('CreateClientUserForm', () => {
     renderWithProviders(<CreateClientUserForm clientId={clientId} />);
 
     await user.type(screen.getByLabelText('Email'), 'ada@example.com');
-    await user.type(screen.getByLabelText('Password'), 'password123');
-    await user.click(screen.getByRole('button', { name: 'Add client user' }));
+    await user.click(screen.getByRole('button', { name: 'Invite client user' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('user is staff');
   });

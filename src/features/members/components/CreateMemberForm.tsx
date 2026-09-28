@@ -8,10 +8,12 @@ import {
 } from '../schemas/member.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, TextField } from '@/components/ui';
+import { useI18n } from '@/features/i18n';
 
 export function CreateMemberForm() {
   const role = useAuthStore((state) => state.role);
   const createMember = useCreateMember();
+  const { t } = useI18n();
 
   const {
     register,
@@ -20,7 +22,7 @@ export function CreateMemberForm() {
     formState: { errors },
   } = useForm<CreateMemberInput>({
     resolver: zodResolver(createMemberSchema),
-    defaultValues: { email: '', password: '', role: 'member' },
+    defaultValues: { email: '', role: 'member' },
   });
 
   if (!canManageMembers(role)) {
@@ -41,26 +43,18 @@ export function CreateMemberForm() {
       noValidate
     >
       <TextField
-        label="Email"
+        label={t('auth.email')}
         type="email"
         autoComplete="email"
         error={errors.email?.message}
         {...register('email')}
       />
 
-      <TextField
-        label="Password"
-        type="password"
-        autoComplete="new-password"
-        error={errors.password?.message}
-        {...register('password')}
-      />
-
       <div>
-        <label htmlFor="role">Role</label>
+        <label htmlFor="role">{t('members.role')}</label>
         <select id="role" className="block rounded border px-2 py-1" {...register('role')}>
-          <option value="member">Member</option>
-          <option value="admin">Admin</option>
+          <option value="member">{t('role.member')}</option>
+          <option value="admin">{t('role.admin')}</option>
         </select>
         {errors.role ? <p role="alert">{errors.role.message}</p> : null}
       </div>
@@ -68,7 +62,7 @@ export function CreateMemberForm() {
       {createMember.isError ? <Alert>{createMember.error.message}</Alert> : null}
 
       <Button type="submit" disabled={createMember.isPending}>
-        Add member
+        {t('members.invite')}
       </Button>
     </form>
   );

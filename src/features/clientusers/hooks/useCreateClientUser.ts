@@ -8,6 +8,7 @@ export function useCreateClientUser(clientId: string) {
 
   return useMutation({
     mutationFn: (input: CreateClientUserInput) => createClientUser(clientId, input),
+    meta: { successKey: 'toast.invited' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: clientUserKeys.lists(clientId),

@@ -7,6 +7,7 @@ export function useDeleteMember() {
 
   return useMutation({
     mutationFn: (userId: string) => deleteMember(userId),
+    meta: { successKey: 'toast.deleted' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: memberKeys.lists(),
