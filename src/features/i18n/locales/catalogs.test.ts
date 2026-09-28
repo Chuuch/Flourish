@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { bg } from './bg';
 import { en } from './en';
+import { locales } from '../schemas/locale.schema';
+import { catalogs } from './catalogs';
 
 describe('catalogs', () => {
-  it('keeps English and Bulgarian keys in sync', () => {
-    expect(Object.keys(bg).sort()).toEqual(Object.keys(en).sort());
+  it('keeps every locale in sync with English', () => {
+    for (const locale of locales) {
+      expect(Object.keys(catalogs[locale]).sort()).toEqual(Object.keys(en).sort());
+    }
   });
 });
