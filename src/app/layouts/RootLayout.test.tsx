@@ -12,6 +12,15 @@ const testOrg = {
   updated_at: '2026-09-11T11:12:20Z',
 };
 
+const testClient = {
+  id: crypto.randomUUID(),
+  organization_id: testOrg.id,
+  name: 'Northwind',
+  notes: '',
+  created_at: '2026-09-11T11:12:20Z',
+  updated_at: '2026-09-11T11:12:20Z',
+};
+
 function renderLayout() {
   return renderWithProviders(
     <MemoryRouter>
@@ -25,23 +34,48 @@ function renderLayout() {
 }
 
 describe('RootLayout', () => {
-  it('shows the theme toggle and language switcher for guests', () => {
+  it('shows the sidebar, theme toggle and language switcher for guests', () => {
     renderLayout();
 
+    expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Sign in' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Use dark theme' })).toBeInTheDocument();
     expect(screen.getByLabelText('Language')).toHaveValue('en');
     expect(screen.getByText('page')).toBeInTheDocument();
   });
 
-  it('shows the theme toggle and language switcher when signed in', () => {
+  it('shows staff links when signed in', () => {
     useAuthStore
       .getState()
       .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
 
     renderLayout();
 
+    expect(screen.getByRole('link', { name: 'Members' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Users' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Clients' })).toBeInTheDocument();
+    expect(screen.getByText('Acme')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Use dark theme' })).toBeInTheDocument();
     expect(screen.getByLabelText('Language')).toHaveValue('en');
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument();
+  });
+
+  it('hides staff links for a client session', () => {
+    useAuthStore
+      .getState()
+      .setPortalSession(
+        { id: crypto.randomUUID(), email: 'pat@example.com' },
+        'token',
+        testOrg,
+        testClient,
+        'client',
+      );
+
+    renderLayout();
+
+    expect(screen.getByText('Northwind')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Members' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Users' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Clients' })).not.toBeInTheDocument();
   });
 });

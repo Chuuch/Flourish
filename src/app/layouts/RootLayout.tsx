@@ -19,9 +19,10 @@ export function RootLayout() {
   const { t } = useI18n();
 
   return (
-    <div className="bg-canvas text-ink min-h-screen flex flex-col">
-      <header className="border-b border-line px-6 py-4">
-        <nav aria-label={t('nav.main')} className="flex gap-6">
+    <div className="bg-canvas text-ink min-h-screen flex flex-col md:flex-row">
+      <aside className="border-b border-line px-4 py-4 md:border-b-0 md:border-r md:w-56 md:shrink-0">
+        <p className="mb-4 font-semibold">{t('home.brand')}</p>
+        <nav aria-label={t('nav.main')} className="flex flex-col gap-3">
           <NavLink to={isPortal ? paths.portal : paths.home} className={navLinkClass} end>
             {t('nav.home')}
           </NavLink>
@@ -76,7 +77,7 @@ export function RootLayout() {
           <ThemeToggle />
           <LocaleSwitcher />
         </nav>
-      </header>
+      </aside>
 
       <div className="flex-1 px-6 py-8">
         <Outlet />
