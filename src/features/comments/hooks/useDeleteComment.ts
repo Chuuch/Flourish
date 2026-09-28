@@ -7,6 +7,7 @@ export function useDeleteComment(taskId: string) {
 
   return useMutation({
     mutationFn: (commentId: string) => deleteComment(commentId),
+    meta: { successKey: 'toast.deleted' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: commentKeys.lists(taskId),

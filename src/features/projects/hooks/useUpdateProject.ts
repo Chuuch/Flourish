@@ -9,6 +9,7 @@ export function useUpdateProject(clientId: string) {
   return useMutation({
     mutationFn: ({ projectId, input }: { projectId: string; input: UpdateProjectInput }) =>
       updateProject(projectId, input),
+    meta: { successKey: 'toast.updated' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: projectKeys.lists(clientId),

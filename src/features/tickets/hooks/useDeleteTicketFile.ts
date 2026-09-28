@@ -7,6 +7,7 @@ export function useDeleteTicketFile(ticketId: string, source: TicketFileSource =
 
   return useMutation({
     mutationFn: (fileId: string) => deleteTicketFile(fileId, source),
+    meta: { successKey: 'toast.deleted' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: ticketFileKeys.lists(ticketId, source),

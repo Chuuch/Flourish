@@ -8,6 +8,7 @@ export function useCreateTicket() {
 
   return useMutation({
     mutationFn: (input: CreateTicketInput) => createPortalTicket(input),
+    meta: { successKey: 'toast.created' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: ticketKeys.portalList(),

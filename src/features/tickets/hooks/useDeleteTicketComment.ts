@@ -7,6 +7,7 @@ export function useDeleteTicketComment(ticketId: string, source: TicketCommentSo
 
   return useMutation({
     mutationFn: (commentId: string) => deleteTicketComment(commentId, source),
+    meta: { successKey: 'toast.deleted' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: ticketCommentKeys.lists(ticketId, source),

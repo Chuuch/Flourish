@@ -9,5 +9,6 @@ export function useChangePassword() {
   return useMutation({
     mutationFn: (input: Parameters<typeof changePassword>[0]) =>
       role === 'client' ? changePortalPassword(input) : changePassword(input),
+    meta: { successKey: 'toast.passwordUpdated' },
   });
 }

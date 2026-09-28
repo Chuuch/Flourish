@@ -9,6 +9,7 @@ export function useUpdateTask(projectId?: string) {
   return useMutation({
     mutationFn: ({ taskId, input }: { taskId: string; input: UpdateTaskInput }) =>
       updateTask(taskId, input),
+    meta: { successKey: 'toast.updated' },
     onSuccess: () => {
       if (projectId) {
         void queryClient.invalidateQueries({ queryKey: taskKeys.lists(projectId) });

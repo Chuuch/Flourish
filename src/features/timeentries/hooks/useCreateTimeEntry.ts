@@ -8,6 +8,7 @@ export function useCreateTimeEntry(taskId: string) {
 
   return useMutation({
     mutationFn: (input: CreateTimeEntryInput) => createTimeEntry(taskId, input),
+    meta: { successKey: 'toast.created' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: timeEntryKeys.lists(taskId),

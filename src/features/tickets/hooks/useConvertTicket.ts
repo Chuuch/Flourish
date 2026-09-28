@@ -9,6 +9,7 @@ export function useConvertTicket(clientId: string) {
   return useMutation({
     mutationFn: ({ ticketId, projectId }: { ticketId: string; projectId: string }) =>
       convertTicket(ticketId, { project_id: projectId }),
+    meta: { successKey: 'toast.converted' },
     onSuccess: (_task, { projectId }) => {
       void queryClient.invalidateQueries({
         queryKey: ticketKeys.staffList(clientId),

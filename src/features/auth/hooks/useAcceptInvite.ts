@@ -4,5 +4,6 @@ import { acceptInvite } from '../api/auth.api';
 export function useAcceptInvite() {
   return useMutation({
     mutationFn: acceptInvite,
+    meta: { successKey: 'toast.passwordUpdated' },
   });
 }

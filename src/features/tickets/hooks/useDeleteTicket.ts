@@ -7,6 +7,7 @@ export function useDeleteTicket(clientId: string) {
 
   return useMutation({
     mutationFn: (ticketId: string) => deleteTicket(ticketId),
+    meta: { successKey: 'toast.deleted' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: ticketKeys.staffList(clientId),

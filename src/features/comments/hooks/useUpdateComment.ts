@@ -9,6 +9,7 @@ export function useUpdateComment(taskId: string) {
   return useMutation({
     mutationFn: ({ commentId, input }: { commentId: string; input: UpdateCommentInput }) =>
       updateComment(commentId, input),
+    meta: { successKey: 'toast.updated' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: commentKeys.lists(taskId),

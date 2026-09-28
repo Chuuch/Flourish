@@ -8,6 +8,7 @@ export function useCreateTicketComment(ticketId: string, source: TicketCommentSo
 
   return useMutation({
     mutationFn: (input: CreateTicketCommentInput) => createTicketComment(ticketId, input, source),
+    meta: { successKey: 'toast.created' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: ticketCommentKeys.lists(ticketId, source),

@@ -7,6 +7,7 @@ export function usePortalLogin() {
 
   return useMutation({
     mutationFn: portalLogin,
+    meta: { successKey: 'toast.signedIn' },
     onSuccess: (data) => {
       setPortalSession(data.user, data.access_token, data.organization, data.client, data.role);
     },

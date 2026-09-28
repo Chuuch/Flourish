@@ -8,6 +8,7 @@ export function useCreateProject(clientId: string) {
 
   return useMutation({
     mutationFn: (input: CreateProjectInput) => createProject(clientId, input),
+    meta: { successKey: 'toast.created' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: projectKeys.lists(clientId),

@@ -9,6 +9,7 @@ export function useUpdateTimeEntry(taskId: string) {
   return useMutation({
     mutationFn: ({ entryId, input }: { entryId: string; input: UpdateTimeEntryInput }) =>
       updateTimeEntry(entryId, input),
+    meta: { successKey: 'toast.updated' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: timeEntryKeys.lists(taskId),

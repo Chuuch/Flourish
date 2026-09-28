@@ -8,6 +8,7 @@ export function useCreateTask(projectId: string) {
 
   return useMutation({
     mutationFn: (input: CreateTaskInput) => createTask(projectId, input),
+    meta: { successKey: 'toast.created' },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: taskKeys.lists(projectId) });
       void queryClient.invalidateQueries({ queryKey: taskKeys.inbox() });

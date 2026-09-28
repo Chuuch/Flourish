@@ -9,6 +9,7 @@ export function useUpdateClient() {
   return useMutation({
     mutationFn: ({ clientId, input }: { clientId: string; input: UpdateClientInput }) =>
       updateClient(clientId, input),
+    meta: { successKey: 'toast.updated' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: clientKeys.lists(),

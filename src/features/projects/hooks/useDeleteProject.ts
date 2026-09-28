@@ -7,6 +7,7 @@ export function useDeleteProject(clientId: string) {
 
   return useMutation({
     mutationFn: (projectId: string) => deleteProject(projectId),
+    meta: { successKey: 'toast.deleted' },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: projectKeys.lists(clientId),

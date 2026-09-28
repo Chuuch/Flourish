@@ -199,6 +199,17 @@ export const en = {
   'tickets.commentFor': 'Comment for {{label}}',
   'tickets.save': 'Save {{label}}',
   'tickets.removeLabel': 'Remove {{label}}',
+  'toast.signedIn': 'Signed in',
+  'toast.signedOut': 'Signed out',
+  'toast.resetSent': 'If that email is registere, we sent a reset link.',
+  'toast.passwordUpdated': 'Password updated',
+  'toast.invited': 'Invite sent',
+  'toast.created': 'Created',
+  'toast.updated': 'Saved',
+  'toast.deleted': 'Removed',
+  'toast.uploaded': 'Uploaded',
+  'toast.converted': 'Opened as a task',
+  'toast.failed': 'Something went wrong',
 } as const;
 
 export type MessageKey = keyof typeof en;
