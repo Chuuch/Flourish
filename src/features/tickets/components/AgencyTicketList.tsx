@@ -11,6 +11,7 @@ import { TicketCommentList } from './TicketCommentList';
 import { CreateTicketCommentForm } from './CreateTicketCommentForm';
 import { useDeleteTicket } from '../hooks/useDeleteTicket';
 import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 export function AgencyTicketList({ clientId }: { clientId: string }) {
   const role = useAuthStore((state) => state.role);
@@ -21,7 +22,7 @@ export function AgencyTicketList({ clientId }: { clientId: string }) {
   const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">{t('tickets.loading')}</p>;
+    return <ListSkeleton label={t('time.loading')} />;
   }
 
   if (isError) {

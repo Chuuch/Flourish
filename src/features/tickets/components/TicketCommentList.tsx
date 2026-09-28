@@ -14,6 +14,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 function TicketCommentManageForm({
   ticketId,
@@ -92,7 +93,7 @@ export function TicketCommentList({
   const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">{t('comments.loading')}</p>;
+    return <ListSkeleton label={t('comments.loading')} />;
   }
 
   if (isError) {

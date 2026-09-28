@@ -13,6 +13,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 function TimeEntryManageForm({ taskId, entry }: { taskId: string; entry: TimeEntry }) {
   const updateTimeEntry = useUpdateTimeEntry(taskId);
@@ -83,7 +84,7 @@ export function TimeEntryList({ taskId }: { taskId: string }) {
   const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">{t('time.loading')}</p>;
+    return <ListSkeleton label={t('time.loading')} />;
   }
 
   if (isError) {

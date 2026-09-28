@@ -5,6 +5,7 @@ import { useAuthStore } from '@/features/auth';
 import { useDeleteTicketFile } from '../hooks/useDeleteTicketFile';
 import { canMutateTicketFile, ticketFileLabel } from '../schemas/ticket-file.schema';
 import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 export function TicketFileList({
   ticketId,
@@ -20,7 +21,7 @@ export function TicketFileList({
   const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">{t('tickets.attachmentsLoading')}</p>;
+    return <ListSkeleton label={t('tickets.attachmentsLoading')} />;
   }
 
   if (isError) {

@@ -14,6 +14,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 function ClientManageForm({ client }: { client: Client }) {
   const updateClient = useUpdateClient();
@@ -84,7 +85,7 @@ export function ClientList() {
   const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">{t('clients.loading')}</p>;
+    return <ListSkeleton label={t('clients.loading')} />;
   }
 
   if (isError) {

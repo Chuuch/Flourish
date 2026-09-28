@@ -4,6 +4,7 @@ import { useAuthStore } from '@/features/auth';
 import { useDeleteFile } from '../hooks/useDeleteFile';
 import { canMutateFile, fileLabel } from '../schemas/file.schema';
 import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 export function FileList({ projectId }: { projectId: string }) {
   const role = useAuthStore((state) => state.role);
@@ -13,7 +14,7 @@ export function FileList({ projectId }: { projectId: string }) {
   const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">{t('files.loading')}</p>;
+    return <ListSkeleton label={t('files.loading')} />;
   }
 
   if (isError) {

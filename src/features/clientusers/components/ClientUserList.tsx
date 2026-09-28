@@ -4,6 +4,7 @@ import { useAuthStore } from '@/features/auth';
 import { canManageClientUsers } from '../schemas/client-user.schema';
 import { useDeleteClientUser } from '../hooks/useDeleteClientUser';
 import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 export function ClientUserList({ clientId }: { clientId: string }) {
   const role = useAuthStore((state) => state.role);
@@ -13,7 +14,7 @@ export function ClientUserList({ clientId }: { clientId: string }) {
   const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">{t('clientUsers.loading')}</p>;
+    return <ListSkeleton label={t('clientUsers.loading')} />;
   }
 
   if (isError) {
