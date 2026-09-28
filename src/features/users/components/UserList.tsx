@@ -1,11 +1,12 @@
 import { Alert } from '@/components/ui';
 import { useUsers } from '../hooks/useUsers';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 export function UserList() {
   const { data, isPending, isError, error, refetch } = useUsers();
 
   if (isPending) {
-    return <p role="status">Loading users...</p>;
+    return <ListSkeleton label="Loading users..." />;
   }
 
   if (isError) {

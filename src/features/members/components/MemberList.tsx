@@ -5,6 +5,7 @@ import { assignableRoleSchema, canManageMembers, type MemberRole } from '../sche
 import { useUpdateMember } from '../hooks/useUpdateMember';
 import { useDeleteMember } from '../hooks/useDeleteMember';
 import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 export function MemberList() {
   const role = useAuthStore((state) => state.role);
@@ -15,7 +16,7 @@ export function MemberList() {
   const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">{t('members.loading')}</p>;
+    return <ListSkeleton label={t('members.loading')} />;
   }
 
   if (isError) {

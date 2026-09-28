@@ -5,13 +5,14 @@ import { TicketFileList } from './TicketFileList';
 import { TicketCommentList } from './TicketCommentList';
 import { CreateTicketCommentForm } from './CreateTicketCommentForm';
 import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 export function TicketList() {
   const { data, isPending, isError, error, refetch } = useTickets();
   const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">{t('tickets.loading')}</p>;
+    return <ListSkeleton label={t('tickets.loading')} />;
   }
 
   if (isError) {

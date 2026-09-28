@@ -7,6 +7,7 @@ import { Alert, Button } from '@/components/ui';
 import { Link } from 'react-router';
 import { projectTasksPath } from '@/app/router/paths';
 import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 export function ConvertTicketForm({
   clientId,
@@ -29,7 +30,7 @@ export function ConvertTicketForm({
   }
 
   if (projects.isPending) {
-    return <p role="status">{t('projects.loading')}</p>;
+    return <ListSkeleton label={t('projects.loading')} />;
   }
 
   if (projects.isError) {

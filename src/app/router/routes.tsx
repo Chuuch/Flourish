@@ -1,21 +1,12 @@
 import type { RouteObject } from 'react-router';
+import { Outlet } from 'react-router';
 import { paths } from './paths';
 import { RootLayout } from '../layouts/RootLayout';
 import { RouteErrorBoundary } from '@/components/feedback/RouteErrorBoundary';
 import { HomePage } from '@/features/home/pages/HomePage';
 import { NotFound } from '@/components/feedback/NotFound';
 import { PageLoader } from '@/components/feedback/PageLoader';
-import { ChangePasswordPage, GuestOnly, RequireAuth } from '@/features/auth';
-import { MembersPage } from '@/features/members';
-import { ClientsPage } from '@/features/clients';
-import { ProjectsPage } from '@/features/projects';
-import { TasksPage } from '@/features/tasks';
-import { TimeEntriesPage } from '@/features/timeentries';
-import { FilesPage } from '@/features/files';
-import { CommentsPage } from '@/features/comments';
-import { ClientUsersPage } from '@/features/clientusers';
-import { PortalHomePage, RequirePortalAuth } from '@/features/portal';
-import { AgencyTicketsPage } from '@/features/tickets';
+import { RequireAuth } from '@/features/auth/components/RequireAuth';
 
 export const routes: RouteObject[] = [
   {
@@ -29,7 +20,8 @@ export const routes: RouteObject[] = [
         path: 'login',
         HydrateFallback: PageLoader,
         lazy: async () => {
-          const { LoginPage } = await import('@/features/auth');
+          const { LoginPage } = await import('@/features/auth/pages/LoginPage');
+          const { GuestOnly } = await import('@/features/auth/components/GuestOnly');
           return {
             Component: function LoginRoute() {
               return (
@@ -45,7 +37,8 @@ export const routes: RouteObject[] = [
         path: 'register',
         HydrateFallback: PageLoader,
         lazy: async () => {
-          const { RegisterPage } = await import('@/features/auth');
+          const { RegisterPage } = await import('@/features/auth/pages/RegisterPage');
+          const { GuestOnly } = await import('@/features/auth/components/GuestOnly');
           return {
             Component: function RegisterRoute() {
               return (
@@ -61,7 +54,8 @@ export const routes: RouteObject[] = [
         path: 'accept-invite',
         HydrateFallback: PageLoader,
         lazy: async () => {
-          const { AcceptInvitePage } = await import('@/features/auth');
+          const { AcceptInvitePage } = await import('@/features/auth/pages/AcceptInvitePage');
+          const { GuestOnly } = await import('@/features/auth/components/GuestOnly');
           return {
             Component: function AccpetInviteRoute() {
               return (
@@ -77,7 +71,8 @@ export const routes: RouteObject[] = [
         path: 'forgot-password',
         HydrateFallback: PageLoader,
         lazy: async () => {
-          const { ForgotPasswordPage } = await import('@/features/auth');
+          const { ForgotPasswordPage } = await import('@/features/auth/pages/ForgotPasswordPage');
+          const { GuestOnly } = await import('@/features/auth/components/GuestOnly');
           return {
             Component: function ForgotPasswordRoute() {
               return (
@@ -93,7 +88,8 @@ export const routes: RouteObject[] = [
         path: 'reset-password',
         HydrateFallback: PageLoader,
         lazy: async () => {
-          const { ResetPasswordPage } = await import('@/features/auth');
+          const { ResetPasswordPage } = await import('@/features/auth/pages/ResetPasswordPage');
+          const { GuestOnly } = await import('@/features/auth/components/GuestOnly');
           return {
             Component: function ResetPasswordRoute() {
               return (
@@ -107,23 +103,17 @@ export const routes: RouteObject[] = [
       },
       {
         path: 'account',
-        element: (
-          <RequireAuth>
-            <ChangePasswordPage />
-          </RequireAuth>
-        ),
-      },
-      {
-        path: 'portal/login',
         HydrateFallback: PageLoader,
         lazy: async () => {
-          const { GuestOnlyPortal, PortalLoginPage } = await import('@/features/portal');
+          const { ChangePasswordPage } = await import('@/features/auth/pages/ChangePasswordPage');
+          const { RequireAuth: RequireStaffAuth } =
+            await import('@/features/auth/components/RequireAuth');
           return {
-            Component: function PortalLoginRoute() {
+            Component: function AccountRoute() {
               return (
-                <GuestOnlyPortal>
-                  <PortalLoginPage />
-                </GuestOnlyPortal>
+                <RequireStaffAuth>
+                  <ChangePasswordPage />
+                </RequireStaffAuth>
               );
             },
           };
@@ -131,91 +121,172 @@ export const routes: RouteObject[] = [
       },
       {
         path: 'portal',
-        element: (
-          <RequirePortalAuth>
-            <PortalHomePage />
-          </RequirePortalAuth>
-        ),
-      },
-      {
-        path: 'portal/account',
-        element: (
-          <RequirePortalAuth>
-            <ChangePasswordPage />
-          </RequirePortalAuth>
-        ),
+        element: <Outlet />,
+        children: [
+          {
+            index: true,
+            HydrateFallback: PageLoader,
+            lazy: async () => {
+              const { PortalHomePage } = await import('@/features/portal/pages/PortalHomePage');
+              const { RequirePortalAuth } =
+                await import('@/features/portal/components/RequirePortalAuth');
+              return {
+                Component: function PortalHomeRoute() {
+                  return (
+                    <RequirePortalAuth>
+                      <PortalHomePage />
+                    </RequirePortalAuth>
+                  );
+                },
+              };
+            },
+          },
+          {
+            path: 'login',
+            HydrateFallback: PageLoader,
+            lazy: async () => {
+              const { PortalLoginPage } = await import('@/features/portal/pages/PortalLoginPage');
+              const { GuestOnlyPortal } =
+                await import('@/features/portal/components/GuestOnlyPortal');
+              return {
+                Component: function PortalLoginRoute() {
+                  return (
+                    <GuestOnlyPortal>
+                      <PortalLoginPage />
+                    </GuestOnlyPortal>
+                  );
+                },
+              };
+            },
+          },
+          {
+            path: 'account',
+            HydrateFallback: PageLoader,
+            lazy: async () => {
+              const { ChangePasswordPage } =
+                await import('@/features/auth/pages/ChangePasswordPage');
+              const { RequirePortalAuth } =
+                await import('@/features/portal/components/RequirePortalAuth');
+              return {
+                Component: function PortalAccountRoute() {
+                  return (
+                    <RequirePortalAuth>
+                      <ChangePasswordPage />
+                    </RequirePortalAuth>
+                  );
+                },
+              };
+            },
+          },
+        ],
       },
       {
         path: 'members',
-        element: (
-          <RequireAuth>
-            <MembersPage />
-          </RequireAuth>
-        ),
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { MembersPage } = await import('@/features/members/pages/MambersPage');
+          const { RequireAuth: RequireStaffAuth } =
+            await import('@/features/auth/components/RequireAuth');
+          return {
+            Component: function MembersRoute() {
+              return (
+                <RequireStaffAuth>
+                  <MembersPage />
+                </RequireStaffAuth>
+              );
+            },
+          };
+        },
       },
       {
         path: 'clients',
         element: (
           <RequireAuth>
-            <ClientsPage />
+            <Outlet />
           </RequireAuth>
         ),
-      },
-      {
-        path: 'clients/:clientId/users',
-        element: (
-          <RequireAuth>
-            <ClientUsersPage />
-          </RequireAuth>
-        ),
-      },
-      {
-        path: 'clients/:clientId/tickets',
-        element: (
-          <RequireAuth>
-            <AgencyTicketsPage />
-          </RequireAuth>
-        ),
-      },
-      {
-        path: 'clients/:clientId/projects',
-        element: (
-          <RequireAuth>
-            <ProjectsPage />
-          </RequireAuth>
-        ),
-      },
-      {
-        path: 'clients/:clientId/projects/:projectId/tasks',
-        element: (
-          <RequireAuth>
-            <TasksPage />
-          </RequireAuth>
-        ),
-      },
-      {
-        path: 'clients/:clientId/projects/:projectId/tasks/:taskid/time-entries',
-        element: (
-          <RequireAuth>
-            <TimeEntriesPage />
-          </RequireAuth>
-        ),
-      },
-      {
-        path: 'clients/:clientId/projects/:projectId/tasks/:taskid/comments',
-        element: (
-          <RequireAuth>
-            <CommentsPage />
-          </RequireAuth>
-        ),
-      },
-      {
-        path: 'clients/:clientId/projects/:projectId/files',
-        element: (
-          <RequireAuth>
-            <FilesPage />
-          </RequireAuth>
-        ),
+        children: [
+          {
+            index: true,
+            HydrateFallback: PageLoader,
+            lazy: async () => {
+              const { ClientsPage } = await import('@/features/clients/pages/ClientsPage');
+              return { Component: ClientsPage };
+            },
+          },
+          {
+            path: ':clientId/users',
+            HydrateFallback: PageLoader,
+            lazy: async () => {
+              const { ClientUsersPage } =
+                await import('@/features/clientusers/pages/ClientUsersPage');
+              return { Component: ClientUsersPage };
+            },
+          },
+          {
+            path: ':clientId/tickets',
+            HydrateFallback: PageLoader,
+            lazy: async () => {
+              const { AgencyTicketsPage } =
+                await import('@/features/tickets/pages/AgencyTicketsPage');
+              return { Component: AgencyTicketsPage };
+            },
+          },
+          {
+            path: ':clientId/projects',
+            element: <Outlet />,
+            children: [
+              {
+                index: true,
+                HydrateFallback: PageLoader,
+                lazy: async () => {
+                  const { ProjectsPage } = await import('@/features/projects/pages/ProjectPage');
+                  return { Component: ProjectsPage };
+                },
+              },
+              {
+                path: ':projectId/tasks',
+                element: <Outlet />,
+                children: [
+                  {
+                    index: true,
+                    HydrateFallback: PageLoader,
+                    lazy: async () => {
+                      const { TasksPage } = await import('@/features/tasks/pages/TasksPage');
+                      return { Component: TasksPage };
+                    },
+                  },
+                  {
+                    path: ':taskid/time-entries',
+                    HydrateFallback: PageLoader,
+                    lazy: async () => {
+                      const { TimeEntriesPage } =
+                        await import('@/features/timeentries/pages/TimeEntriesPage');
+                      return { Component: TimeEntriesPage };
+                    },
+                  },
+                  {
+                    path: ':taskid/comments',
+                    HydrateFallback: PageLoader,
+                    lazy: async () => {
+                      const { CommentsPage } =
+                        await import('@/features/comments/pages/CommentsPage');
+                      return { Component: CommentsPage };
+                    },
+                  },
+                ],
+              },
+              {
+                path: ':projectId/files',
+                HydrateFallback: PageLoader,
+                lazy: async () => {
+                  const { FilesPage } = await import('@/features/files/pages/FilesPage');
+                  return { Component: FilesPage };
+                },
+              },
+            ],
+          },
+        ],
       },
       { path: '*', element: <NotFound /> },
     ],

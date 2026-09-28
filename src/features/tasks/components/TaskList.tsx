@@ -8,6 +8,7 @@ import { useAuthStore } from '@/features/auth';
 import { useDeleteTask } from '../hooks/useDeleteTask';
 import { EditTaskForm } from './EditTaskForm';
 import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 export function TaskList({ projectId, clientId }: { projectId: string; clientId: string }) {
   const role = useAuthStore((state) => state.role);
@@ -18,7 +19,7 @@ export function TaskList({ projectId, clientId }: { projectId: string; clientId:
   const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">{t('tasks.loading')}</p>;
+    return <ListSkeleton label={t('tasks.loading')} />;
   }
 
   if (isError) {

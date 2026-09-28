@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Alert, Button } from '@/components/ui';
 import { canDeleteComment, canEditComment } from '../schemas/comment.schema';
 import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 export function CommentList({ taskId }: { taskId: string }) {
   const userId = useAuthStore((state) => state.user?.id);
@@ -18,7 +19,7 @@ export function CommentList({ taskId }: { taskId: string }) {
   const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">{t('comments.loading')}</p>;
+    return <ListSkeleton label={t('comments.loading')} />;
   }
 
   if (isError) {

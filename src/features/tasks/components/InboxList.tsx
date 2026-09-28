@@ -4,6 +4,7 @@ import { useUpdateTask } from '../hooks/useUpdateTask';
 import { taskStatusSchema, type TaskStatus } from '../schemas/task.schema';
 import { EditTaskForm } from './EditTaskForm';
 import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 export function InboxList() {
   const { data, isPending, isError, error, refetch } = useInbox();
@@ -11,7 +12,7 @@ export function InboxList() {
   const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">{t('inbox.loading')}</p>;
+    return <ListSkeleton label={t('inbox.loading')} />;
   }
 
   if (isError) {

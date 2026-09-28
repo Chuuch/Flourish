@@ -14,6 +14,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 function ProjectManageForm({ clientId, project }: { clientId: string; project: Project }) {
   const updateProject = useUpdateProject(clientId);
@@ -84,7 +85,7 @@ export function ProjectList({ clientId }: { clientId: string }) {
   const { t } = useI18n();
 
   if (isPending) {
-    return <p role="status">{t('projects.loading')}</p>;
+    return <ListSkeleton label={t('projects.loading')} />;
   }
 
   if (isError) {
