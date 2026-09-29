@@ -13,7 +13,6 @@ import {
   LogIn,
   LogOut,
   Settings,
-  User,
   UserPlus,
   UsersRound,
 } from 'lucide-react';
@@ -43,9 +42,6 @@ export function RootLayout() {
             <>
               <SidebarLink to={paths.members} icon={UsersRound}>
                 {t('nav.members')}
-              </SidebarLink>
-              <SidebarLink to={paths.users} icon={User}>
-                {t('nav.users')}
               </SidebarLink>
               <SidebarLink to={paths.clients} icon={Building2}>
                 {t('nav.clients')}

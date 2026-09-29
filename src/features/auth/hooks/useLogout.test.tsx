@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { HttpResponse, http as mswHttp } from 'msw';
 import { createMemoryRouter, RouterProvider } from 'react-router';
@@ -49,7 +49,8 @@ describe('useLogout', () => {
 
     await user.click(await screen.findByRole('button', { name: 'Sign out' }));
 
-    expect(await screen.findByRole('link', { name: 'Sign in' })).toBeInTheDocument();
+    const nav = screen.getByRole('navigation', { name: 'Main' });
+    expect(await within(nav).findByRole('link', { name: 'Sign in' })).toBeInTheDocument();
     expect(useAuthStore.getState().user).toBeNull();
     expect(useAuthStore.getState().organization).toBeNull();
     expect(useAuthStore.getState().client).toBeNull();
@@ -86,7 +87,8 @@ describe('useLogout', () => {
 
     await user.click(await screen.findByRole('button', { name: 'Sign out' }));
 
-    expect(await screen.findByRole('link', { name: 'Sign in' })).toBeInTheDocument();
+    const nav = screen.getByRole('navigation', { name: 'Main' });
+    expect(await within(nav).findByRole('link', { name: 'Sign in' })).toBeInTheDocument();
     expect(useAuthStore.getState().user).toBeNull();
     expect(useAuthStore.getState().client).toBeNull();
     expect(useAuthStore.getState().role).toBeNull();

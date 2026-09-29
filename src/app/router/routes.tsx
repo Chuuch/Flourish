@@ -57,7 +57,7 @@ export const routes: RouteObject[] = [
           const { AcceptInvitePage } = await import('@/features/auth/pages/AcceptInvitePage');
           const { GuestOnly } = await import('@/features/auth/components/GuestOnly');
           return {
-            Component: function AccpetInviteRoute() {
+            Component: function AcceptInviteRoute() {
               return (
                 <GuestOnly>
                   <AcceptInvitePage />
@@ -192,24 +192,6 @@ export const routes: RouteObject[] = [
               return (
                 <RequireStaffAuth>
                   <MembersPage />
-                </RequireStaffAuth>
-              );
-            },
-          };
-        },
-      },
-      {
-        path: 'users',
-        HydrateFallback: PageLoader,
-        lazy: async () => {
-          const { UsersPage } = await import('@/features/users/pages/UsersPage');
-          const { RequireAuth: RequireStaffAuth } =
-            await import('@/features/auth/components/RequireAuth');
-          return {
-            Component: function UsersRoute() {
-              return (
-                <RequireStaffAuth>
-                  <UsersPage />
                 </RequireStaffAuth>
               );
             },
