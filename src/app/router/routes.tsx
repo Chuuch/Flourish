@@ -284,22 +284,37 @@ export const routes: RouteObject[] = [
                             },
                           },
                           {
-                            path: ':taskid/time-entries',
-                            HydrateFallback: PageLoader,
-                            lazy: async () => {
-                              const { TimeEntriesPage } =
-                                await import('@/features/timeentries/pages/TimeEntriesPage');
-                              return { Component: TimeEntriesPage };
-                            },
-                          },
-                          {
-                            path: ':taskid/comments',
-                            HydrateFallback: PageLoader,
-                            lazy: async () => {
-                              const { CommentsPage } =
-                                await import('@/features/comments/pages/CommentsPage');
-                              return { Component: CommentsPage };
-                            },
+                            path: ':taskid',
+                            element: <Outlet />,
+                            children: [
+                              {
+                                index: true,
+                                HydrateFallback: PageLoader,
+                                lazy: async () => {
+                                  const { TaskWorkspacePage } =
+                                    await import('@/features/tasks/pages/TaskWorkspacePage');
+                                  return { Component: TaskWorkspacePage };
+                                },
+                              },
+                              {
+                                path: 'time-entries',
+                                HydrateFallback: PageLoader,
+                                lazy: async () => {
+                                  const { TimeEntriesPage } =
+                                    await import('@/features/timeentries/pages/TimeEntriesPage');
+                                  return { Component: TimeEntriesPage };
+                                },
+                              },
+                              {
+                                path: 'comments',
+                                HydrateFallback: PageLoader,
+                                lazy: async () => {
+                                  const { CommentsPage } =
+                                    await import('@/features/comments/pages/CommentsPage');
+                                  return { Component: CommentsPage };
+                                },
+                              },
+                            ],
                           },
                         ],
                       },

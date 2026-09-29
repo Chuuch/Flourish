@@ -4,6 +4,7 @@ import { z } from 'zod';
 export const sessionUserSchema = z.object({
   id: z.uuid(),
   email: z.email(),
+  display_name: z.string().default(''),
 });
 
 export const sessionOrganizationSchema = z.object({
@@ -54,6 +55,17 @@ export const changePasswordInputSchema = z.object({
   password: z.string().min(8, { error: () => t('validation.passwordMin') }),
 });
 
+export const updateDisplayNameInputSchema = z.object({
+  display_name: z.string().max(100),
+});
+
+export const updateOrganizationInputSchema = z.object({
+  name: z
+    .string()
+    .min(4, { error: () => t('validation.orgNameMin') })
+    .max(100),
+});
+
 export const authResponseSchema = z.object({
   access_token: z.string().min(1),
   user: sessionUserSchema,
@@ -67,6 +79,7 @@ export const sessionResponseSchema = authResponseSchema;
 export const registerResponseSchema = authResponseSchema;
 
 export type SessionUser = z.infer<typeof sessionUserSchema>;
+export type SessionUserInput = z.input<typeof sessionUserSchema>;
 export type SessionOrganization = z.infer<typeof sessionOrganizationSchema>;
 export type SessionRole = z.infer<typeof sessionRoleSchema>;
 export type LoginInput = z.infer<typeof loginInputSchema>;
@@ -77,3 +90,5 @@ export type ForgotPasswordInput = z.infer<typeof forgotPasswordInputSchema>;
 export type ResetPasswordFormInput = z.infer<typeof resetPasswordFormSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordInputSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordInputSchema>;
+export type UpdateDisplayNameInput = z.infer<typeof updateDisplayNameInputSchema>;
+export type UpdateOrganizationInput = z.infer<typeof updateOrganizationInputSchema>;

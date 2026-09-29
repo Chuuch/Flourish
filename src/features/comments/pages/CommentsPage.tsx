@@ -4,6 +4,7 @@ import {
   paths,
   projectPath,
   projectTasksPath,
+  taskPath,
 } from '@/app/router/paths';
 import { Link, useParams } from 'react-router';
 import { CreateCommentForm } from '../components/CreateCommentForm';
@@ -11,7 +12,8 @@ import { CommentList } from '../components/CommentList';
 import { useI18n } from '@/features/i18n';
 
 export function CommentsPage() {
-  const { clientId, projectId, taskId } = useParams();
+  const { clientId, projectId, taskid, taskId: taskIdParam } = useParams();
+  const taskId = taskid ?? taskIdParam;
   const { t } = useI18n();
 
   if (!clientId || !projectId || !taskId) {
@@ -35,6 +37,8 @@ export function CommentsPage() {
         <Link to={projectPath(clientId, projectId)}>{t('projects.hubCrumb')}</Link>
         {' / '}
         <Link to={projectTasksPath(clientId, projectId)}>{t('common.tasks')}</Link>
+        {' / '}
+        <Link to={taskPath(clientId, projectId, taskId)}>{t('tasks.hubCrumb')}</Link>
       </p>
       <h1>{t('comments.title')}</h1>
       <CreateCommentForm taskId={taskId} />

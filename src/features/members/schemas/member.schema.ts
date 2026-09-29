@@ -7,6 +7,7 @@ export const assignableRoleSchema = z.enum(['admin', 'member']);
 export const memberSchema = z.object({
   user_id: z.uuid(),
   email: z.email(),
+  display_name: z.string().default(''),
   role: memberRoleSchema,
   created_at: z.string(),
 });
@@ -26,6 +27,10 @@ export type Member = z.infer<typeof memberSchema>;
 export type CreateMemberInput = z.infer<typeof createMemberSchema>;
 export type UpdateMemberInput = z.infer<typeof updateMemberSchema>;
 export type MemberRole = z.infer<typeof memberRoleSchema>;
+
+export function memberLabel(member: Pick<Member, 'display_name' | 'email'>): string {
+  return member.display_name.trim() === '' ? member.email : member.display_name;
+}
 
 export function canManageMembers(role: string | null | undefined): boolean {
   return role === 'owner' || role === 'admin';

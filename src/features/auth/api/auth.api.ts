@@ -3,12 +3,14 @@ import {
   loginResponseSchema,
   registerResponseSchema,
   sessionResponseSchema,
+  sessionUserSchema,
   type AccpetInviteInput,
   type ChangePasswordInput,
   type ForgotPasswordInput,
   type LoginInput,
   type RegisterInput,
   type ResetPasswordInput,
+  type UpdateDisplayNameInput,
 } from '../schemas/auth.schema';
 import z from 'zod';
 
@@ -28,6 +30,9 @@ export const resetPassword = (input: ResetPasswordInput) =>
 
 export const changePassword = (input: ChangePasswordInput) =>
   http.post('/auth/change-password', z.unknown(), input);
+
+export const updateDisplayName = (input: UpdateDisplayNameInput) =>
+  http.patch('/auth/display-name', sessionUserSchema, input);
 
 export const fetchSession = () => http.get('/auth/me', sessionResponseSchema);
 

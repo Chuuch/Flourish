@@ -1,5 +1,6 @@
 import { useI18n } from '@/features/i18n';
 import type { Member } from '@/features/members';
+import { memberLabel } from '@/features/members/schemas/member.schema';
 import type { UseFormRegisterReturn } from 'react-hook-form';
 
 export function AssigneeSelect({
@@ -23,7 +24,7 @@ export function AssigneeSelect({
         <option value="">{t('tasks.unassigned')}</option>
         {members.map((member) => (
           <option key={member.user_id} value={member.user_id}>
-            {member.email}
+            {memberLabel(member)}
           </option>
         ))}
       </select>
