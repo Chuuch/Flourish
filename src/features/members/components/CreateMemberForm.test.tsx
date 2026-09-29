@@ -9,7 +9,7 @@ import { HttpResponse, http as mswHttp } from 'msw';
 import { createMemberSchema, type Member } from '../schemas/member.schema';
 import { makeMember } from '@/test/factories/member';
 import { useAuthStore } from '@/features/auth';
-import { MembersPage } from '../pages/MambersPage';
+import { MembersPage } from '../pages/MembersPage';
 
 const membersUrl = `${env.API_URL}/members`;
 

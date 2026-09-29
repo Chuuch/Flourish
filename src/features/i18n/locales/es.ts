@@ -166,6 +166,11 @@ export const es: Record<MessageKey, string> = {
   'inbox.loading': 'Cargando bandeja de entrada...',
   'inbox.loadError': 'No se pudo cargar la bandeja de entrada: {{message}}',
   'inbox.empty': 'No hay tareas en la bandeja.',
+
+  'inbox.filter': 'Mostrar',
+  'inbox.filterAll': 'Todas',
+  'inbox.filterMine': 'Asignadas a mí',
+  'inbox.filterUnassigned': 'Sin asignar',
   'comments.title': 'Comentarios',
   'comments.add': 'Añadir comentario',
   'comments.loading': 'Cargando comentarios...',
