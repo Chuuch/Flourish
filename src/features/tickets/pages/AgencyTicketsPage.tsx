@@ -1,4 +1,4 @@
-import { clientProjectsPath, paths } from '@/app/router/paths';
+import { clientPath, paths } from '@/app/router/paths';
 import { Link, useParams } from 'react-router';
 import { AgencyTicketList } from '../components/AgencyTicketList';
 import { useI18n } from '@/features/i18n';
@@ -21,7 +21,7 @@ export function AgencyTicketsPage() {
       <p>
         <Link to={paths.clients}>{t('common.clients')}</Link>
         {' / '}
-        <Link to={clientProjectsPath(clientId)}>{t('common.projects')}</Link>
+        <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
       </p>
       <h1>{t('tickets.title')}</h1>
       <AgencyTicketList clientId={clientId} />
