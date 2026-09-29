@@ -258,44 +258,60 @@ export const routes: RouteObject[] = [
                     },
                   },
                   {
-                    path: ':projectId/tasks',
+                    path: ':projectId',
                     element: <Outlet />,
                     children: [
                       {
                         index: true,
                         HydrateFallback: PageLoader,
                         lazy: async () => {
-                          const { TasksPage } = await import('@/features/tasks/pages/TasksPage');
-                          return { Component: TasksPage };
+                          const { ProjectHubPage } =
+                            await import('@/features/projects/pages/ProjectHubPage');
+                          return { Component: ProjectHubPage };
                         },
                       },
                       {
-                        path: ':taskid/time-entries',
-                        HydrateFallback: PageLoader,
-                        lazy: async () => {
-                          const { TimeEntriesPage } =
-                            await import('@/features/timeentries/pages/TimeEntriesPage');
-                          return { Component: TimeEntriesPage };
-                        },
+                        path: 'tasks',
+                        element: <Outlet />,
+                        children: [
+                          {
+                            index: true,
+                            HydrateFallback: PageLoader,
+                            lazy: async () => {
+                              const { TasksPage } =
+                                await import('@/features/tasks/pages/TasksPage');
+                              return { Component: TasksPage };
+                            },
+                          },
+                          {
+                            path: ':taskid/time-entries',
+                            HydrateFallback: PageLoader,
+                            lazy: async () => {
+                              const { TimeEntriesPage } =
+                                await import('@/features/timeentries/pages/TimeEntriesPage');
+                              return { Component: TimeEntriesPage };
+                            },
+                          },
+                          {
+                            path: ':taskid/comments',
+                            HydrateFallback: PageLoader,
+                            lazy: async () => {
+                              const { CommentsPage } =
+                                await import('@/features/comments/pages/CommentsPage');
+                              return { Component: CommentsPage };
+                            },
+                          },
+                        ],
                       },
                       {
-                        path: ':taskid/comments',
+                        path: 'files',
                         HydrateFallback: PageLoader,
                         lazy: async () => {
-                          const { CommentsPage } =
-                            await import('@/features/comments/pages/CommentsPage');
-                          return { Component: CommentsPage };
+                          const { FilesPage } = await import('@/features/files/pages/FilesPage');
+                          return { Component: FilesPage };
                         },
                       },
                     ],
-                  },
-                  {
-                    path: ':projectId/files',
-                    HydrateFallback: PageLoader,
-                    lazy: async () => {
-                      const { FilesPage } = await import('@/features/files/pages/FilesPage');
-                      return { Component: FilesPage };
-                    },
                   },
                 ],
               },

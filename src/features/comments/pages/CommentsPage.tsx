@@ -1,4 +1,10 @@
-import { clientProjectsPath, paths, projectTasksPath } from '@/app/router/paths';
+import {
+  clientPath,
+  clientProjectsPath,
+  paths,
+  projectPath,
+  projectTasksPath,
+} from '@/app/router/paths';
 import { Link, useParams } from 'react-router';
 import { CreateCommentForm } from '../components/CreateCommentForm';
 import { CommentList } from '../components/CommentList';
@@ -22,7 +28,11 @@ export function CommentsPage() {
       <p>
         <Link to={paths.clients}>{t('common.clients')}</Link>
         {' / '}
+        <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
+        {' / '}
         <Link to={clientProjectsPath(clientId)}>{t('common.projects')}</Link>
+        {' / '}
+        <Link to={projectPath(clientId, projectId)}>{t('projects.hubCrumb')}</Link>
         {' / '}
         <Link to={projectTasksPath(clientId, projectId)}>{t('common.tasks')}</Link>
       </p>
