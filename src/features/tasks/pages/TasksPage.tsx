@@ -1,4 +1,4 @@
-import { clientProjectsPath, paths } from '@/app/router/paths';
+import { clientPath, clientProjectsPath, paths, projectPath } from '@/app/router/paths';
 import { Link, useParams } from 'react-router';
 import { CreateTaskForm } from '../components/CreateTaskForm';
 import { TaskList } from '../components/TaskList';
@@ -22,7 +22,11 @@ export function TasksPage() {
       <p>
         <Link to={paths.clients}>{t('common.clients')}</Link>
         {' / '}
+        <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
+        {' / '}
         <Link to={clientProjectsPath(clientId)}>{t('common.projects')}</Link>
+        {' / '}
+        <Link to={projectPath(clientId, projectId)}>{t('projects.hubCrumb')}</Link>
       </p>
       <h1>{t('tasks.title')}</h1>
       <CreateTaskForm projectId={projectId} />

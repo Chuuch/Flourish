@@ -57,7 +57,7 @@ describe('ClientPage', () => {
     expect(screen.getByText('Retail')).toBeInTheDocument();
     expect(await screen.findByRole('link', { name: 'Website' })).toHaveAttribute(
       'href',
-      `/clients/${client.id}/projects/${website.id}/tasks`,
+      `/clients/${client.id}/projects/${website.id}`,
     );
     expect(screen.getByRole('link', { name: 'View projects' })).toHaveAttribute(
       'href',

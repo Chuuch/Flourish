@@ -1,4 +1,4 @@
-import { clientProjectsPath, paths } from '@/app/router/paths';
+import { clientPath, clientProjectsPath, paths, projectPath } from '@/app/router/paths';
 import { Link, useParams } from 'react-router';
 import { CreateFileForm } from '../components/CreateFileForm';
 import { FileList } from '../components/FileList';
@@ -22,7 +22,11 @@ export function FilesPage() {
       <p>
         <Link to={paths.clients}>{t('common.clients')}</Link>
         {' / '}
+        <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
+        {' / '}
         <Link to={clientProjectsPath(clientId)}>{t('common.projects')}</Link>
+        {' / '}
+        <Link to={projectPath(clientId, projectId)}>{t('projects.hubCrumb')}</Link>
       </p>
       <h1>{t('files.title')}</h1>
       <CreateFileForm projectId={projectId} />

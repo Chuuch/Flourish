@@ -4,7 +4,7 @@ import {
   clientTicketsPath,
   clientUsersPath,
   paths,
-  projectTasksPath,
+  projectPath,
 } from '@/app/router/paths';
 import { Alert } from '@/components/ui';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
@@ -111,7 +111,7 @@ function HubProjects({ clientId }: { clientId: string }) {
         <ul>
           {data.map((project) => (
             <li key={project.id}>
-              <Link to={projectTasksPath(clientId, project.id)}>{project.name}</Link>
+              <Link to={projectPath(clientId, project.id)}>{project.name}</Link>
             </li>
           ))}
         </ul>
