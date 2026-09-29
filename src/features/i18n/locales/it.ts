@@ -225,4 +225,14 @@ export const it: Record<MessageKey, string> = {
   'toast.uploaded': 'Caricato',
   'toast.converted': 'Aperta come attività',
   'toast.failed': 'Qualcosa è andato storto',
+  'home.slogan': 'Il sistema operativo della tua agenzia.',
+  'home.heroLead': 'Clienti, progetti, attività e tempo — in un unico posto.',
+  'home.heroBody':
+    "Flourish fa funzionare l'agenzia: clienti e progetti da una parte, attività e tempo dall'altra, e un portale per le persone per cui lavorate.",
+  'home.heroClients': 'Clienti e progetti',
+  'home.heroClientsBody': 'Una casa per ogni cliente e il lavoro collegato.',
+  'home.heroWork': 'Attività e tempo',
+  'home.heroWorkBody': 'Inbox, assegnazioni e tempo senza saltare da uno strumento all’altro.',
+  'home.heroPortal': 'Portale cliente',
+  'home.heroPortalBody': 'I clienti aprono ticket. Voi li trasformate in attività.',
 };

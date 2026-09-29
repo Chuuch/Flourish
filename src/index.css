@@ -92,6 +92,226 @@ main {
   gap: 1.25rem;
 }
 
+main.auth-screen {
+  margin-inline: auto;
+  min-height: calc(100dvh - 8rem);
+  max-width: none;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-panel {
+  display: grid;
+  width: min(100%, 52rem);
+  grid-template-columns: 1fr;
+  border: 1px solid var(--line);
+  border-radius: 1.15rem;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.auth-panel-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  padding: 2rem 1.75rem 1.75rem;
+}
+
+.auth-panel-form h1 {
+  font-size: 1.65rem;
+}
+
+.auth-panel-form p {
+  text-align: left;
+}
+
+.auth-panel-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.75rem 1.5rem;
+  text-align: center;
+  border-top: 1px solid var(--line);
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+}
+
+.auth-panel-brand p:not(:first-child) {
+  max-width: 16rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+@media (min-width: 768px) {
+  .auth-panel {
+    grid-template-columns: minmax(0, 1.25fr) minmax(16rem, 0.75fr);
+  }
+
+  .auth-panel-form {
+    padding: 2.4rem 2.25rem 2.1rem;
+  }
+
+  .auth-panel-brand {
+    border-top: 0;
+    border-left: 1px solid var(--line);
+    padding: 2.5rem 2rem;
+  }
+}
+
+main.auth-screen form {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+main.auth-screen input {
+  padding: 0.7rem 0.9rem;
+  font-size: 1rem;
+}
+
+main.guest-hero {
+  margin-inline: auto;
+  max-width: 44rem;
+  width: 100%;
+  min-height: calc(100dvh - 8rem);
+  align-items: center;
+  justify-content: center;
+  gap: 2.75rem;
+  text-align: center;
+}
+
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.15rem;
+}
+
+.hero-copy h1 {
+  max-width: 22ch;
+}
+
+.hero-body {
+  max-width: 38rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.hero-cta-primary,
+.hero-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.7rem;
+  padding: 0.7rem 1.15rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hero-cta-primary {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+.hero-cta-secondary {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.hero-cta-primary:hover,
+.hero-cta-secondary:hover {
+  text-decoration: none;
+  opacity: 0.92;
+}
+
+.hero-graphic {
+  position: relative;
+  display: grid;
+  width: 10rem;
+  height: 10rem;
+  place-items: center;
+}
+
+.hero-ring {
+  position: absolute;
+  inset: 14%;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  border-radius: 999px;
+}
+
+.hero-ring-delay {
+  inset: 0;
+  opacity: 0.5;
+}
+
+.hero-leaf {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 5.25rem;
+  height: 5.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+}
+
+.hero-features {
+  display: grid;
+  width: 100%;
+  gap: 0.75rem;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  main.guest-hero {
+    max-width: 56rem;
+  }
+
+  .hero-features {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.hero-features > li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: var(--surface);
+  padding: 1rem 1.1rem;
+  box-shadow: var(--shadow);
+}
+
+.hero-features h2 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.hero-features p {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
 main h1 {
   font-size: 1.75rem;
   font-weight: 600;
@@ -131,7 +351,7 @@ main li form {
   box-shadow: none;
 }
 
-main ul:not([aria-hidden='true']) {
+main ul:not([aria-hidden='true']):not(.hero-features) {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -139,7 +359,7 @@ main ul:not([aria-hidden='true']) {
   list-style: none;
 }
 
-main ul:not([aria-hidden='true']) > li {
+main ul:not([aria-hidden='true']):not(.hero-features) > li {
   border: 1px solid var(--line);
   border-radius: 0.9rem;
   background: var(--surface);

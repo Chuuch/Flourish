@@ -226,4 +226,14 @@ export const es: Record<MessageKey, string> = {
   'toast.uploaded': 'Subido',
   'toast.converted': 'Abierta como tarea',
   'toast.failed': 'Algo salió mal',
+  'home.slogan': 'El sistema operativo de tu agencia.',
+  'home.heroLead': 'Clientes, proyectos, tareas y tiempo — en un solo lugar.',
+  'home.heroBody':
+    'Flourish mantiene la agencia en marcha: clientes y proyectos de un lado, tareas y tiempo del otro, y un portal para las personas para las que trabajáis.',
+  'home.heroClients': 'Clientes y proyectos',
+  'home.heroClientsBody': 'Un hogar para cada cliente y el trabajo asociado.',
+  'home.heroWork': 'Tareas y tiempo',
+  'home.heroWorkBody': 'Bandeja, asignaciones y tiempo sin saltar de herramienta.',
+  'home.heroPortal': 'Portal del cliente',
+  'home.heroPortalBody': 'Los clientes abren tickets. Vosotros los convertís en tareas.',
 };

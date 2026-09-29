@@ -224,4 +224,14 @@ export const fr: Record<MessageKey, string> = {
   'toast.uploaded': 'Téléversé',
   'toast.converted': 'Ouvert comme tâche',
   'toast.failed': "Une erreur s'est produite",
+  'home.slogan': "Le système d'exploitation de votre agence.",
+  'home.heroLead': 'Clients, projets, tâches et temps — au même endroit.',
+  'home.heroBody':
+    "Flourish fait tourner l'agence : clients et projets d'un côté, tâches et temps de l'autre, et un portail pour les personnes pour qui vous travaillez.",
+  'home.heroClients': 'Clients et projets',
+  'home.heroClientsBody': 'Un seul endroit pour chaque client et le travail qui lui est lié.',
+  'home.heroWork': 'Tâches et temps',
+  'home.heroWorkBody': 'Boîte de réception, affectations et temps sans changer d’outil.',
+  'home.heroPortal': 'Portail client',
+  'home.heroPortalBody': 'Les clients ouvrent des tickets. Vous les transformez en tâches.',
 };

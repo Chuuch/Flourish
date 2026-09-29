@@ -226,4 +226,14 @@ export const de: Record<MessageKey, string> = {
   'toast.uploaded': 'Hochgeladen',
   'toast.converted': 'Als Aufgabe geöffnet',
   'toast.failed': 'Etwas ist schiefgelaufen',
+  'home.slogan': 'Das Betriebssystem für deine Agentur.',
+  'home.heroLead': 'Kunden, Projekte, Aufgaben und Zeit — an einem Ort.',
+  'home.heroBody':
+    'Flourish hält die Agentur am Laufen: Kunden und Projekte auf der einen Seite, Aufgaben und Zeit auf der anderen, und ein Portal für die Menschen, für die ihr arbeitet.',
+  'home.heroClients': 'Kunden & Projekte',
+  'home.heroClientsBody': 'Ein Zuhause für jeden Kunden und die dazugehörige Arbeit.',
+  'home.heroWork': 'Aufgaben & Zeit',
+  'home.heroWorkBody': 'Posteingang, Zuweisungen und Zeiteinträge ohne Tool-Hopping.',
+  'home.heroPortal': 'Kundenportal',
+  'home.heroPortalBody': 'Kunden erstellen Tickets. Ihr macht Aufgaben daraus.',
 };

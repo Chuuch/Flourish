@@ -3,6 +3,7 @@ import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
 import { InboxList } from '@/features/tasks/components/InboxList';
 import { Navigate } from 'react-router';
+import { GuestHome } from '../components/GuestHome';
 
 export function HomePage() {
   const user = useAuthStore((state) => state.user);
@@ -14,17 +15,12 @@ export function HomePage() {
   }
 
   if (!user) {
-    return (
-      <main>
-        <h1>{t('home.brand')}</h1>
-      </main>
-    );
+    return <GuestHome />;
   }
 
   return (
     <main>
-      <h1>{t('home.brand')}</h1>
-      <h2>{t('home.inbox')}</h2>
+      <h1>{t('home.inbox')}</h1>
       <InboxList />
     </main>
   );
