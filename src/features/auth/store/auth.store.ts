@@ -1,16 +1,14 @@
 import { create } from 'zustand';
 import { setAccessToken, setAuthRealm } from '@/lib/api/client';
-import type { z } from 'zod';
-import {
-  sessionUserSchema,
-  type SessionOrganization,
-  type SessionRole,
-  type SessionUser,
+import type {
+  SessionOrganization,
+  SessionRole,
+  SessionUser,
+  SessionUserInput,
 } from '../schemas/auth.schema';
 import type { SessionClient } from '@/features/portal/schemas/portal-auth.schema';
 
 type AuthRole = SessionRole | 'client';
-type SessionUserInput = z.input<typeof sessionUserSchema>;
 
 function toSessionUser(user: SessionUserInput): SessionUser {
   return {

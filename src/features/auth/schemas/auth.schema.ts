@@ -79,6 +79,7 @@ export const sessionResponseSchema = authResponseSchema;
 export const registerResponseSchema = authResponseSchema;
 
 export type SessionUser = z.infer<typeof sessionUserSchema>;
+export type SessionUserInput = z.input<typeof sessionUserSchema>;
 export type SessionOrganization = z.infer<typeof sessionOrganizationSchema>;
 export type SessionRole = z.infer<typeof sessionRoleSchema>;
 export type LoginInput = z.infer<typeof loginInputSchema>;
