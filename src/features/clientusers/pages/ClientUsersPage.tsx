@@ -1,4 +1,4 @@
-import { clientProjectsPath, paths } from '@/app/router/paths';
+import { clientPath, paths } from '@/app/router/paths';
 import { Link, useParams } from 'react-router';
 import { CreateClientUserForm } from '../components/CreateClientUserForm';
 import { ClientUserList } from '../components/ClientUserList';
@@ -22,7 +22,7 @@ export function ClientUsersPage() {
       <p>
         <Link to={paths.clients}>{t('common.clients')}</Link>
         {' / '}
-        <Link to={clientProjectsPath(clientId)}>{t('common.projects')}</Link>
+        <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
       </p>
       <h1>{t('clientUsers.title')}</h1>
       <CreateClientUserForm clientId={clientId} />

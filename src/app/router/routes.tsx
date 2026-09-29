@@ -215,74 +215,89 @@ export const routes: RouteObject[] = [
             },
           },
           {
-            path: ':clientId/users',
-            HydrateFallback: PageLoader,
-            lazy: async () => {
-              const { ClientUsersPage } =
-                await import('@/features/clientusers/pages/ClientUsersPage');
-              return { Component: ClientUsersPage };
-            },
-          },
-          {
-            path: ':clientId/tickets',
-            HydrateFallback: PageLoader,
-            lazy: async () => {
-              const { AgencyTicketsPage } =
-                await import('@/features/tickets/pages/AgencyTicketsPage');
-              return { Component: AgencyTicketsPage };
-            },
-          },
-          {
-            path: ':clientId/projects',
+            path: ':clientId',
             element: <Outlet />,
             children: [
               {
                 index: true,
                 HydrateFallback: PageLoader,
                 lazy: async () => {
-                  const { ProjectsPage } = await import('@/features/projects/pages/ProjectPage');
-                  return { Component: ProjectsPage };
+                  const { ClientPage } = await import('@/features/clients/pages/ClientPage');
+                  return { Component: ClientPage };
                 },
               },
               {
-                path: ':projectId/tasks',
+                path: 'users',
+                HydrateFallback: PageLoader,
+                lazy: async () => {
+                  const { ClientUsersPage } =
+                    await import('@/features/clientusers/pages/ClientUsersPage');
+                  return { Component: ClientUsersPage };
+                },
+              },
+              {
+                path: 'tickets',
+                HydrateFallback: PageLoader,
+                lazy: async () => {
+                  const { AgencyTicketsPage } =
+                    await import('@/features/tickets/pages/AgencyTicketsPage');
+                  return { Component: AgencyTicketsPage };
+                },
+              },
+              {
+                path: 'projects',
                 element: <Outlet />,
                 children: [
                   {
                     index: true,
                     HydrateFallback: PageLoader,
                     lazy: async () => {
-                      const { TasksPage } = await import('@/features/tasks/pages/TasksPage');
-                      return { Component: TasksPage };
+                      const { ProjectsPage } =
+                        await import('@/features/projects/pages/ProjectPage');
+                      return { Component: ProjectsPage };
                     },
                   },
                   {
-                    path: ':taskid/time-entries',
-                    HydrateFallback: PageLoader,
-                    lazy: async () => {
-                      const { TimeEntriesPage } =
-                        await import('@/features/timeentries/pages/TimeEntriesPage');
-                      return { Component: TimeEntriesPage };
-                    },
+                    path: ':projectId/tasks',
+                    element: <Outlet />,
+                    children: [
+                      {
+                        index: true,
+                        HydrateFallback: PageLoader,
+                        lazy: async () => {
+                          const { TasksPage } = await import('@/features/tasks/pages/TasksPage');
+                          return { Component: TasksPage };
+                        },
+                      },
+                      {
+                        path: ':taskid/time-entries',
+                        HydrateFallback: PageLoader,
+                        lazy: async () => {
+                          const { TimeEntriesPage } =
+                            await import('@/features/timeentries/pages/TimeEntriesPage');
+                          return { Component: TimeEntriesPage };
+                        },
+                      },
+                      {
+                        path: ':taskid/comments',
+                        HydrateFallback: PageLoader,
+                        lazy: async () => {
+                          const { CommentsPage } =
+                            await import('@/features/comments/pages/CommentsPage');
+                          return { Component: CommentsPage };
+                        },
+                      },
+                    ],
                   },
                   {
-                    path: ':taskid/comments',
+                    path: ':projectId/files',
                     HydrateFallback: PageLoader,
                     lazy: async () => {
-                      const { CommentsPage } =
-                        await import('@/features/comments/pages/CommentsPage');
-                      return { Component: CommentsPage };
+                      const { FilesPage } = await import('@/features/files/pages/FilesPage');
+                      return { Component: FilesPage };
                     },
                   },
                 ],
-              },
-              {
-                path: ':projectId/files',
-                HydrateFallback: PageLoader,
-                lazy: async () => {
-                  const { FilesPage } = await import('@/features/files/pages/FilesPage');
-                  return { Component: FilesPage };
-                },
               },
             ],
           },

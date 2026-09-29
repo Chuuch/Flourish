@@ -15,6 +15,10 @@ export const paths = {
   portalAccount: '/portal/account',
 } as const;
 
+export function clientPath(clientId: string): string {
+  return `${paths.clients}/${clientId}`;
+}
+
 export function clientProjectsPath(clientId: string): string {
   return `${paths.clients}/${clientId}/projects`;
 }
