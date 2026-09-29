@@ -170,3 +170,23 @@ describe('RequireAuth', () => {
     expect(await screen.findByRole('heading', { name: 'Website' })).toBeInTheDocument();
   });
 });
+
+describe('RequireAuth', () => {
+  it('redirects anonymous users to login', async () => {
+    renderAt('/time');
+
+    expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeInTheDocument();
+  });
+
+  it('renders the protected page when there is a session', async () => {
+    useAuthStore
+      .getState()
+      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
+
+    server.use(mswHttp.get(`${env.API_URL}/time-entries`, () => HttpResponse.json([])));
+
+    renderAt('/time');
+
+    expect(await screen.findByRole('heading', { name: 'Time entries' })).toBeInTheDocument();
+  });
+});

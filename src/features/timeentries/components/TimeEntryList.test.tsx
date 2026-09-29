@@ -42,6 +42,7 @@ describe('TimeEntryList', () => {
 
     expect(await screen.findByText('90 min - OAuth')).toBeInTheDocument();
     expect(screen.getByText('30 min')).toBeInTheDocument();
+    expect(screen.getByText('120 min total')).toBeInTheDocument();
   });
 
   it('renders an empty state', async () => {

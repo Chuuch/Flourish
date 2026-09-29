@@ -7,6 +7,7 @@ import { ThemeToggle } from '@/features/theme';
 import { LocaleSwitcher, useI18n } from '@/features/i18n';
 import {
   Building2,
+  Clock,
   DoorOpen,
   House,
   Leaf,
@@ -45,6 +46,9 @@ export function RootLayout() {
               </SidebarLink>
               <SidebarLink to={paths.clients} icon={Building2}>
                 {t('nav.clients')}
+              </SidebarLink>
+              <SidebarLink to={paths.time} icon={Clock}>
+                {t('nav.time')}
               </SidebarLink>
             </>
           ) : null}

@@ -10,6 +10,9 @@ import z from 'zod';
 export const fetchTimeEntries = (taskId: string) =>
   http.get(`/tasks/${taskId}/time-entries`, timeEntriesSchema);
 
+export const fetchTimeEntryRange = (from: string, to: string) =>
+  http.get('/time-entries', timeEntriesSchema, { params: { from, to } });
+
 export const createTimeEntry = (taskId: string, input: CreateTimeEntryInput) =>
   http.post(`/tasks/${taskId}/time-entries`, timeEntrySchema, input);
 

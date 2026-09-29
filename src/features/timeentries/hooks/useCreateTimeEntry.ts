@@ -11,7 +11,7 @@ export function useCreateTimeEntry(taskId: string) {
     meta: { successKey: 'toast.created' },
     onSuccess: () =>
       queryClient.invalidateQueries({
-        queryKey: timeEntryKeys.lists(taskId),
+        queryKey: timeEntryKeys.all,
       }),
   });
 }

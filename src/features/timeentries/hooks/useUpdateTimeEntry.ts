@@ -3,7 +3,7 @@ import { updateTimeEntry } from '../api/time-entries.api';
 import { timeEntryKeys } from '../api/time-entries.queries';
 import type { UpdateTimeEntryInput } from '../schemas/time-entry.schema';
 
-export function useUpdateTimeEntry(taskId: string) {
+export function useUpdateTimeEntry(_taskId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -12,7 +12,7 @@ export function useUpdateTimeEntry(taskId: string) {
     meta: { successKey: 'toast.updated' },
     onSuccess: () =>
       queryClient.invalidateQueries({
-        queryKey: timeEntryKeys.lists(taskId),
+        queryKey: timeEntryKeys.all,
       }),
   });
 }

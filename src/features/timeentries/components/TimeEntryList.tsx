@@ -90,7 +90,7 @@ export function TimeEntryList({ taskId }: { taskId: string }) {
   if (isError) {
     return (
       <Alert>
-        <p>{t('time.loadError', { message: error.message })}</p>
+        <p>{t('time.loadError', { message: error instanceof Error ? error.message : '' })}</p>
         <button type="button" onClick={() => void refetch()}>
           {t('common.retry')}
         </button>
@@ -102,16 +102,21 @@ export function TimeEntryList({ taskId }: { taskId: string }) {
     return <p>{t('time.empty')}</p>;
   }
 
+  const total = data.reduce((sum, entry) => sum + entry.minutes, 0);
+
   return (
-    <ul>
-      {data.map((entry) => (
-        <li key={entry.id}>
-          {timeEntryLabel(entry)}
-          {canMutateTimeEntry(role, actorUserId, entry.user_id) ? (
-            <TimeEntryManageForm taskId={taskId} entry={entry} />
-          ) : null}
-        </li>
-      ))}
-    </ul>
+    <>
+      <p>{t('time.total', { minutes: total })}</p>
+      <ul>
+        {data.map((entry) => (
+          <li key={entry.id}>
+            {timeEntryLabel(entry)}
+            {canMutateTimeEntry(role, actorUserId, entry.user_id) ? (
+              <TimeEntryManageForm taskId={taskId} entry={entry} />
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }

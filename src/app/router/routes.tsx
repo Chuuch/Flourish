@@ -199,6 +199,24 @@ export const routes: RouteObject[] = [
         },
       },
       {
+        path: 'time',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { TimeWeekPage } = await import('@/features/timeentries/pages/TimeWeekPage');
+          const { RequireAuth: RequireStaffAuth } =
+            await import('@/features/auth/components/RequireAuth');
+          return {
+            Component: function TimeRoute() {
+              return (
+                <RequireStaffAuth>
+                  <TimeWeekPage />
+                </RequireStaffAuth>
+              );
+            },
+          };
+        },
+      },
+      {
         path: 'clients',
         element: (
           <RequireAuth>
