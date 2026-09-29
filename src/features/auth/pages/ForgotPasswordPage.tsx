@@ -1,12 +1,12 @@
 import { useI18n } from '@/features/i18n';
 import { ForgotPasswordForm } from '../components/ForgotPasswordForm';
+import { AuthScreen } from '../components/AuthScreen';
 
 export function ForgotPasswordPage() {
   const { t } = useI18n();
   return (
-    <main>
-      <h1>{t('auth.forgotPassword')}</h1>
+    <AuthScreen title={t('auth.resetPassword')}>
       <ForgotPasswordForm />
-    </main>
+    </AuthScreen>
   );
 }

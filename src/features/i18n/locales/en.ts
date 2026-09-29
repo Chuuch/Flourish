@@ -3,7 +3,6 @@ export const en = {
   'nav.home': 'Home',
   'nav.members': 'Members',
   'nav.clients': 'Clients',
-  'nav.users': 'Users',
   'nav.account': 'Account',
   'nav.signOut': 'Sign out',
   'nav.signIn': 'Sign in',
@@ -116,11 +115,6 @@ export const en = {
   'clientUsers.loadError': 'Could not load client users: {{message}}',
   'clientUsers.empty': 'No client users yet.',
   'clientUsers.remove': 'Remove {{email}}',
-  'users.title': 'Users',
-  'users.add': 'Create user',
-  'users.loading': 'Loading users...',
-  'users.loadError': 'Could not load users: {{message}}',
-  'users.empty': 'No users yet.',
   'projects.title': 'Projects',
   'projects.add': 'Add project',
   'projects.loading': 'Loading projects...',
@@ -221,6 +215,16 @@ export const en = {
   'toast.uploaded': 'Uploaded',
   'toast.converted': 'Opened as a task',
   'toast.failed': 'Something went wrong',
+  'home.slogan': 'The operating system for your agency.',
+  'home.heroLead': 'Clients, projects, tasks, and time — in one place.',
+  'home.heroBody':
+    'Flourish keeps the agency running: clients and projects on one side, tasks and time on the other, and a portal for the people you work for.',
+  'home.heroClients': 'Clients & projects',
+  'home.heroClientsBody': 'One home for every client and the work attached to them.',
+  'home.heroWork': 'Tasks & time',
+  'home.heroWorkBody': 'Inbox, assignments, and time entries without hopping tools.',
+  'home.heroPortal': 'Client portal',
+  'home.heroPortalBody': 'Clients raise tickets. You convert them into tasks.',
 } as const;
 
 export type MessageKey = keyof typeof en;
