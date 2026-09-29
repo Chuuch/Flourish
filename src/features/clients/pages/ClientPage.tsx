@@ -47,10 +47,11 @@ function ClientHub({ clientId, canManage }: { clientId: string; canManage: boole
   }
 
   if (isError) {
+    const message = error instanceof Error ? error.message : '';
     return (
       <main>
         <Alert>
-          <p>{t('clients.loadError', { message: error.message })}</p>
+          <p>{t('clients.loadError', { message })}</p>
           <button type="button" onClick={() => void refetch()}>
             {t('common.retry')}
           </button>
@@ -99,7 +100,7 @@ function HubProjects({ clientId }: { clientId: string }) {
       {isPending ? <ListSkeleton label={t('projects.loading')} rows={3} /> : null}
       {isError ? (
         <Alert>
-          <p>{t('projects.loadError', { message: error.message })}</p>
+          <p>{t('projects.loadError', { message: error instanceof Error ? error.message : '' })}</p>
           <button type="button" onClick={() => void refetch()}>
             {t('common.retry')}
           </button>
@@ -132,7 +133,7 @@ function HubTickets({ clientId }: { clientId: string }) {
       {isPending ? <ListSkeleton label={t('tickets.loading')} rows={3} /> : null}
       {isError ? (
         <Alert>
-          <p>{t('tickets.loadError', { message: error.message })}</p>
+          <p>{t('tickets.loadError', { message: error instanceof Error ? error.message : '' })}</p>
           <button type="button" onClick={() => void refetch()}>
             {t('common.retry')}
           </button>
@@ -164,7 +165,9 @@ function HubUsers({ clientId }: { clientId: string }) {
       {isPending ? <ListSkeleton label={t('clientUsers.loading')} rows={3} /> : null}
       {isError ? (
         <Alert>
-          <p>{t('clientUsers.loadError', { message: error.message })}</p>
+          <p>
+            {t('clientUsers.loadError', { message: error instanceof Error ? error.message : '' })}
+          </p>
           <button type="button" onClick={() => void refetch()}>
             {t('common.retry')}
           </button>
