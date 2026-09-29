@@ -1,7 +1,7 @@
 import { Alert, Button } from '@/components/ui';
 import { useMembers } from '../hooks/useMembers';
 import { useAuthStore } from '@/features/auth';
-import { assignableRoleSchema, canManageMembers, type MemberRole } from '../schemas/member.schema';
+import { assignableRoleSchema, canManageMembers, memberLabel, type MemberRole } from '../schemas/member.schema';
 import { useUpdateMember } from '../hooks/useUpdateMember';
 import { useDeleteMember } from '../hooks/useDeleteMember';
 import { useI18n } from '@/features/i18n';
@@ -41,10 +41,10 @@ export function MemberList() {
       <ul>
         {data.map((member) => (
           <li key={member.user_id}>
-            <p>{t('members.summary', { email: member.email, role: member.role })}</p>
+            <p>{t('members.summary', { email: memberLabel(member), role: member.role })}</p>
             {canManage && member.role !== 'owner' ? (
               <label>
-                {t('members.roleFor', { email: member.email })}
+                {t('members.roleFor', { email: memberLabel(member) })}
                 <select
                   value={member.role}
                   disabled={updateMember.isPending}
@@ -75,7 +75,7 @@ export function MemberList() {
                   deleteMember.mutate(member.user_id);
                 }}
               >
-                {t('members.remove', { email: member.email })}
+                {t('members.remove', { email: memberLabel(member) })}
               </Button>
             ) : null}
           </li>
