@@ -5,6 +5,7 @@ import {
   paths,
   projectFilesPath,
   projectTasksPath,
+  taskPath,
 } from '@/app/router/paths';
 import { Alert } from '@/components/ui';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
@@ -128,7 +129,9 @@ function HubTasks({ clientId, projectId }: { clientId: string; projectId: string
       {data && data.length > 0 ? (
         <ul>
           {data.map((task) => (
-            <li key={task.id}>{task.title}</li>
+            <li key={task.id}>
+              <Link to={taskPath(clientId, projectId, task.id)}>{task.title}</Link>
+            </li>
           ))}
         </ul>
       ) : null}
