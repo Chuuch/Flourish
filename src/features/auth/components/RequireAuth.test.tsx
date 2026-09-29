@@ -7,6 +7,7 @@ import { env } from '@/config/env';
 import { renderWithProviders } from '@/test/render';
 import { server } from '@/test/server';
 import { useAuthStore } from '../store/auth.store';
+import { makeClient } from '@/test/factories/client';
 
 const testOrg = {
   id: crypto.randomUUID(),
@@ -108,5 +109,32 @@ describe('RequireAuth', () => {
     renderAt(`/clients/${clientId}/users`);
 
     expect(await screen.findByRole('heading', { name: 'Client users' })).toBeInTheDocument();
+  });
+});
+
+describe('RequireAuth', () => {
+  it('redirects anonymous users to login', async () => {
+    renderAt(`/clients/${clientId}`);
+
+    expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeInTheDocument();
+  });
+
+  it('renders the protected page when there is a session', async () => {
+    useAuthStore
+      .getState()
+      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
+
+    const client = makeClient({ name: 'Northwind', notes: '' });
+
+    server.use(
+      mswHttp.get(`${env.API_URL}/clients`, () => HttpResponse.json([client])),
+      mswHttp.get(`${env.API_URL}/clients/${client.id}/projects`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/clients/${client.id}/tickets`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/clients/${client.id}/users`, () => HttpResponse.json([])),
+    );
+
+    renderAt(`/clients/${client.id}`);
+
+    expect(await screen.findByRole('heading', { name: 'Northwind' })).toBeInTheDocument();
   });
 });
