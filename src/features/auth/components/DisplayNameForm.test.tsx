@@ -19,7 +19,9 @@ describe('DisplayNameForm', () => {
   it('saves a display name and updates the session', async () => {
     const user = userEvent.setup();
     const userId = crypto.randomUUID();
-    useAuthStore.getState().setSession({ id: userId, email: 'ada@example.com' }, 'token', testOrg, 'owner');
+    useAuthStore
+      .getState()
+      .setSession({ id: userId, email: 'ada@example.com' }, 'token', testOrg, 'owner');
 
     server.use(
       mswHttp.patch(`${env.API_URL}/auth/display-name`, async ({ request }) => {

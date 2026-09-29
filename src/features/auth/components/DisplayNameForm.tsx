@@ -4,10 +4,7 @@ import { Alert, Button, TextField } from '@/components/ui';
 import { useI18n } from '@/features/i18n';
 import { useAuthStore } from '../store/auth.store';
 import { useUpdateDisplayName } from '../hooks/useUpdateDisplayName';
-import {
-  updateDisplayNameInputSchema,
-  type UpdateDisplayNameInput,
-} from '../schemas/auth.schema';
+import { updateDisplayNameInputSchema, type UpdateDisplayNameInput } from '../schemas/auth.schema';
 
 export function DisplayNameForm() {
   const displayName = useAuthStore((state) => state.user?.display_name ?? '');

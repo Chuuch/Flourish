@@ -1,7 +1,12 @@
 import { Alert, Button } from '@/components/ui';
 import { useMembers } from '../hooks/useMembers';
 import { useAuthStore } from '@/features/auth';
-import { assignableRoleSchema, canManageMembers, memberLabel, type MemberRole } from '../schemas/member.schema';
+import {
+  assignableRoleSchema,
+  canManageMembers,
+  memberLabel,
+  type MemberRole,
+} from '../schemas/member.schema';
 import { useUpdateMember } from '../hooks/useUpdateMember';
 import { useDeleteMember } from '../hooks/useDeleteMember';
 import { useI18n } from '@/features/i18n';
