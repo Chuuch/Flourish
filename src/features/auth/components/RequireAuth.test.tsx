@@ -9,6 +9,7 @@ import { server } from '@/test/server';
 import { useAuthStore } from '../store/auth.store';
 import { makeClient } from '@/test/factories/client';
 import { makeProject } from '@/test/factories/project';
+import { makeTask } from '@/test/factories/task';
 
 const testOrg = {
   id: crypto.randomUUID(),
@@ -168,5 +169,37 @@ describe('RequireAuth', () => {
     renderAt(`/clients/${project.client_id}/projects/${project.id}`);
 
     expect(await screen.findByRole('heading', { name: 'Website' })).toBeInTheDocument();
+  });
+});
+
+describe('RequireAuth', () => {
+  it('redirects anonymous users to login', async () => {
+    const client = makeClient();
+    const project = makeProject({ client_id: client.id });
+    const task = makeTask({ project_id: project.id });
+
+    renderAt(`/clients/${client.id}/projects/${project.id}/tasks/${task.id}`);
+
+    expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeInTheDocument();
+  });
+
+  it('renders the protected page when there is a session', async () => {
+    useAuthStore
+      .getState()
+      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
+
+    const project = makeProject({ name: 'Website', notes: '' });
+    const task = makeTask({ project_id: project.id, title: 'Fix login', notes: '' });
+
+    server.use(
+      mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () => HttpResponse.json([task])),
+      mswHttp.get(`${env.API_URL}/tasks/${task.id}/comments`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tasks/${task.id}/time-entries`, () => HttpResponse.json([])),
+    );
+
+    renderAt(`/clients/${project.client_id}/projects/${project.id}/tasks/${task.id}`);
+
+    expect(await screen.findByRole('heading', { name: 'Fix login' })).toBeInTheDocument();
   });
 });

@@ -1,7 +1,7 @@
 import { Alert, Button } from '@/components/ui';
 import { useTasks } from '../hooks/useTasks';
 import { Link } from 'react-router';
-import { taskCommentsPath, taskTimeEntriesPath } from '@/app/router/paths';
+import { taskCommentsPath, taskPath } from '@/app/router/paths';
 import { useUpdateTask } from '../hooks/useUpdateTask';
 import { canManageTasks, taskStatusSchema, type TaskStatus } from '../schemas/task.schema';
 import { useAuthStore } from '@/features/auth';
@@ -25,7 +25,7 @@ export function TaskList({ projectId, clientId }: { projectId: string; clientId:
   if (isError) {
     return (
       <Alert>
-        <p>{t('tasks.loadError', { message: error.message })}</p>
+        <p>{t('tasks.loadError', { message: error instanceof Error ? error.message : '' })}</p>
         <button type="button" onClick={() => void refetch()}>
           {t('common.retry')}
         </button>
@@ -44,7 +44,7 @@ export function TaskList({ projectId, clientId }: { projectId: string; clientId:
       <ul>
         {data.map((task) => (
           <li key={task.id}>
-            <Link to={taskTimeEntriesPath(clientId, projectId, task.id)}>
+            <Link to={taskPath(clientId, projectId, task.id)}>
               {task.notes ? `${task.title} - ${task.notes}` : task.title}
             </Link>{' '}
             <Link to={taskCommentsPath(clientId, projectId, task.id)}>{t('common.comments')}</Link>{' '}

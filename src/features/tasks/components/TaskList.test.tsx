@@ -54,7 +54,7 @@ describe('TaskList', () => {
 
     expect(await screen.findByRole('link', { name: 'Fix login - OAuth' })).toHaveAttribute(
       'href',
-      `/clients/${clientId}/projects/${projectId}/tasks/${login.id}/time-entries`,
+      `/clients/${clientId}/projects/${projectId}/tasks/${login.id}`,
     );
     expect(screen.getByRole('link', { name: 'Ship site' })).toBeInTheDocument();
     expect(screen.getAllByRole('link', { name: 'Comments' })[0]).toHaveAttribute(

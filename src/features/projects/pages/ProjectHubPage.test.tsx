@@ -58,7 +58,10 @@ describe('ProjectHubPage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Website' })).toBeInTheDocument();
     expect(screen.getByText('Launch')).toBeInTheDocument();
-    expect(await screen.findByText('Fix login')).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'Fix login' })).toHaveAttribute(
+      'href',
+      `/clients/${project.client_id}/projects/${project.id}/tasks/${task.id}`,
+    );
     expect(await screen.findByText('spec.pdf (2048 bytes)')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'View tasks' })).toHaveAttribute(
       'href',
