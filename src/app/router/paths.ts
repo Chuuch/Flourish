@@ -7,6 +7,7 @@ export const paths = {
   resetPassword: '/reset-password',
   account: '/account',
   members: '/members',
+  activity: '/activity',
   clients: '/clients',
   projects: '/projects',
   tasks: '/tasks',

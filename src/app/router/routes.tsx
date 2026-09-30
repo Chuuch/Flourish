@@ -199,6 +199,24 @@ export const routes: RouteObject[] = [
         },
       },
       {
+        path: 'activity',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { ActivityPage } = await import('@/features/activity/pages/ActivityPage');
+          const { RequireAuth: RequireStaffAuth } =
+            await import('@/features/auth/components/RequireAuth');
+          return {
+            Component: function ActivityRoute() {
+              return (
+                <RequireStaffAuth>
+                  <ActivityPage />
+                </RequireStaffAuth>
+              );
+            },
+          };
+        },
+      },
+      {
         path: 'clients',
         element: (
           <RequireAuth>
