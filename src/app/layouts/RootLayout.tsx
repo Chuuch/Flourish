@@ -8,6 +8,7 @@ import { LocaleSwitcher, useI18n } from '@/features/i18n';
 import {
   Building2,
   DoorOpen,
+  History,
   House,
   Leaf,
   LogIn,
@@ -45,6 +46,9 @@ export function RootLayout() {
               </SidebarLink>
               <SidebarLink to={paths.clients} icon={Building2}>
                 {t('nav.clients')}
+              </SidebarLink>
+              <SidebarLink to={paths.activity} icon={History}>
+                {t('nav.activity')}
               </SidebarLink>
             </>
           ) : null}

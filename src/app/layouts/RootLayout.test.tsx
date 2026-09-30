@@ -54,6 +54,7 @@ describe('RootLayout', () => {
 
     expect(screen.getByRole('link', { name: 'Members' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Clients' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Activity' })).toBeInTheDocument();
     expect(screen.getByText('Acme')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Use dark theme' })).toBeInTheDocument();
     expect(screen.getByLabelText('Language')).toHaveValue('en');
