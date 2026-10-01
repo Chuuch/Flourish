@@ -15,6 +15,8 @@ export const paths = {
   portal: '/portal',
   portalLogin: '/portal/login',
   portalAccount: '/portal/account',
+  notifications: '/notifications',
+  portalNotifications: '/portal/notifications',
 } as const;
 
 export function clientPath(clientId: string): string {

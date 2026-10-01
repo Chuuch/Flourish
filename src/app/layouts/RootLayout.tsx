@@ -6,6 +6,7 @@ import { Button, SidebarLink } from '@/components/ui';
 import { ThemeToggle } from '@/features/theme';
 import { LocaleSwitcher, useI18n } from '@/features/i18n';
 import {
+  Bell,
   Building2,
   ChartColumn,
   DoorOpen,
@@ -54,10 +55,18 @@ export function RootLayout() {
               <SidebarLink to={paths.reports} icon={ChartColumn}>
                 {t('nav.reports')}
               </SidebarLink>
+              <SidebarLink to={paths.notifications} icon={Bell}>
+                {t('nav.notifications')}
+              </SidebarLink>
             </>
           ) : null}
           {user ? (
             <>
+              {isPortal ? (
+                <SidebarLink to={paths.portalNotifications} icon={Bell}>
+                  {t('nav.notifications')}
+                </SidebarLink>
+              ) : null}
               {isPortal ? (
                 client ? (
                   <p className="text-muted mt-3 px-2.5 text-xs font-medium">{client.name}</p>
