@@ -243,7 +243,7 @@ export const en = {
   'tickets.removeLabel': 'Remove {{label}}',
   'toast.signedIn': 'Signed in',
   'toast.signedOut': 'Signed out',
-  'toast.resetSent': 'If that email is registere, we sent a reset link.',
+  'toast.resetSent': 'If that email is registered, we sent a reset link.',
   'toast.passwordUpdated': 'Password updated',
   'toast.invited': 'Invite sent',
   'toast.created': 'Created',
