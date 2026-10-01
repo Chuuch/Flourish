@@ -8,6 +8,7 @@ export const paths = {
   account: '/account',
   members: '/members',
   activity: '/activity',
+  reports: '/reports',
   clients: '/clients',
   projects: '/projects',
   tasks: '/tasks',

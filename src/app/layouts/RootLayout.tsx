@@ -7,6 +7,7 @@ import { ThemeToggle } from '@/features/theme';
 import { LocaleSwitcher, useI18n } from '@/features/i18n';
 import {
   Building2,
+  ChartColumn,
   DoorOpen,
   History,
   House,
@@ -49,6 +50,9 @@ export function RootLayout() {
               </SidebarLink>
               <SidebarLink to={paths.activity} icon={History}>
                 {t('nav.activity')}
+              </SidebarLink>
+              <SidebarLink to={paths.reports} icon={ChartColumn}>
+                {t('nav.reports')}
               </SidebarLink>
             </>
           ) : null}

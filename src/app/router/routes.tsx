@@ -217,6 +217,24 @@ export const routes: RouteObject[] = [
         },
       },
       {
+        path: 'reports',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { ReportsPage } = await import('@/features/reports/pages/ReportsPage');
+          const { RequireAuth: RequireStaffAuth } =
+            await import('@/features/auth/components/RequireAuth');
+          return {
+            Component: function ReportsRoute() {
+              return (
+                <RequireStaffAuth>
+                  <ReportsPage />
+                </RequireStaffAuth>
+              );
+            },
+          };
+        },
+      },
+      {
         path: 'clients',
         element: (
           <RequireAuth>
