@@ -1,12 +1,12 @@
-import type { RouteObject } from 'react-router';
-import { Outlet } from 'react-router';
-import { paths } from './paths';
-import { RootLayout } from '../layouts/RootLayout';
-import { RouteErrorBoundary } from '@/components/feedback/RouteErrorBoundary';
-import { HomePage } from '@/features/home/pages/HomePage';
 import { NotFound } from '@/components/feedback/NotFound';
 import { PageLoader } from '@/components/feedback/PageLoader';
+import { RouteErrorBoundary } from '@/components/feedback/RouteErrorBoundary';
 import { RequireAuth } from '@/features/auth/components/RequireAuth';
+import { HomePage } from '@/features/home/pages/HomePage';
+import type { RouteObject } from 'react-router';
+import { Outlet } from 'react-router';
+import { RootLayout } from '../layouts/RootLayout';
+import { paths } from './paths';
 
 export const routes: RouteObject[] = [
   {
@@ -178,6 +178,25 @@ export const routes: RouteObject[] = [
               };
             },
           },
+          {
+            path: 'notifications',
+            HydrateFallback: PageLoader,
+            lazy: async () => {
+              const { NotificationsPage } =
+                await import('@/features/notifications/pages/NotificationsPage');
+              const { RequirePortalAuth } =
+                await import('@/features/portal/components/RequirePortalAuth');
+              return {
+                Component: function PortalNotificationsRoute() {
+                  return (
+                    <RequirePortalAuth>
+                      <NotificationsPage />
+                    </RequirePortalAuth>
+                  );
+                },
+              };
+            },
+          },
         ],
       },
       {
@@ -228,6 +247,25 @@ export const routes: RouteObject[] = [
               return (
                 <RequireStaffAuth>
                   <ReportsPage />
+                </RequireStaffAuth>
+              );
+            },
+          };
+        },
+      },
+      {
+        path: 'notifications',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { NotificationsPage } =
+            await import('@/features/notifications/pages/NotificationsPage');
+          const { RequireAuth: RequireStaffAuth } =
+            await import('@/features/auth/components/RequireAuth');
+          return {
+            Component: function NotificationsRoute() {
+              return (
+                <RequireStaffAuth>
+                  <NotificationsPage />
                 </RequireStaffAuth>
               );
             },
