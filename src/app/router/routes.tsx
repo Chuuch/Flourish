@@ -319,6 +319,29 @@ export const routes: RouteObject[] = [
                 },
               },
               {
+                path: 'invoices',
+                element: <Outlet />,
+                children: [
+                  {
+                    index: true,
+                    HydrateFallback: PageLoader,
+                    lazy: async () => {
+                      const { InvoicesPage } =
+                        await import('@/features/invoices/pages/InvoicesPage');
+                      return { Component: InvoicesPage };
+                    },
+                  },
+                  {
+                    path: ':invoiceId',
+                    HydrateFallback: PageLoader,
+                    lazy: async () => {
+                      const { InvoicePage } = await import('@/features/invoices/pages/InvoicePage');
+                      return { Component: InvoicePage };
+                    },
+                  },
+                ],
+              },
+              {
                 path: 'projects',
                 element: <Outlet />,
                 children: [

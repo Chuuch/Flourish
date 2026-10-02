@@ -35,6 +35,14 @@ export function clientTicketsPath(clientId: string): string {
   return `${paths.clients}/${clientId}/tickets`;
 }
 
+export function clientInvoicesPath(clientId: string): string {
+  return `${paths.clients}/${clientId}/invoices`;
+}
+
+export function invoicePath(clientId: string, invoiceId: string): string {
+  return `${paths.clients}/${clientId}/invoices/${invoiceId}`;
+}
+
 export function projectPath(clientId: string, projectId: string): string {
   return `${paths.clients}/${clientId}/projects/${projectId}`;
 }

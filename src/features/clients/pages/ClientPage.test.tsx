@@ -30,6 +30,7 @@ function mockHubApis(client: Client, projects: unknown[] = []) {
     mswHttp.get(`${env.API_URL}/clients`, () => HttpResponse.json([client])),
     mswHttp.get(`${env.API_URL}/clients/${client.id}/projects`, () => HttpResponse.json(projects)),
     mswHttp.get(`${env.API_URL}/clients/${client.id}/tickets`, () => HttpResponse.json([])),
+    mswHttp.get(`${env.API_URL}/clients/${client.id}/invoices`, () => HttpResponse.json([])),
     mswHttp.get(`${env.API_URL}/clients/${client.id}/users`, () => HttpResponse.json([])),
   );
 }
@@ -63,6 +64,10 @@ describe('ClientPage', () => {
       'href',
       `/clients/${client.id}/projects`,
     );
+    expect(screen.getByRole('link', { name: 'View invoices' })).toHaveAttribute(
+      'href',
+      `/clients/${client.id}/invoices`,
+    );
   });
 
   it('updates a client name and notes', async () => {
@@ -74,6 +79,7 @@ describe('ClientPage', () => {
       mswHttp.get(`${env.API_URL}/clients`, () => HttpResponse.json([client])),
       mswHttp.get(`${env.API_URL}/clients/${client.id}/projects`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/clients/${client.id}/tickets`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/clients/${client.id}/invoices`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/clients/${client.id}/users`, () => HttpResponse.json([])),
       mswHttp.patch(`${env.API_URL}/clients/${client.id}`, async ({ request }) => {
         const input = updateClientSchema.parse(await request.json());

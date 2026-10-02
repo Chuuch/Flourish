@@ -1,0 +1,93 @@
+import { useAuthStore } from '@/features/auth';
+import { useCreateInvoice } from '../hooks/useCreateInvoice';
+import { useInvoices } from '../hooks/useInvoices';
+import { canManageClients } from '@/features/clients/schemas/client.schema';
+import { defaultReportDates, reportRange } from '@/features/reports/lib/reportRange';
+import { useI18n } from '@/features/i18n';
+import { Alert, Button, TextField } from '@/components/ui';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
+import { Link } from 'react-router';
+import { invoicePath } from '@/app/router/paths';
+import { invoiceStatusKey } from '../lib/invoiceStatus';
+import { formatEUR } from '../lib/formatMoney';
+
+export function InvoiceList({ clientId }: { clientId: string }) {
+  const { data, isPending, isError, error, refetch } = useInvoices(clientId);
+  const createInvoice = useCreateInvoice(clientId);
+  const role = useAuthStore((state) => state.role);
+  const canManage = canManageClients(role);
+  const defaults = defaultReportDates();
+  const { t } = useI18n();
+
+  return (
+    <>
+      {canManage ? (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            const form = new FormData(event.currentTarget);
+            const fromDate = form.get('from');
+            const toDate = form.get('to');
+            if (typeof fromDate !== 'string' || typeof toDate !== 'string') {
+              return;
+            }
+            const range = reportRange(fromDate, toDate);
+            createInvoice.mutate({ from: range.from, to: range.to });
+          }}
+        >
+          <TextField
+            name="from"
+            type="date"
+            label={t('reports.from')}
+            defaultValue={defaults.from}
+            required
+          />
+
+          <TextField
+            name="to"
+            type="date"
+            label={t('reports.to')}
+            defaultValue={defaults.to}
+            required
+          />
+          <Button type="submit" disabled={createInvoice.isPending}>
+            {t('invoices.create')}
+          </Button>
+        </form>
+      ) : null}
+
+      {isPending ? <ListSkeleton label={t('invoices.loading')} /> : null}
+
+      {isError ? (
+        <Alert>
+          <p>
+            {t('invoices.loadError', {
+              message: error instanceof Error ? error.message : '',
+            })}
+          </p>
+          <button type="button" onClick={() => void refetch()}>
+            {t('common.retry')}
+          </button>
+        </Alert>
+      ) : null}
+
+      {data && data.length === 0 ? <p>{t('invoices.empty')}</p> : null}
+
+      {data && data.length > 0 ? (
+        <ul>
+          {data.map((invoice) => (
+            <li key={invoice.id}>
+              <Link to={invoicePath(clientId, invoice.id)}>
+                {t('invoices.listLine', {
+                  number: invoice.number,
+                  status: t(invoiceStatusKey[invoice.status]),
+                  amount: formatEUR(invoice.total_cents),
+                })}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </>
+  );
+}

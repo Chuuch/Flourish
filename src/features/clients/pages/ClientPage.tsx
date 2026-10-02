@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router';
 import {
+  clientInvoicesPath,
   clientProjectsPath,
   clientTicketsPath,
   clientUsersPath,
@@ -11,6 +12,7 @@ import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
 import { useClientUsers } from '@/features/clientusers/hooks/useClientUsers';
+import { useInvoices } from '@/features/invoices/hooks/useInvoices';
 import { useProjects } from '@/features/projects/hooks/useProjects';
 import { useStaffTickets } from '@/features/tickets/hooks/useStaffTickets';
 import { ClientManageForm } from '../components/ClientManageForm';
@@ -84,6 +86,7 @@ function ClientHub({ clientId, canManage }: { clientId: string; canManage: boole
       <div className="hub-grid">
         <HubProjects clientId={clientId} />
         <HubTickets clientId={clientId} />
+        <HubInvoices clientId={clientId} />
         <HubUsers clientId={clientId} />
       </div>
     </main>
@@ -150,6 +153,38 @@ function HubTickets({ clientId }: { clientId: string }) {
       ) : null}
       <p>
         <Link to={clientTicketsPath(clientId)}>{t('clients.viewTickets')}</Link>
+      </p>
+    </section>
+  );
+}
+
+function HubInvoices({ clientId }: { clientId: string }) {
+  const { data, isPending, isError, error, refetch } = useInvoices(clientId);
+  const { t } = useI18n();
+
+  return (
+    <section>
+      <h2>{t('common.invoices')}</h2>
+      {isPending ? <ListSkeleton label={t('invoices.loading')} rows={3} /> : null}
+      {isError ? (
+        <Alert>
+          <p>{t('invoices.loadError', { message: error instanceof Error ? error.message : '' })}</p>
+          <button type="button" onClick={() => void refetch()}>
+            {t('common.retry')}
+          </button>
+        </Alert>
+      ) : null}
+      {data ? <p>{t('clients.invoiceCount', { count: data.length })}</p> : null}
+      {data && data.length === 0 ? <p>{t('invoices.empty')}</p> : null}
+      {data && data.length > 0 ? (
+        <ul>
+          {data.slice(0, 5).map((invoice) => (
+            <li key={invoice.id}>{invoice.number}</li>
+          ))}
+        </ul>
+      ) : null}
+      <p>
+        <Link to={clientInvoicesPath(clientId)}>{t('clients.viewInvoices')}</Link>
       </p>
     </section>
   );
