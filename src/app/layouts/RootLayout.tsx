@@ -15,6 +15,7 @@ import {
   Leaf,
   LogIn,
   LogOut,
+  Receipt,
   Settings,
   UserPlus,
   UsersRound,
@@ -63,9 +64,14 @@ export function RootLayout() {
           {user ? (
             <>
               {isPortal ? (
-                <SidebarLink to={paths.portalNotifications} icon={Bell}>
-                  {t('nav.notifications')}
-                </SidebarLink>
+                <>
+                  <SidebarLink to={paths.portalNotifications} icon={Bell}>
+                    {t('nav.notifications')}
+                  </SidebarLink>
+                  <SidebarLink to={paths.portalInvoices} icon={Receipt}>
+                    {t('common.invoices')}
+                  </SidebarLink>
+                </>
               ) : null}
               {isPortal ? (
                 client ? (

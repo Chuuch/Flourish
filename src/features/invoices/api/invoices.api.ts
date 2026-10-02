@@ -5,6 +5,11 @@ import axios from 'axios';
 import { ApiError, apiErrorResponseSchema } from '@/lib/api/errors';
 import { apiClient } from '@/lib/api/client';
 
+export const fetchPortalInvoices = () => http.get('/client-auth/invoices', invoicesSchema);
+
+export const fetchPortalInvoice = (invoiceId: string) =>
+  http.get(`/client-auth/invoices/${invoiceId}`, invoiceSchema);
+
 export const fetchInvoices = (clientId: string) =>
   http.get(`/clients/${clientId}/invoices`, invoicesSchema);
 
@@ -61,10 +66,12 @@ async function throwBlobError(error: unknown): Promise<never> {
   throw new ApiError('Download failed', 0, 'DOWNLOAD_FAILED');
 }
 
-export async function downloadInvoicePdf(invoiceId: string): Promise<void> {
-  let response;
+export async function downloadInvoicePdf(
+  invoiceId: string,
+  pdfPath = `/invoices/${invoiceId}/pdf`,
+): Promise<void> {
   try {
-    response = await apiClient.get<Blob>(`/invoices/${invoiceId}/pdf`, {
+    const response = await apiClient.get<Blob>(pdfPath, {
       responseType: 'blob',
       timeout: 30_000,
     });
@@ -86,3 +93,6 @@ export async function downloadInvoicePdf(invoiceId: string): Promise<void> {
     await throwBlobError(error);
   }
 }
+
+export const downloadPortalInvoicePdf = (invoiceId: string) =>
+  downloadInvoicePdf(invoiceId, `/client-auth/invoices/${invoiceId}/pdf`);

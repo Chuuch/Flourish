@@ -17,6 +17,7 @@ export const paths = {
   portalAccount: '/portal/account',
   notifications: '/notifications',
   portalNotifications: '/portal/notifications',
+  portalInvoices: '/portal/invoices',
 } as const;
 
 export function clientPath(clientId: string): string {
@@ -41,6 +42,10 @@ export function clientInvoicesPath(clientId: string): string {
 
 export function invoicePath(clientId: string, invoiceId: string): string {
   return `${paths.clients}/${clientId}/invoices/${invoiceId}`;
+}
+
+export function portalInvoicePath(invoiceId: string): string {
+  return `${paths.portalInvoices}/${invoiceId}`;
 }
 
 export function projectPath(clientId: string, projectId: string): string {

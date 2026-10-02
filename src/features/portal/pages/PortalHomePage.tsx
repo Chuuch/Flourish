@@ -1,6 +1,9 @@
+import { paths } from '@/app/router/paths';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
+import { PortalInvoiceList } from '@/features/invoices/components/PortalInvoiceList';
 import { CreateTicketForm, TicketList } from '@/features/tickets';
+import { Link } from 'react-router';
 
 export function PortalHomePage() {
   const user = useAuthStore((state) => state.user);
@@ -15,6 +18,10 @@ export function PortalHomePage() {
       <h2>{t('common.tickets')}</h2>
       <CreateTicketForm />
       <TicketList />
+      <h2>
+        <Link to={paths.portalInvoices}>{t('common.invoices')}</Link>
+      </h2>
+      <PortalInvoiceList />
     </main>
   );
 }
