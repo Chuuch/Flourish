@@ -149,6 +149,7 @@ export const es: Record<MessageKey, string> = {
   'invoices.line': '{{project}} · {{task}} · {{hours}} h · {{amount}}',
   'invoices.listLine': '{{number}} · {{status}} · {{amount}}',
   'invoices.total': 'Total {{amount}}',
+  'invoices.download': 'Descargar PDF',
   'clientUsers.title': 'Usuarios del cliente',
   'clientUsers.invite': 'Invitar usuario del cliente',
   'clientUsers.loading': 'Cargando usuarios del cliente...',
@@ -311,6 +312,7 @@ export const es: Record<MessageKey, string> = {
   'toast.sent': 'Enviado',
   'toast.markedPaid': 'Marcada como pagada',
   'toast.failed': 'Algo salió mal',
+  'toast.downloaded': 'Descargado',
   'home.slogan': 'El sistema operativo de tu agencia.',
   'home.heroLead': 'Clientes, proyectos, tareas y tiempo — en un solo lugar.',
   'home.heroBody':

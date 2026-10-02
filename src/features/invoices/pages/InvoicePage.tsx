@@ -13,6 +13,7 @@ import { useInvoice } from '../hooks/useInvoice';
 import { useMarkInvoicePaid } from '../hooks/useMarkInvoicePaid';
 import { useSendInvoice } from '../hooks/useSendInvoice';
 import { useUpdateInvoice } from '../hooks/useUpdateInvoice';
+import { useDownloadInvoicePdf } from '../hooks/useDownloadInvoicePdf';
 
 export function InvoicePage() {
   const { clientId, invoiceId } = useParams();
@@ -36,6 +37,7 @@ function InvoiceDetail({ clientId, invoiceId }: { clientId: string; invoiceId: s
   const sendInvoice = useSendInvoice(clientId, invoiceId);
   const markPaid = useMarkInvoicePaid(clientId, invoiceId);
   const deleteInvoice = useDeleteInvoice(clientId);
+  const downloadPdf = useDownloadInvoicePdf();
   const navigate = useNavigate();
   const role = useAuthStore((state) => state.role);
   const canManage = canManageClients(role);
@@ -111,6 +113,16 @@ function InvoiceDetail({ clientId, invoiceId }: { clientId: string; invoiceId: s
           </li>
         ))}
       </ul>
+
+      <Button
+        type="button"
+        onClick={() => {
+          downloadPdf.mutate(invoiceId);
+        }}
+        disabled={downloadPdf.isPending}
+      >
+        {t('invoices.download')}
+      </Button>
 
       {canManage && data.status === 'draft' ? (
         <>

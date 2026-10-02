@@ -188,6 +188,7 @@ export const en = {
   'invoices.line': '{{project}} · {{task}} · {{hours}} h · {{amount}}',
   'invoices.listLine': '{{number}} · {{status}} · {{amount}}',
   'invoices.total': 'Total {{amount}}',
+  'invoices.download': 'Download PDF',
   'clientUsers.title': 'Client users',
   'clientUsers.invite': 'Invite client user',
   'clientUsers.loading': 'Loading client users...',
@@ -306,6 +307,7 @@ export const en = {
   'toast.sent': 'Sent',
   'toast.markedPaid': 'Marked paid',
   'toast.failed': 'Something went wrong',
+  'toast.downloaded': 'Downloaded',
   'home.slogan': 'The operating system for your agency.',
   'home.heroLead': 'Clients, projects, tasks, and time — in one place.',
   'home.heroBody':
