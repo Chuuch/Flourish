@@ -147,6 +147,7 @@ export const bg: Record<MessageKey, string> = {
   'invoices.line': '{{project}} · {{task}} · {{hours}} ч · {{amount}}',
   'invoices.listLine': '{{number}} · {{status}} · {{amount}}',
   'invoices.total': 'Общо {{amount}}',
+  'invoices.download': 'Изтегли PDF',
   'clientUsers.title': 'Клиентски потребители',
   'clientUsers.invite': 'Покани клиентски потребител',
   'clientUsers.loading': 'Зареждане на клиентски потребители...',
@@ -308,6 +309,7 @@ export const bg: Record<MessageKey, string> = {
   'toast.sent': 'Изпратено',
   'toast.markedPaid': 'Маркирана като платена',
   'toast.failed': 'Нещо се обърка',
+  'toast.downloaded': 'Изтеглено',
   'home.slogan': 'Операционната система за твоята агенция.',
   'home.heroLead': 'Клиенти, проекти, задачи и време — на едно място.',
   'home.heroBody':

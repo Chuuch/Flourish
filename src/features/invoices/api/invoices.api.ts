@@ -1,6 +1,9 @@
 import { http } from '@/lib/api/http';
 import { invoiceSchema, invoicesSchema } from '../schemas/invoice.schema';
 import z from 'zod';
+import axios from 'axios';
+import { ApiError, apiErrorResponseSchema } from '@/lib/api/errors';
+import { apiClient } from '@/lib/api/client';
 
 export const fetchInvoices = (clientId: string) =>
   http.get(`/clients/${clientId}/invoices`, invoicesSchema);
@@ -22,3 +25,64 @@ export const markInvoicePaid = (invoiceId: string) =>
 
 export const deleteInvoice = (invoiceId: string) =>
   http.delete(`/invoices/${invoiceId}`, z.unknown());
+
+function filenameFromDisposition(header: string | undefined): string | null {
+  if (!header) {
+    return null;
+  }
+  const match = /filename="([^"]+)"/i.exec(header);
+  return match?.[1] ?? null;
+}
+
+async function throwBlobError(error: unknown): Promise<never> {
+  if (axios.isAxiosError(error) && error.response?.data instanceof Blob) {
+    const text = await error.response.data.text();
+    try {
+      const parsed = apiErrorResponseSchema.safeParse(JSON.parse(text));
+      if (parsed.success) {
+        throw new ApiError(
+          parsed.data.error.message,
+          error.response.status,
+          parsed.data.error.code,
+          parsed.data.error.details,
+        );
+      }
+    } catch (parsedError) {
+      if (parsedError instanceof ApiError) {
+        throw parsedError;
+      }
+    }
+  }
+
+  if (error instanceof ApiError) {
+    throw error;
+  }
+
+  throw new ApiError('Download failed', 0, 'DOWNLOAD_FAILED');
+}
+
+export async function downloadInvoicePdf(invoiceId: string): Promise<void> {
+  let response;
+  try {
+    response = await apiClient.get<Blob>(`/invoices/${invoiceId}/pdf`, {
+      responseType: 'blob',
+      timeout: 30_000,
+    });
+
+    const blob = response.data;
+    const dispositionHeader = response.headers['content-disposition'] as unknown;
+    const filename =
+      filenameFromDisposition(
+        typeof dispositionHeader === 'string' ? dispositionHeader : undefined,
+      ) ?? `invoice-${invoiceId}.pdf`;
+
+    const objectUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = objectUrl;
+    anchor.download = filename;
+    anchor.click();
+    URL.revokeObjectURL(objectUrl);
+  } catch (error) {
+    await throwBlobError(error);
+  }
+}
