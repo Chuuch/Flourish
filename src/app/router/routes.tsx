@@ -197,6 +197,44 @@ export const routes: RouteObject[] = [
               };
             },
           },
+          {
+            path: 'invoices',
+            HydrateFallback: PageLoader,
+            lazy: async () => {
+              const { PortalInvoicesPage } =
+                await import('@/features/invoices/pages/PortalInvoicesPage');
+              const { RequirePortalAuth } =
+                await import('@/features/portal/components/RequirePortalAuth');
+              return {
+                Component: function PortalInvoicesRoute() {
+                  return (
+                    <RequirePortalAuth>
+                      <PortalInvoicesPage />
+                    </RequirePortalAuth>
+                  );
+                },
+              };
+            },
+          },
+          {
+            path: 'invoices/:invoiceId',
+            HydrateFallback: PageLoader,
+            lazy: async () => {
+              const { PortalInvoicePage } =
+                await import('@/features/invoices/pages/PortalInvoicePage');
+              const { RequirePortalAuth } =
+                await import('@/features/portal/components/RequirePortalAuth');
+              return {
+                Component: function PortalInvoiceRoute() {
+                  return (
+                    <RequirePortalAuth>
+                      <PortalInvoicePage />
+                    </RequirePortalAuth>
+                  );
+                },
+              };
+            },
+          },
         ],
       },
       {
