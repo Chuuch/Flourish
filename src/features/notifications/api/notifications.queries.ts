@@ -11,6 +11,5 @@ export const notificationQueries = {
     queryOptions({
       queryKey: notificationKeys.list(portal),
       queryFn: () => fetchNotifications(portal),
-      refetchInterval: 20_000,
     }),
 };

@@ -67,7 +67,7 @@ function toApiError(error: unknown): ApiError {
   return new ApiError('An unknown error has occurred', 0);
 }
 
-async function refreshAccessToken(): Promise<string> {
+export async function refreshAccessToken(): Promise<string> {
   if (!refreshPromise) {
     const refreshPath = authRealm === 'portal' ? '/client-auth/refresh' : '/auth/refresh';
     const schema = authRealm === 'portal' ? portalAuthResponseSchema : refreshResponseSchema;
