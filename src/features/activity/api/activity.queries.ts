@@ -11,6 +11,5 @@ export const activityQueries = {
     queryOptions({
       queryKey: activityKeys.lists(),
       queryFn: fetchActivity,
-      refetchInterval: 20_000,
     }),
 };
