@@ -116,7 +116,8 @@ export const bg: Record<MessageKey, string> = {
   'members.title': 'Членове',
   'members.invite': 'Покани член',
   'members.inviteHeading': 'Покани колега',
-  'members.inviteDescription': 'Изпрати покана по имейл. Админите могат да управляват членове и настройки.',
+  'members.inviteDescription':
+    'Изпрати покана по имейл. Админите могат да управляват членове и настройки.',
   'members.loading': 'Зареждане на членове...',
   'members.loadError': 'Членовете не можаха да се заредят: {{message}}',
   'members.empty': 'Все още няма членове.',

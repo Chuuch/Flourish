@@ -117,7 +117,8 @@ export const it: Record<MessageKey, string> = {
   'members.title': 'Membri',
   'members.invite': 'Invita membro',
   'members.inviteHeading': 'Invita un membro del team',
-  'members.inviteDescription': 'Invia un invito via e-mail. Gli admin possono gestire membri e impostazioni.',
+  'members.inviteDescription':
+    'Invia un invito via e-mail. Gli admin possono gestire membri e impostazioni.',
   'members.loading': 'Caricamento membri...',
   'members.loadError': 'Impossibile caricare i membri: {{message}}',
   'members.empty': 'Nessun membro ancora.',

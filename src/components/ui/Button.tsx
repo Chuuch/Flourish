@@ -13,7 +13,8 @@ const variants: Record<ButtonVariant, string> = {
   default: 'border-line bg-surface text-ink hover:bg-canvas-elevated',
   primary: 'border-transparent bg-accent text-accent-fg hover:brightness-110',
   ghost: 'border-transparent bg-transparent text-muted hover:bg-accent/8 hover:text-ink',
-  danger: 'border-line bg-surface text-muted hover:border-danger/45 hover:bg-canvas-elevated hover:text-danger',
+  danger:
+    'border-line bg-surface text-muted hover:border-danger/45 hover:bg-canvas-elevated hover:text-danger',
 };
 
 const sizes: Record<ButtonSize, string> = {

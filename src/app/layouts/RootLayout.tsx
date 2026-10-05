@@ -4,19 +4,19 @@ import { useLogout } from '@/features/auth/hooks/useLogout';
 import { LocaleSwitcher, useI18n } from '@/features/i18n';
 import { ThemeToggle } from '@/features/theme';
 import {
-    Bell,
-    Building2,
-    ChartColumn,
-    DoorOpen,
-    History,
-    House,
-    Leaf,
-    LogIn,
-    LogOut,
-    Receipt,
-    Settings,
-    UserPlus,
-    UsersRound,
+  Bell,
+  Building2,
+  ChartColumn,
+  DoorOpen,
+  History,
+  House,
+  Leaf,
+  LogIn,
+  LogOut,
+  Receipt,
+  Settings,
+  UserPlus,
+  UsersRound,
 } from 'lucide-react';
 import { Outlet } from 'react-router';
 import { paths } from '../router/paths';

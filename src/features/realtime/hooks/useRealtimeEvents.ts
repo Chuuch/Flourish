@@ -6,9 +6,9 @@ import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import {
-    applyRealtimeEvent,
-    catchUpRealtimeQueries,
-    realtimeEventSchema,
+  applyRealtimeEvent,
+  catchUpRealtimeQueries,
+  realtimeEventSchema,
 } from '../lib/realtimeEvent';
 
 class FatalRealtimeError extends Error {}

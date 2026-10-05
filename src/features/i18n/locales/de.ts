@@ -118,7 +118,8 @@ export const de: Record<MessageKey, string> = {
   'members.title': 'Mitglieder',
   'members.invite': 'Mitglied einladen',
   'members.inviteHeading': 'Teammitglied einladen',
-  'members.inviteDescription': 'Sende eine Einladung per E-Mail. Admins können Mitglieder und Einstellungen verwalten.',
+  'members.inviteDescription':
+    'Sende eine Einladung per E-Mail. Admins können Mitglieder und Einstellungen verwalten.',
   'members.loading': 'Mitglieder werden geladen...',
   'members.loadError': 'Mitglieder konnten nicht geladen werden: {{message}}',
   'members.empty': 'Noch keine Mitglieder.',

@@ -116,7 +116,8 @@ export const ru: Record<MessageKey, string> = {
   'members.title': 'Участники',
   'members.invite': 'Пригласить участника',
   'members.inviteHeading': 'Пригласить в команду',
-  'members.inviteDescription': 'Отправьте приглашение по email. Админы могут управлять участниками и настройками.',
+  'members.inviteDescription':
+    'Отправьте приглашение по email. Админы могут управлять участниками и настройками.',
   'members.loading': 'Загрузка участников...',
   'members.loadError': 'Не удалось загрузить участников: {{message}}',
   'members.empty': 'Пока нет участников.',

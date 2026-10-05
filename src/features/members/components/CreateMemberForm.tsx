@@ -59,7 +59,11 @@ export function CreateMemberForm() {
             />
           </div>
           <div className="w-full sm:w-44">
-            <SelectField label={t('members.role')} error={errors.role?.message} {...register('role')}>
+            <SelectField
+              label={t('members.role')}
+              error={errors.role?.message}
+              {...register('role')}
+            >
               <option value="member">{t('role.member')}</option>
               <option value="admin">{t('role.admin')}</option>
             </SelectField>
