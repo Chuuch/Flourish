@@ -6,7 +6,9 @@ export function ActivityPage() {
 
   return (
     <main>
-      <h1>{t('activity.title')}</h1>
+      <div className="page-header">
+        <h1>{t('activity.title')}</h1>
+      </div>
       <ActivityList />
     </main>
   );

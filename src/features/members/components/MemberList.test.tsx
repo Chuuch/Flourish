@@ -37,8 +37,10 @@ describe('MemberList', () => {
 
     renderWithProviders(<MemberList />);
 
-    expect(await screen.findByText('ada@example.com - owner')).toBeInTheDocument();
-    expect(screen.getByText('linus@example.com - member')).toBeInTheDocument();
+    expect(await screen.findByText('ada@example.com')).toBeInTheDocument();
+    expect(screen.getByText('linus@example.com')).toBeInTheDocument();
+    expect(document.querySelector('[data-role="owner"]')).toHaveTextContent('Owner');
+    expect(document.querySelector('[data-role="member"]')).toHaveTextContent('Member');
   });
 
   it('renders an empty state', async () => {
@@ -72,7 +74,7 @@ describe('MemberList', () => {
 
     renderWithProviders(<MemberList />);
 
-    expect(await screen.findByText('linus@example.com - member')).toBeInTheDocument();
+    expect(await screen.findByText('linus@example.com')).toBeInTheDocument();
     expect(screen.queryByLabelText('Role for linus@example.com')).not.toBeInTheDocument();
     expect(
       screen.queryByRole('button', { name: 'Remove linus@example.com' }),
@@ -99,7 +101,9 @@ describe('MemberList', () => {
 
     await user.selectOptions(screen.getByLabelText('Role for linus@example.com'), 'admin');
 
-    expect(await screen.findByText('linus@example.com - admin')).toBeInTheDocument();
+    const row = (await screen.findByText('linus@example.com')).closest('li');
+    expect(row).not.toBeNull();
+    expect(row!.querySelector('[data-role="admin"]')).toHaveTextContent('Admin');
     expect(screen.getByLabelText('Role for linus@example.com')).toHaveValue('admin');
   });
 

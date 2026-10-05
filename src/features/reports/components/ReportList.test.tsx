@@ -70,10 +70,10 @@ describe('ReportList', () => {
 
     renderReport();
 
-    expect(await screen.findByText('90 min')).toBeInTheDocument();
-    expect(screen.getByText('Northwind - 90 min')).toBeInTheDocument();
-    expect(screen.getByText('Portal (Northwind) - 90 min')).toBeInTheDocument();
-    expect(screen.getByText('linus@example.com - 90 min')).toBeInTheDocument();
+    expect(await screen.findByText('Portal')).toBeInTheDocument();
+    expect(screen.getAllByText('Northwind').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('linus@example.com')).toBeInTheDocument();
+    expect(screen.getAllByText('90 min').length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders an empty state', async () => {

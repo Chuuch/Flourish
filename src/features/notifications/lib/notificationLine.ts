@@ -13,15 +13,14 @@ const kindKeys = {
 } as const satisfies Record<Notification['kind'], MessageKey>;
 
 export function notificationLine(item: Notification): string {
+  if (item.summary.trim() !== '') {
+    return item.summary;
+  }
+
   const actor = memberLabel({
     display_name: item.actor_display_name,
     email: item.actor_email,
   });
-  const kind = t(kindKeys[item.kind], { actor });
 
-  if (item.summary.trim() === '') {
-    return kind;
-  }
-
-  return t('notifications.lineWithSummary', { kind, summary: item.summary });
+  return t(kindKeys[item.kind], { actor });
 }

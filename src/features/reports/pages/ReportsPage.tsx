@@ -12,7 +12,9 @@ export function ReportsPage() {
 
   return (
     <main>
-      <h1>{t('reports.title')}</h1>
+      <div className="page-header">
+        <h1>{t('reports.title')}</h1>
+      </div>
       <ReportList
         fromDate={fromDate}
         toDate={toDate}

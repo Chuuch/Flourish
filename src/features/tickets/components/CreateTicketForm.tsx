@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { useCreateTicket } from '../hooks/useCreateTicket';
 import { createTicketSchema, type CreateTicketInput } from '../schemas/ticket.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, Button, TextField } from '@/components/ui';
+import { Alert, Button, SelectField, TextArea, TextField } from '@/components/ui';
 import { useI18n } from '@/features/i18n';
 
 export function CreateTicketForm() {
@@ -32,16 +32,12 @@ export function CreateTicketForm() {
       }
       noValidate
     >
-      <div>
-        <label htmlFor="kind">{t('tickets.kind')}</label>
-        <select id="kind" className="block rounded border px-2 py-1" {...register('kind')}>
-          <option value="bug">{t('tickets.kind.bug')}</option>
-          <option value="feature">{t('tickets.kind.feature')}</option>
-          <option value="question">{t('tickets.kind.question')}</option>
-          <option value="other">{t('tickets.kind.other')}</option>
-        </select>
-        {errors.kind ? <p role="alert">{errors.kind.message}</p> : null}
-      </div>
+      <SelectField label={t('tickets.kind')} error={errors.kind?.message} {...register('kind')}>
+        <option value="bug">{t('tickets.kind.bug')}</option>
+        <option value="feature">{t('tickets.kind.feature')}</option>
+        <option value="question">{t('tickets.kind.question')}</option>
+        <option value="other">{t('tickets.kind.other')}</option>
+      </SelectField>
 
       <TextField
         label={t('tasks.titleLabel')}
@@ -50,13 +46,16 @@ export function CreateTicketForm() {
         {...register('title')}
       />
 
-      <div>
-        <label htmlFor="body">{t('comments.body')}</label>
-        <textarea id="body" className="block rounded border px-2 py-1" {...register('body')} />
-        {errors.body ? <p role="alert">{errors.body.message}</p> : null}
+      <TextArea
+        label={t('comments.body')}
+        rows={4}
+        error={errors.body?.message}
+        {...register('body')}
+      />
 
-        {createTicket.isError ? <Alert>{createTicket.error.message}</Alert> : null}
+      {createTicket.isError ? <Alert>{createTicket.error.message}</Alert> : null}
 
+      <div className="form-actions">
         <Button type="submit" disabled={createTicket.isPending}>
           {t('tickets.submit')}
         </Button>

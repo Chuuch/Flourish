@@ -1,4 +1,4 @@
-import { Alert } from '@/components/ui';
+import { Alert, Button } from '@/components/ui';
 import { useClients } from '../hooks/useClients';
 import { Link } from 'react-router';
 import { clientPath, clientTicketsPath, clientUsersPath } from '@/app/router/paths';
@@ -17,26 +17,51 @@ export function ClientList() {
     return (
       <Alert>
         <p>{t('clients.loadError', { message: error.message })}</p>
-        <button type="button" onClick={() => void refetch()}>
+        <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
           {t('common.retry')}
-        </button>
+        </Button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>{t('clients.empty')}</p>;
+    return <p className="text-muted m-0 text-sm">{t('clients.empty')}</p>;
   }
 
   return (
-    <ul>
+    <ul className="stack-list">
       {data.map((client) => (
         <li key={client.id}>
-          <Link to={clientPath(client.id)}>
-            {client.notes ? `${client.name} - ${client.notes}` : client.name}
-          </Link>
-          <Link to={clientUsersPath(client.id)}>{t('common.users')}</Link>
-          <Link to={clientTicketsPath(client.id)}>{t('common.tickets')}</Link>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <Link
+                to={clientPath(client.id)}
+                className="text-ink text-sm font-semibold no-underline hover:underline"
+              >
+                {client.name}
+              </Link>
+              {client.notes ? (
+                <p className="text-muted m-0 mt-1 truncate text-sm">{client.notes}</p>
+              ) : null}
+            </div>
+            <div className="action-bar shrink-0">
+              <Link
+                to={clientUsersPath(client.id)}
+                className="text-muted hover:text-accent text-sm no-underline"
+              >
+                {t('common.users')}
+              </Link>
+              <span className="text-line" aria-hidden="true">
+                ·
+              </span>
+              <Link
+                to={clientTicketsPath(client.id)}
+                className="text-muted hover:text-accent text-sm no-underline"
+              >
+                {t('common.tickets')}
+              </Link>
+            </div>
+          </div>
         </li>
       ))}
     </ul>

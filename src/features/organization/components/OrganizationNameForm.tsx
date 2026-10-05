@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, Button, TextField } from '@/components/ui';
+import { Alert, Button, FieldGrid, FormSection, TextField } from '@/components/ui';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
 import { canManageMembers } from '@/features/members/schemas/member.schema';
@@ -44,91 +44,104 @@ export function OrganizationNameForm() {
   }
 
   return (
-    <form
-      onSubmit={(event) =>
-        void handleSubmit((input) => {
-          updateOrganization.mutate(input);
-        })(event)
-      }
-      noValidate
-    >
-      <h2>{t('auth.billingHeading')}</h2>
+    <div className="panel-card">
+      <h2 className="m-0 text-sm font-bold tracking-tight">{t('auth.organizationHeading')}</h2>
+      <form
+        className="mt-3"
+        onSubmit={(event) =>
+          void handleSubmit((input) => {
+            updateOrganization.mutate(input);
+          })(event)
+        }
+        noValidate
+      >
+        <FormSection title={t('auth.billingHeading')}>
+          <FieldGrid wide>
+            <TextField
+              label={t('auth.organizationName')}
+              autoComplete="organization"
+              error={errors.name?.message}
+              {...register('name')}
+            />
+            <TextField
+              label={t('auth.legalName')}
+              error={errors.legal_name?.message}
+              {...register('legal_name')}
+            />
+            <TextField
+              label={t('auth.registrationNumber')}
+              error={errors.registration_number?.message}
+              {...register('registration_number')}
+            />
+            <TextField
+              label={t('auth.vatId')}
+              error={errors.vat_id?.message}
+              {...register('vat_id')}
+            />
+            <TextField
+              label={t('auth.defaultVatRate')}
+              error={errors.default_vat_rate_bps?.message}
+              {...register('default_vat_rate_bps', { valueAsNumber: true })}
+            />
+          </FieldGrid>
+        </FormSection>
 
-      <TextField
-        label={t('auth.organizationName')}
-        autoComplete="organization"
-        error={errors.name?.message}
-        {...register('name')}
-      />
-      <TextField
-        label={t('auth.legalName')}
-        error={errors.legal_name?.message}
-        {...register('legal_name')}
-      />
+        <FormSection title={t('auth.addressHeading')}>
+          <FieldGrid>
+            <TextField
+              label={t('auth.addressLine1')}
+              error={errors.address_line1?.message}
+              {...register('address_line1')}
+            />
+            <TextField
+              label={t('auth.addressLine2')}
+              error={errors.address_line2?.message}
+              {...register('address_line2')}
+            />
+          </FieldGrid>
+          <FieldGrid columns={3}>
+            <TextField label={t('auth.city')} error={errors.city?.message} {...register('city')} />
+            <TextField
+              label={t('auth.postalCode')}
+              error={errors.postal_code?.message}
+              {...register('postal_code')}
+            />
+            <TextField
+              label={t('auth.country')}
+              error={errors.country?.message}
+              {...register('country')}
+            />
+          </FieldGrid>
+        </FormSection>
 
-      <TextField
-        label={t('auth.registrationNumber')}
-        error={errors.registration_number?.message}
-        {...register('registration_number')}
-      />
+        <FormSection title={t('auth.bankHeading')}>
+          <FieldGrid wide>
+            <TextField
+              label={t('auth.bankIban')}
+              error={errors.bank_iban?.message}
+              {...register('bank_iban')}
+            />
+            <TextField
+              label={t('auth.bankBic')}
+              error={errors.bank_bic?.message}
+              {...register('bank_bic')}
+            />
+            <TextField
+              label={t('auth.bankName')}
+              error={errors.bank_name?.message}
+              {...register('bank_name')}
+            />
+          </FieldGrid>
+        </FormSection>
 
-      <TextField label={t('auth.vatId')} error={errors.vat_id?.message} {...register('vat_id')} />
+        {updateOrganization.isError ? <Alert>{updateOrganization.error.message}</Alert> : null}
 
-      <TextField
-        label={t('auth.addressLine1')}
-        error={errors.address_line1?.message}
-        {...register('address_line1')}
-      />
-
-      <TextField
-        label={t('auth.addressLine2')}
-        error={errors.address_line2?.message}
-        {...register('address_line2')}
-      />
-
-      <TextField label={t('auth.city')} error={errors.city?.message} {...register('city')} />
-
-      <TextField
-        label={t('auth.postalCode')}
-        error={errors.postal_code?.message}
-        {...register('postal_code')}
-      />
-
-      <TextField
-        label={t('auth.country')}
-        error={errors.country?.message}
-        {...register('country')}
-      />
-
-      <TextField
-        label={t('auth.defaultVatRate')}
-        error={errors.default_vat_rate_bps?.message}
-        {...register('default_vat_rate_bps', { valueAsNumber: true })}
-      />
-
-      <TextField
-        label={t('auth.bankIban')}
-        error={errors.bank_iban?.message}
-        {...register('bank_iban')}
-      />
-
-      <TextField
-        label={t('auth.bankBic')}
-        error={errors.bank_bic?.message}
-        {...register('bank_bic')}
-      />
-
-      <TextField
-        label={t('auth.bankName')}
-        error={errors.bank_name?.message}
-        {...register('bank_name')}
-      />
-
-      {updateOrganization.isError ? <Alert>{updateOrganization.error.message}</Alert> : null}
-
-      <Button type="submit" disabled={updateOrganization.isPending}>
-        {t('auth.saveOrganization')}
-      </Button>
-    </form>
+        <div className="form-actions">
+          <Button type="submit" disabled={updateOrganization.isPending}>
+            {t('auth.saveOrganization')}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }

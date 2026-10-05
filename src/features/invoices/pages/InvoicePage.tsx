@@ -1,6 +1,6 @@
 import { clientInvoicesPath, clientPath, paths } from '@/app/router/paths';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
-import { Alert, Button, TextField } from '@/components/ui';
+import { Alert, Button, FieldGrid, TextField } from '@/components/ui';
 import { useAuthStore } from '@/features/auth';
 import { canManageClients } from '@/features/clients/schemas/client.schema';
 import { useI18n } from '@/features/i18n';
@@ -23,8 +23,10 @@ export function InvoicePage() {
   if (!clientId || !invoiceId) {
     return (
       <main>
-        <h1>{t('invoices.title')}</h1>
-        <p>{t('invoices.notFound')}</p>
+        <div className="page-header">
+          <h1>{t('invoices.title')}</h1>
+          <p>{t('invoices.notFound')}</p>
+        </div>
       </main>
     );
   }
@@ -61,9 +63,9 @@ function InvoiceDetail({ clientId, invoiceId }: { clientId: string; invoiceId: s
               message: error instanceof Error ? error.message : '',
             })}
           </p>
-          <button type="button" onClick={() => void refetch()}>
+          <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
             {t('common.retry')}
-          </button>
+          </Button>
         </Alert>
       </main>
     );
@@ -76,67 +78,117 @@ function InvoiceDetail({ clientId, invoiceId }: { clientId: string; invoiceId: s
 
   return (
     <main>
-      <p>
+      <p className="breadcrumb">
         <Link to={paths.clients}>{t('common.clients')}</Link>
-        {' / '}
+        <span aria-hidden="true">/</span>
         <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
-        {' / '}
+        <span aria-hidden="true">/</span>
         <Link to={clientInvoicesPath(clientId)}>{t('invoices.title')}</Link>
       </p>
-      <h1>{data.number}</h1>
-      <p>
-        {t('invoices.statusLabel')}: {t(invoiceStatusKey[data.status])}
-      </p>
-      <p>
-        {t('invoices.issued')}: {data.issued_at.slice(0, 10)}
-      </p>
-      <p>
-        {t('invoices.due')}: {data.due_at.slice(0, 10)}
-      </p>
-      <p>
-        {t('invoices.rate')}: {formatEUR(data.rate_cents)}
-      </p>
+
+      <div className="page-header">
+        <h1>{data.number}</h1>
+        <ul className="page-meta">
+          <li>
+            {t('invoices.statusLabel')}: <strong>{t(invoiceStatusKey[data.status])}</strong>
+          </li>
+          <li>
+            {t('invoices.issued')}: <strong>{data.issued_at.slice(0, 10)}</strong>
+          </li>
+          <li>
+            {t('invoices.due')}: <strong>{data.due_at.slice(0, 10)}</strong>
+          </li>
+          <li>
+            {t('invoices.rate')}: <strong>{formatEUR(data.rate_cents)}</strong>
+          </li>
+        </ul>
+      </div>
 
       <InvoiceBillingSummary invoice={data} />
 
-      <ul>
-        {data.lines.map((line) => (
-          <li key={line.id}>
-            {t('invoices.line', {
-              project: line.project_name,
-              task: line.task_title,
-              hours: formatHours(line.minutes),
-              amount: formatEUR(line.amount_cents),
-            })}
-          </li>
-        ))}
-      </ul>
+      <section className="detail-panel">
+        <h2>{t('invoices.title')}</h2>
+        <ul>
+          {data.lines.map((line) => (
+            <li key={line.id}>
+              {t('invoices.line', {
+                project: line.project_name,
+                task: line.task_title,
+                hours: formatHours(line.minutes),
+                amount: formatEUR(line.amount_cents),
+              })}
+            </li>
+          ))}
+        </ul>
+      </section>
 
-      <Button
-        type="button"
-        onClick={() => {
-          downloadPdf.mutate(invoiceId);
-        }}
-        disabled={downloadPdf.isPending}
-      >
-        {t('invoices.download')}
-      </Button>
+      <div className="action-bar">
+        <Button
+          type="button"
+          onClick={() => {
+            downloadPdf.mutate(invoiceId);
+          }}
+          disabled={downloadPdf.isPending}
+        >
+          {t('invoices.download')}
+        </Button>
+
+        {canManage && data.status === 'draft' ? (
+          <>
+            <Button
+              type="button"
+              onClick={() => {
+                sendInvoice.mutate();
+              }}
+              disabled={sendInvoice.isPending}
+            >
+              {t('invoices.send', { number: data.number })}
+            </Button>
+            <Button
+              type="button"
+              variant="danger"
+              onClick={() => {
+                deleteInvoice.mutate(invoiceId, {
+                  onSuccess: () => {
+                    void navigate(clientInvoicesPath(clientId));
+                  },
+                });
+              }}
+              disabled={deleteInvoice.isPending}
+            >
+              {t('invoices.remove', { number: data.number })}
+            </Button>
+          </>
+        ) : null}
+
+        {canManage && data.status === 'sent' ? (
+          <Button
+            type="button"
+            onClick={() => {
+              markPaid.mutate();
+            }}
+            disabled={markPaid.isPending}
+          >
+            {t('invoices.markPaid', { number: data.number })}
+          </Button>
+        ) : null}
+      </div>
 
       {canManage && data.status === 'draft' ? (
-        <>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              const form = new FormData(event.currentTarget);
-              const fromValue = form.get('from');
-              const toValue = form.get('to');
-              if (typeof fromValue !== 'string' || typeof toValue !== 'string') {
-                return;
-              }
-              const range = reportRange(fromValue, toValue);
-              updateInvoice.mutate({ from: range.from, to: range.to });
-            }}
-          >
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            const form = new FormData(event.currentTarget);
+            const fromValue = form.get('from');
+            const toValue = form.get('to');
+            if (typeof fromValue !== 'string' || typeof toValue !== 'string') {
+              return;
+            }
+            const range = reportRange(fromValue, toValue);
+            updateInvoice.mutate({ from: range.from, to: range.to });
+          }}
+        >
+          <FieldGrid>
             <TextField
               name="from"
               type="date"
@@ -151,45 +203,13 @@ function InvoiceDetail({ clientId, invoiceId }: { clientId: string; invoiceId: s
               defaultValue={toDate}
               required
             />
+          </FieldGrid>
+          <div className="form-actions">
             <Button type="submit" disabled={updateInvoice.isPending}>
               {t('common.save')}
             </Button>
-          </form>
-          <Button
-            type="button"
-            onClick={() => {
-              sendInvoice.mutate();
-            }}
-            disabled={sendInvoice.isPending}
-          >
-            {t('invoices.send', { number: data.number })}
-          </Button>
-          <Button
-            type="button"
-            onClick={() => {
-              deleteInvoice.mutate(invoiceId, {
-                onSuccess: () => {
-                  void navigate(clientInvoicesPath(clientId));
-                },
-              });
-            }}
-            disabled={deleteInvoice.isPending}
-          >
-            {t('invoices.remove', { number: data.number })}
-          </Button>
-        </>
-      ) : null}
-
-      {canManage && data.status === 'sent' ? (
-        <Button
-          type="button"
-          onClick={() => {
-            markPaid.mutate();
-          }}
-          disabled={markPaid.isPending}
-        >
-          {t('invoices.markPaid', { number: data.number })}
-        </Button>
+          </div>
+        </form>
       ) : null}
     </main>
   );

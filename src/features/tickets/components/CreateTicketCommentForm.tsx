@@ -6,7 +6,7 @@ import {
   type CreateTicketCommentInput,
 } from '../schemas/ticket-comment.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, Button } from '@/components/ui';
+import { Alert, Button, TextArea } from '@/components/ui';
 import { useI18n } from '@/features/i18n';
 
 export function CreateTicketCommentForm({
@@ -29,8 +29,6 @@ export function CreateTicketCommentForm({
     defaultValues: { body: '' },
   });
 
-  const fieldId = `ticket-comment-${ticketId}`;
-
   return (
     <form
       onSubmit={(event) =>
@@ -44,13 +42,17 @@ export function CreateTicketCommentForm({
       }
       noValidate
     >
-      <div>
-        <label htmlFor={fieldId}>{t('tickets.comment')}</label>
-        <textarea id={fieldId} className="block rounded border px-2 py-1" {...register('body')} />
-        {errors.body ? <p role="alert">{errors.body.message}</p> : null}
+      <TextArea
+        id={`ticket-comment-${ticketId}`}
+        label={t('tickets.comment')}
+        rows={3}
+        error={errors.body?.message}
+        {...register('body')}
+      />
 
-        {createComment.isError ? <Alert>{createComment.error.message}</Alert> : null}
+      {createComment.isError ? <Alert>{createComment.error.message}</Alert> : null}
 
+      <div className="form-actions">
         <Button type="submit" disabled={createComment.isPending}>
           {t('comments.add')}
         </Button>

@@ -66,7 +66,8 @@ describe('CreateMemberForm', () => {
     await user.selectOptions(screen.getByLabelText('Role'), 'admin');
     await user.click(screen.getByRole('button', { name: 'Invite member' }));
 
-    expect(await screen.findByText('grace@example.com - admin')).toBeInTheDocument();
+    expect(await screen.findByText('grace@example.com')).toBeInTheDocument();
+    expect(document.querySelector('[data-role="admin"]')).toHaveTextContent('Admin');
     expect(screen.getByLabelText('Email')).toHaveValue('');
   });
 

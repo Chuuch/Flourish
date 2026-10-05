@@ -11,20 +11,24 @@ export function ProjectsPage() {
   if (!clientId) {
     return (
       <main>
-        <h1>{t('projects.title')}</h1>
-        <p>{t('clients.notFoundPeriod')}</p>
+        <div className="page-header">
+          <h1>{t('projects.title')}</h1>
+          <p>{t('clients.notFoundPeriod')}</p>
+        </div>
       </main>
     );
   }
 
   return (
     <main>
-      <p>
+      <p className="breadcrumb">
         <Link to={paths.clients}>{t('common.clients')}</Link>
-        {' / '}
+        <span aria-hidden="true">/</span>
         <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
       </p>
-      <h1>{t('common.projects')}</h1>
+      <div className="page-header">
+        <h1>{t('common.projects')}</h1>
+      </div>
       <CreateProjectForm clientId={clientId} />
       <ProjectList clientId={clientId} />
     </main>

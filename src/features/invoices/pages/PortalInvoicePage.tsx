@@ -47,9 +47,9 @@ function PortalInvoiceDetail({ invoiceId }: { invoiceId: string }) {
               message: error instanceof Error ? error.message : '',
             })}
           </p>
-          <button type="button" onClick={() => void refetch()}>
+          <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
             {t('common.retry')}
-          </button>
+          </Button>
         </Alert>
       </main>
     );

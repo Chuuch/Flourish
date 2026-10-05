@@ -14,7 +14,7 @@ export const activityEventSchema = z.object({
   id: z.uuid(),
   organization_id: z.uuid(),
   actor_id: z.uuid(),
-  actor_email: z.email(),
+  actor_email: z.string().default(''),
   actor_display_name: z.string().default(''),
   action: activityActionSchema,
   entity_type: activityEntitySchema,

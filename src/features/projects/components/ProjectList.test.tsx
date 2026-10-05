@@ -43,10 +43,11 @@ describe('ProjectList', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByRole('link', { name: 'Website - Launch' })).toHaveAttribute(
+    expect(await screen.findByRole('link', { name: 'Website' })).toHaveAttribute(
       'href',
       `/clients/${clientId}/projects/${website.id}`,
     );
+    expect(screen.getByText('Launch')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Brand' })).toBeInTheDocument();
     expect(screen.getAllByRole('link', { name: 'Files' })[0]).toHaveAttribute(
       'href',
@@ -94,8 +95,8 @@ describe('ProjectList', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByRole('link', { name: 'Website - Launch' })).toBeInTheDocument();
-    expect(screen.queryByLabelText('Name for Website')).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Remove Website' })).not.toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'Website' })).toBeInTheDocument();
+    expect(screen.queryByLabelText('Name')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
   });
 });

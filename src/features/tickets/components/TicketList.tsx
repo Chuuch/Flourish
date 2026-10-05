@@ -1,4 +1,4 @@
-import { Alert } from '@/components/ui';
+import { Alert, Button } from '@/components/ui';
 import { useTickets } from '../hooks/useTickets';
 import { CreateTicketFileForm } from './CreateTicketFileForm';
 import { TicketFileList } from './TicketFileList';
@@ -19,9 +19,9 @@ export function TicketList() {
     return (
       <Alert>
         <p>{t('tickets.loadError', { message: error.message })}</p>
-        <button type="button" onClick={() => void refetch()}>
+        <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
           {t('common.retry')}
-        </button>
+        </Button>
       </Alert>
     );
   }

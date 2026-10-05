@@ -70,7 +70,8 @@ describe('CreateClientForm', () => {
     await user.type(screen.getByLabelText('Notes'), 'Retail');
     await user.click(screen.getByRole('button', { name: 'Add client' }));
 
-    expect(await screen.findByText('Northwind - Retail')).toBeInTheDocument();
+    expect(await screen.findByText('Northwind')).toBeInTheDocument();
+    expect(screen.getByText('Retail')).toBeInTheDocument();
     expect(screen.getByLabelText('Name')).toHaveValue('');
   });
 

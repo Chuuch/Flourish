@@ -5,16 +5,16 @@ export const taskStatusSchema = z.enum(['todo', 'in_progress', 'done']);
 
 export const taskSchema = z.object({
   id: z.uuid(),
-  organization_id: z.string(),
-  project_id: z.string(),
-  ticket_id: z.string().nullable(),
+  organization_id: z.uuid(),
+  project_id: z.uuid(),
+  ticket_id: z.uuid().nullable(),
   title: z.string().min(1),
   notes: z.string(),
   status: taskStatusSchema,
   completed_at: z.string().nullable(),
   created_by: z.uuid().nullable(),
   assignee_id: z.uuid().nullable(),
-  version: z.int().min(1),
+  version: z.number().int().min(1),
   created_at: z.string(),
   updated_at: z.string(),
 });

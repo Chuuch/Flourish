@@ -3,7 +3,7 @@ import { useComments } from '../hooks/useComments';
 import { useDeleteComment } from '../hooks/useDeleteComment';
 import { useUpdateComment } from '../hooks/useUpdateComment';
 import { useState } from 'react';
-import { Alert, Button } from '@/components/ui';
+import { Alert, Button, TextArea } from '@/components/ui';
 import { canDeleteComment, canEditComment } from '../schemas/comment.schema';
 import { useI18n } from '@/features/i18n';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
@@ -26,15 +26,15 @@ export function CommentList({ taskId }: { taskId: string }) {
     return (
       <Alert>
         <p>{t('comments.loadError', { message: error.message })}</p>
-        <button type="button" onClick={() => void refetch()}>
+        <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
           {t('common.retry')}
-        </button>
+        </Button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>{t('comments.empty')}</p>;
+    return <p className="text-muted m-0 text-sm">{t('comments.empty')}</p>;
   }
 
   return (
@@ -45,69 +45,80 @@ export function CommentList({ taskId }: { taskId: string }) {
         {data.map((comment) => (
           <li key={comment.id}>
             {editingId === comment.id ? (
-              <>
-                <label htmlFor={`edit-body-${comment.id}`}>{t('comments.editBody')}</label>
-                <textarea
+              <div className="flex flex-col gap-3">
+                <TextArea
                   id={`edit-body-${comment.id}`}
-                  className="block rounded border px-2 py-1"
+                  label={t('comments.editBody')}
                   value={draft}
                   onChange={(event) => {
                     setDraft(event.currentTarget.value);
                   }}
                 />
-                <Button
-                  type="submit"
-                  disabled={updateComment.isPending || draft.length === 0}
-                  onClick={() => {
-                    updateComment.mutate(
-                      { commentId: comment.id, input: { body: draft } },
-                      {
-                        onSuccess: () => {
-                          setEditingId(null);
+                <div className="form-actions">
+                  <Button
+                    type="button"
+                    disabled={updateComment.isPending || draft.length === 0}
+                    onClick={() => {
+                      updateComment.mutate(
+                        { commentId: comment.id, input: { body: draft } },
+                        {
+                          onSuccess: () => {
+                            setEditingId(null);
+                          },
                         },
-                      },
-                    );
-                  }}
-                >
-                  {t('common.save')}
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => {
-                    setEditingId(null);
-                  }}
-                >
-                  {t('common.cancel')}
-                </Button>
-              </>
+                      );
+                    }}
+                  >
+                    {t('common.save')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => {
+                      setEditingId(null);
+                    }}
+                  >
+                    {t('common.cancel')}
+                  </Button>
+                </div>
+              </div>
             ) : (
-              <>
-                <span>
-                  {comment.user_id} - {comment.body}
-                </span>
-                {canEditComment(userId, comment) ? (
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      setEditingId(comment.id);
-                      setDraft(comment.body);
-                    }}
-                  >
-                    {t('common.edit')}
-                  </Button>
-                ) : null}
-                {canDeleteComment(userId, role, comment) ? (
-                  <Button
-                    type="button"
-                    disabled={deleteComment.isPending}
-                    onClick={() => {
-                      deleteComment.mutate(comment.id);
-                    }}
-                  >
-                    {t('common.delete')}
-                  </Button>
-                ) : null}
-              </>
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-1">
+                  <span className="text-muted text-xs font-semibold tracking-wide uppercase">
+                    {comment.user_id}
+                  </span>
+                  <p className="m-0 text-sm leading-relaxed">{comment.body}</p>
+                </div>
+                <div className="form-actions">
+                  {canEditComment(userId, comment) ? (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        setEditingId(comment.id);
+                        setDraft(comment.body);
+                      }}
+                    >
+                      {t('common.edit')}
+                    </Button>
+                  ) : null}
+                  {canDeleteComment(userId, role, comment) ? (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="danger"
+                      disabled={deleteComment.isPending}
+                      onClick={() => {
+                        deleteComment.mutate(comment.id);
+                      }}
+                    >
+                      {t('common.delete')}
+                    </Button>
+                  ) : null}
+                </div>
+              </div>
             )}
           </li>
         ))}

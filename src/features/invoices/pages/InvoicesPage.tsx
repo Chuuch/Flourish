@@ -10,20 +10,24 @@ export function InvoicesPage() {
   if (!clientId) {
     return (
       <main>
-        <h1>{t('invoices.title')}</h1>
-        <p>{t('clients.notFoundPeriod')}</p>
+        <div className="page-header">
+          <h1>{t('invoices.title')}</h1>
+          <p>{t('clients.notFoundPeriod')}</p>
+        </div>
       </main>
     );
   }
 
   return (
     <main>
-      <p>
+      <p className="breadcrumb">
         <Link to={paths.clients}>{t('common.clients')}</Link>
-        {' / '}
+        <span aria-hidden="true">/</span>
         <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
       </p>
-      <h1>{t('invoices.title')}</h1>
+      <div className="page-header">
+        <h1>{t('invoices.title')}</h1>
+      </div>
       <InvoiceList clientId={clientId} />
     </main>
   );

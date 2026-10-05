@@ -59,9 +59,11 @@ export function ResetPasswordForm() {
 
       {resetPassword.isError ? <Alert>{resetPassword.error.message}</Alert> : null}
 
-      <Button type="submit" disabled={resetPassword.isPending}>
-        {t('auth.setPasswordAction')}
-      </Button>
+      <div className="form-actions">
+        <Button type="submit" disabled={resetPassword.isPending}>
+          {t('auth.setPasswordAction')}
+        </Button>
+      </div>
     </form>
   );
 }

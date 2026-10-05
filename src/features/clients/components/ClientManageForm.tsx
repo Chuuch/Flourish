@@ -1,4 +1,4 @@
-import { Alert, Button, TextField } from '@/components/ui';
+import { Alert, Button, FieldGrid, FormSection, TextArea, TextField } from '@/components/ui';
 import { useI18n } from '@/features/i18n';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -31,7 +31,7 @@ export function ClientManageForm({ client }: { client: Client }) {
   });
 
   return (
-    <>
+    <div className="flex flex-col gap-3">
       {updateClient.isError ? <Alert>{updateClient.error.message}</Alert> : null}
       {deleteClient.isError ? <Alert>{deleteClient.error.message}</Alert> : null}
       <form
@@ -42,71 +42,75 @@ export function ClientManageForm({ client }: { client: Client }) {
         }
         noValidate
       >
-        <TextField
-          label={t('clients.nameFor', { name: client.name })}
-          autoComplete="organization"
-          error={errors.name?.message}
-          {...register('name')}
-        />
-
-        <div>
-          <label htmlFor={`notes-${client.id}`}>
-            {t('clients.notesFor', { name: client.name })}
-          </label>
-          <textarea
-            id={`notes-${client.id}`}
-            className="block rounded px-2 py-1"
+        <FormSection>
+          <TextField
+            label={t('clients.name')}
+            autoComplete="organization"
+            error={errors.name?.message}
+            {...register('name')}
+          />
+          <TextArea
+            label={t('clients.notes')}
+            error={errors.notes?.message}
             {...register('notes')}
           />
-          {errors.notes ? <p role="alert">{errors.notes.message}</p> : null}
+          <FieldGrid wide>
+            <TextField
+              label={t('clients.legalName')}
+              error={errors.legal_name?.message}
+              {...register('legal_name')}
+            />
+            <TextField
+              label={t('clients.vatId')}
+              error={errors.vat_id?.message}
+              {...register('vat_id')}
+            />
+            <TextField
+              label={t('clients.addressLine1')}
+              error={errors.address_line1?.message}
+              {...register('address_line1')}
+            />
+            <TextField
+              label={t('clients.addressLine2')}
+              error={errors.address_line2?.message}
+              {...register('address_line2')}
+            />
+          </FieldGrid>
+          <FieldGrid columns={3}>
+            <TextField
+              label={t('clients.city')}
+              error={errors.city?.message}
+              {...register('city')}
+            />
+            <TextField
+              label={t('clients.postalCode')}
+              error={errors.postal_code?.message}
+              {...register('postal_code')}
+            />
+            <TextField
+              label={t('clients.country')}
+              error={errors.country?.message}
+              {...register('country')}
+            />
+          </FieldGrid>
+        </FormSection>
+
+        <div className="form-actions">
+          <Button type="submit" disabled={updateClient.isPending}>
+            {t('common.save')}
+          </Button>
+          <Button
+            type="button"
+            variant="danger"
+            disabled={deleteClient.isPending}
+            onClick={() => {
+              deleteClient.mutate(client.id);
+            }}
+          >
+            {t('common.delete')}
+          </Button>
         </div>
-
-        <h2>{t('clients.billingHeading')}</h2>
-        <TextField
-          label={t('clients.legalName')}
-          error={errors.legal_name?.message}
-          {...register('legal_name')}
-        />
-        <TextField
-          label={t('clients.vatId')}
-          error={errors.vat_id?.message}
-          {...register('vat_id')}
-        />
-        <TextField
-          label={t('clients.addressLine1')}
-          error={errors.address_line1?.message}
-          {...register('address_line1')}
-        />
-        <TextField
-          label={t('clients.addressLine2')}
-          error={errors.address_line2?.message}
-          {...register('address_line2')}
-        />
-        <TextField label={t('clients.city')} error={errors.city?.message} {...register('city')} />
-        <TextField
-          label={t('clients.postalCode')}
-          error={errors.postal_code?.message}
-          {...register('postal_code')}
-        />
-        <TextField
-          label={t('clients.country')}
-          error={errors.country?.message}
-          {...register('country')}
-        />
-
-        <Button type="submit" disabled={updateClient.isPending}>
-          {t('clients.save', { name: client.name })}
-        </Button>
       </form>
-      <Button
-        type="button"
-        disabled={deleteClient.isPending}
-        onClick={() => {
-          deleteClient.mutate(client.id);
-        }}
-      >
-        {t('clients.remove', { name: client.name })}
-      </Button>
-    </>
+    </div>
   );
 }

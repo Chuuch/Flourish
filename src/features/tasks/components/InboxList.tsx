@@ -1,4 +1,4 @@
-import { Alert } from '@/components/ui';
+import { Alert, Button, SelectField } from '@/components/ui';
 import { useInbox } from '../hooks/useInbox';
 import { useUpdateTask } from '../hooks/useUpdateTask';
 import { taskStatusSchema, type TaskStatus } from '../schemas/task.schema';
@@ -19,15 +19,15 @@ export function InboxList() {
     return (
       <Alert>
         <p>{t('inbox.loadError', { message: error.message })}</p>
-        <button type="button" onClick={() => void refetch()}>
+        <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
           {t('common.retry')}
-        </button>
+        </Button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>{t('inbox.empty')}</p>;
+    return <p className="text-muted m-0 text-sm">{t('inbox.empty')}</p>;
   }
 
   return (
@@ -36,10 +36,13 @@ export function InboxList() {
       <ul>
         {data.map((task) => (
           <li key={task.id}>
-            <p>{task.notes ? `${task.title} - ${task.notes}` : task.title}</p>
-            <label>
-              {t('tasks.statusFor', { title: task.title })}
-              <select
+            <div className="flex flex-col gap-3">
+              <div>
+                <p className="m-0 text-sm font-semibold">{task.title}</p>
+                {task.notes ? <p className="text-muted m-0 mt-1 text-sm">{task.notes}</p> : null}
+              </div>
+              <SelectField
+                label={t('tasks.statusFor', { title: task.title })}
                 value={task.status}
                 disabled={updateTask.isPending}
                 onChange={(event) => {
@@ -59,9 +62,9 @@ export function InboxList() {
                 <option value="todo">{t('tasks.todo')}</option>
                 <option value="in_progress">{t('tasks.inProgress')}</option>
                 <option value="done">{t('tasks.done')}</option>
-              </select>
-            </label>
-            <EditTaskForm task={task} />
+              </SelectField>
+              <EditTaskForm task={task} />
+            </div>
           </li>
         ))}
       </ul>

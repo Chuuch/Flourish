@@ -1,15 +1,15 @@
 import { env } from '@/config/env';
 import { useAuthStore } from '@/features/auth';
 import { getAccessToken, refreshAccessToken } from '@/lib/api/client';
+import { notifyUnauthorized } from '@/lib/api/session';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import {
-  applyRealtimeEvent,
-  catchUpRealtimeQueries,
-  realtimeEventSchema,
+    applyRealtimeEvent,
+    catchUpRealtimeQueries,
+    realtimeEventSchema,
 } from '../lib/realtimeEvent';
-import { notifyUnauthorized } from '@/lib/api/session';
-import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 class FatalRealtimeError extends Error {}
 

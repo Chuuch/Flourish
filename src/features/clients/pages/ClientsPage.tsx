@@ -4,9 +4,12 @@ import { CreateClientForm } from '../components/CreateClientForm';
 
 export function ClientsPage() {
   const { t } = useI18n();
+
   return (
     <main>
-      <h1>{t('clients.title')}</h1>
+      <div className="page-header">
+        <h1>{t('clients.title')}</h1>
+      </div>
       <CreateClientForm />
       <ClientList />
     </main>

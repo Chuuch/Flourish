@@ -51,16 +51,18 @@ export function CreateFileForm({ projectId }: { projectId: string }) {
           ref={inputRef}
           type="file"
           accept=".pdf,.png,.jpeg,.jpg,.webp,.txt,.zip,.application/pdf,image/png,image/jpeg,image/webp,text/plain,application/zip"
-          className="block rounded border px-2 py-1"
+          className="file-input"
         />
       </div>
 
       {validationError ? <p role="alert">{validationError}</p> : null}
       {uploadFile.isError ? <Alert>{uploadFile.error.message}</Alert> : null}
 
-      <Button type="submit" disabled={uploadFile.isPending}>
-        {t('common.upload')}
-      </Button>
+      <div className="form-actions">
+        <Button type="submit" disabled={uploadFile.isPending}>
+          {t('common.upload')}
+        </Button>
+      </div>
     </form>
   );
 }

@@ -21,9 +21,9 @@ export function ClientUserList({ clientId }: { clientId: string }) {
     return (
       <Alert>
         <p>{t('clientUsers.loadError', { message: error.message })}</p>
-        <button type="button" onClick={() => void refetch()}>
+        <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
           {t('common.retry')}
-        </button>
+        </Button>
       </Alert>
     );
   }

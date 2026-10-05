@@ -12,16 +12,23 @@ export function PortalHomePage() {
 
   return (
     <main>
-      <h1>{t('portal.title')}</h1>
-      {user ? <p>{user.email}</p> : null}
-      {client ? <p>{client.name}</p> : null}
-      <h2>{t('common.tickets')}</h2>
-      <CreateTicketForm />
-      <TicketList />
-      <h2>
-        <Link to={paths.portalInvoices}>{t('common.invoices')}</Link>
-      </h2>
-      <PortalInvoiceList />
+      <div className="page-header">
+        <h1>{t('portal.title')}</h1>
+        <p>{[user?.email, client?.name].filter(Boolean).join(' · ')}</p>
+      </div>
+
+      <section className="flex flex-col gap-4">
+        <h2>{t('common.tickets')}</h2>
+        <CreateTicketForm />
+        <TicketList />
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <h2>
+          <Link to={paths.portalInvoices}>{t('common.invoices')}</Link>
+        </h2>
+        <PortalInvoiceList />
+      </section>
     </main>
   );
 }

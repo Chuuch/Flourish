@@ -1,12 +1,13 @@
 import { useI18n } from '@/features/i18n';
 import { useActivity } from '../hooks/useActivity';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
-import { Alert } from '@/components/ui';
+import { Alert, Button } from '@/components/ui';
+import { formatDateTime } from '@/lib/formatDate';
 import { activityLine } from '../lib/activityLabel';
 
 export function ActivityList() {
   const { data, isPending, isError, error, refetch } = useActivity();
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
 
   if (isPending) {
     return <ListSkeleton label={t('activity.loading')} />;
@@ -20,23 +21,25 @@ export function ActivityList() {
             message: error instanceof Error ? error.message : '',
           })}
         </p>
-        <button type="button" onClick={() => void refetch()}>
+        <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
           {t('common.retry')}
-        </button>
+        </Button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>{t('activity.empty')}</p>;
+    return <p className="text-muted m-0 text-sm">{t('activity.empty')}</p>;
   }
 
   return (
-    <ul>
+    <ul className="stack-list">
       {data.map((event) => (
         <li key={event.id}>
-          <p>{activityLine(event)}</p>
-          <time dateTime={event.created_at}>{event.created_at}</time>
+          <div className="row-split">
+            <p className="m-0 text-sm leading-relaxed font-medium">{activityLine(event)}</p>
+            <time dateTime={event.created_at}>{formatDateTime(event.created_at, locale)}</time>
+          </div>
         </li>
       ))}
     </ul>

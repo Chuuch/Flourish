@@ -45,7 +45,7 @@ describe('ActivityList', () => {
     renderWithProviders(<ActivityList />);
 
     expect(await screen.findByText('Ada created a task: Draw wireframes')).toBeInTheDocument();
-    expect(screen.getByText(createdAt)).toBeInTheDocument();
+    expect(screen.getByRole('time')).toHaveAttribute('dateTime', createdAt);
   });
 
   it('falls back to email when display name is empty', async () => {

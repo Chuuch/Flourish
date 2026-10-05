@@ -1,7 +1,7 @@
 import { useI18n } from '@/features/i18n';
 import { usePortalInvoices } from '../hooks/usePortalInvoices';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
-import { Alert } from '@/components/ui';
+import { Alert, Button } from '@/components/ui';
 import { Link } from 'react-router';
 import { portalInvoicePath } from '@/app/router/paths';
 import { invoiceStatusKey } from '../lib/invoiceStatus';
@@ -23,9 +23,9 @@ export function PortalInvoiceList() {
             message: error instanceof Error ? error.message : '',
           })}
         </p>
-        <button type="button" onClick={() => void refetch()}>
+        <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
           {t('common.retry')}
-        </button>
+        </Button>
       </Alert>
     );
   }

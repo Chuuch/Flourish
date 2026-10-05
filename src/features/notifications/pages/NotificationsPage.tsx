@@ -6,7 +6,9 @@ export function NotificationsPage() {
 
   return (
     <main>
-      <h1>{t('notifications.title')}</h1>
+      <div className="page-header">
+        <h1>{t('notifications.title')}</h1>
+      </div>
       <NotificationList />
     </main>
   );

@@ -39,10 +39,11 @@ describe('ClientList', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByRole('link', { name: 'Northwind - Retail' })).toHaveAttribute(
+    expect(await screen.findByRole('link', { name: 'Northwind' })).toHaveAttribute(
       'href',
       `/clients/${northWind.id}`,
     );
+    expect(screen.getByText('Retail')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Contoso' })).toBeInTheDocument();
     expect(screen.getAllByRole('link', { name: 'Users' })[0]).toHaveAttribute(
       'href',
@@ -95,8 +96,8 @@ describe('ClientList', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByRole('link', { name: 'Northwind - Retail' })).toBeInTheDocument();
-    expect(screen.queryByLabelText('Name for Northwind')).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Remove Northwind' })).not.toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'Northwind' })).toBeInTheDocument();
+    expect(screen.queryByLabelText('Name')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
   });
 });

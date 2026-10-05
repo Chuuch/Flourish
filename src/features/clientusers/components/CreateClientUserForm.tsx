@@ -52,9 +52,11 @@ export function CreateClientUserForm({ clientId }: { clientId: string }) {
 
       {createClientUser.isError ? <Alert>{createClientUser.error.message}</Alert> : null}
 
-      <Button type="submit" disabled={createClientUser.isPending}>
-        {t('clientUsers.invite')}
-      </Button>
+      <div className="form-actions">
+        <Button type="submit" disabled={createClientUser.isPending}>
+          {t('clientUsers.invite')}
+        </Button>
+      </div>
     </form>
   );
 }

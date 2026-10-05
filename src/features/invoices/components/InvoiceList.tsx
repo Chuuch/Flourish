@@ -4,7 +4,7 @@ import { useInvoices } from '../hooks/useInvoices';
 import { canManageClients } from '@/features/clients/schemas/client.schema';
 import { defaultReportDates, reportRange } from '@/features/reports/lib/reportRange';
 import { useI18n } from '@/features/i18n';
-import { Alert, Button, TextField } from '@/components/ui';
+import { Alert, Button, FieldGrid, TextField } from '@/components/ui';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 import { Link } from 'react-router';
 import { invoicePath } from '@/app/router/paths';
@@ -35,24 +35,27 @@ export function InvoiceList({ clientId }: { clientId: string }) {
             createInvoice.mutate({ from: range.from, to: range.to });
           }}
         >
-          <TextField
-            name="from"
-            type="date"
-            label={t('reports.from')}
-            defaultValue={defaults.from}
-            required
-          />
-
-          <TextField
-            name="to"
-            type="date"
-            label={t('reports.to')}
-            defaultValue={defaults.to}
-            required
-          />
-          <Button type="submit" disabled={createInvoice.isPending}>
-            {t('invoices.create')}
-          </Button>
+          <FieldGrid>
+            <TextField
+              name="from"
+              type="date"
+              label={t('reports.from')}
+              defaultValue={defaults.from}
+              required
+            />
+            <TextField
+              name="to"
+              type="date"
+              label={t('reports.to')}
+              defaultValue={defaults.to}
+              required
+            />
+          </FieldGrid>
+          <div className="form-actions">
+            <Button type="submit" disabled={createInvoice.isPending}>
+              {t('invoices.create')}
+            </Button>
+          </div>
         </form>
       ) : null}
 
@@ -65,19 +68,24 @@ export function InvoiceList({ clientId }: { clientId: string }) {
               message: error instanceof Error ? error.message : '',
             })}
           </p>
-          <button type="button" onClick={() => void refetch()}>
+          <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
             {t('common.retry')}
-          </button>
+          </Button>
         </Alert>
       ) : null}
 
-      {data && data.length === 0 ? <p>{t('invoices.empty')}</p> : null}
+      {data && data.length === 0 ? (
+        <p className="text-muted m-0 text-sm">{t('invoices.empty')}</p>
+      ) : null}
 
       {data && data.length > 0 ? (
         <ul>
           {data.map((invoice) => (
             <li key={invoice.id}>
-              <Link to={invoicePath(clientId, invoice.id)}>
+              <Link
+                to={invoicePath(clientId, invoice.id)}
+                className="text-ink font-semibold no-underline hover:underline"
+              >
                 {t('invoices.listLine', {
                   number: invoice.number,
                   status: t(invoiceStatusKey[invoice.status]),

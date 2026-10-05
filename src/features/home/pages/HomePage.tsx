@@ -20,7 +20,9 @@ export function HomePage() {
 
   return (
     <main>
-      <h1>{t('home.inbox')}</h1>
+      <div className="page-header">
+        <h1>{t('home.inbox')}</h1>
+      </div>
       <InboxList />
     </main>
   );

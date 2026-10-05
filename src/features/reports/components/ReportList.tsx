@@ -1,4 +1,4 @@
-import { Alert, Button, TextField } from '@/components/ui';
+import { Alert, Button, FieldGrid, TextField } from '@/components/ui';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 import { useI18n } from '@/features/i18n';
 import { memberLabel } from '@/features/members/schemas/member.schema';
@@ -19,6 +19,7 @@ export function ReportList({ fromDate, toDate, onRangeChange }: ReportListProps)
   return (
     <>
       <form
+        className="panel-card"
         onSubmit={(event) => {
           event.preventDefault();
           const form = new FormData(event.currentTarget);
@@ -30,15 +31,29 @@ export function ReportList({ fromDate, toDate, onRangeChange }: ReportListProps)
           onRangeChange(from, to);
         }}
       >
-        <TextField
-          name="from"
-          type="date"
-          label={t('reports.from')}
-          defaultValue={fromDate}
-          required
-        />
-        <TextField name="to" type="date" label={t('reports.to')} defaultValue={toDate} required />
-        <Button type="submit">{t('reports.apply')}</Button>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <div className="min-w-0 flex-1">
+            <FieldGrid>
+              <TextField
+                name="from"
+                type="date"
+                label={t('reports.from')}
+                defaultValue={fromDate}
+                required
+              />
+              <TextField
+                name="to"
+                type="date"
+                label={t('reports.to')}
+                defaultValue={toDate}
+                required
+              />
+            </FieldGrid>
+          </div>
+          <div className="form-actions sm:pb-0.5">
+            <Button type="submit">{t('reports.apply')}</Button>
+          </div>
+        </div>
       </form>
 
       {isPending ? <ListSkeleton label={t('reports.loading')} /> : null}
@@ -50,59 +65,72 @@ export function ReportList({ fromDate, toDate, onRangeChange }: ReportListProps)
               message: error instanceof Error ? error.message : '',
             })}
           </p>
-          <button type="button" onClick={() => void refetch()}>
+          <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
             {t('common.retry')}
-          </button>
+          </Button>
         </Alert>
       ) : null}
 
-      {data ? <p>{t('reports.total', { minutes: data.total_minutes })}</p> : null}
+      {data ? (
+        <p className="stat-pill m-0" data-tone="accent">
+          {t('reports.total', { minutes: data.total_minutes })}
+        </p>
+      ) : null}
 
-      {data && data.total_minutes === 0 ? <p>{t('reports.empty')}</p> : null}
+      {data && data.total_minutes === 0 ? (
+        <p className="text-muted m-0 text-sm">{t('reports.empty')}</p>
+      ) : null}
 
       {data && data.total_minutes > 0 ? (
-        <>
-          <section>
-            <h2>{t('reports.byClient')}</h2>
-            <ul>
+        <div className="page-grid page-grid-3">
+          <section className="flex flex-col gap-2">
+            <h2 className="m-0 text-sm font-bold tracking-tight">{t('reports.byClient')}</h2>
+            <ul className="stack-list">
               {data.by_client.map((row) => (
                 <li key={row.client_id}>
-                  {t('reports.clientLine', { name: row.client_name, minutes: row.minutes })}
+                  <div className="row-split">
+                    <span className="text-sm font-medium">{row.client_name}</span>
+                    <span>{t('reports.total', { minutes: row.minutes })}</span>
+                  </div>
                 </li>
               ))}
             </ul>
           </section>
-          <section>
-            <h2>{t('reports.byProject')}</h2>
-            <ul>
+          <section className="flex flex-col gap-2">
+            <h2 className="m-0 text-sm font-bold tracking-tight">{t('reports.byProject')}</h2>
+            <ul className="stack-list">
               {data.by_project.map((row) => (
                 <li key={row.project_id}>
-                  {t('reports.projectLine', {
-                    name: row.project_name,
-                    client: row.client_name,
-                    minutes: row.minutes,
-                  })}
+                  <div className="row-split">
+                    <div className="min-w-0">
+                      <p className="m-0 text-sm font-medium">{row.project_name}</p>
+                      <p className="text-muted m-0 text-xs">{row.client_name}</p>
+                    </div>
+                    <span>{t('reports.total', { minutes: row.minutes })}</span>
+                  </div>
                 </li>
               ))}
             </ul>
           </section>
-          <section>
-            <h2>{t('reports.byMember')}</h2>
-            <ul>
+          <section className="flex flex-col gap-2">
+            <h2 className="m-0 text-sm font-bold tracking-tight">{t('reports.byMember')}</h2>
+            <ul className="stack-list">
               {data.by_member.map((row) => (
                 <li key={row.user_id}>
-                  {t('reports.memberLine', {
-                    name: memberLabel({
-                      display_name: row.display_name,
-                      email: row.email,
-                    }),
-                    minutes: row.minutes,
-                  })}
+                  <div className="row-split">
+                    <span className="text-sm font-medium">
+                      {memberLabel({
+                        display_name: row.display_name,
+                        email: row.email,
+                      })}
+                    </span>
+                    <span>{t('reports.total', { minutes: row.minutes })}</span>
+                  </div>
                 </li>
               ))}
             </ul>
           </section>
-        </>
+        </div>
       ) : null}
     </>
   );

@@ -55,17 +55,17 @@ describe('ClientPage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Northwind' })).toBeInTheDocument();
     expect(screen.getByText('Retail')).toBeInTheDocument();
-    expect(await screen.findByRole('link', { name: 'Website' })).toHaveAttribute(
-      'href',
-      `/clients/${client.id}/projects/${website.id}`,
-    );
-    expect(screen.getByRole('link', { name: 'View projects' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /Projects/ })).toHaveAttribute(
       'href',
       `/clients/${client.id}/projects`,
     );
-    expect(screen.getByRole('link', { name: 'View invoices' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /Invoices/ })).toHaveAttribute(
       'href',
       `/clients/${client.id}/invoices`,
+    );
+    expect(screen.getByRole('link', { name: /Tickets/ })).toHaveAttribute(
+      'href',
+      `/clients/${client.id}/tickets`,
     );
   });
 
@@ -89,13 +89,14 @@ describe('ClientPage', () => {
 
     renderHub(client.id);
 
-    expect(await screen.findByLabelText('Name for Northwind')).toHaveValue('Northwind');
+    await user.click(await screen.findByText('Billing details'));
+    expect(await screen.findByLabelText('Name')).toHaveValue('Northwind');
 
-    await user.clear(screen.getByLabelText('Name for Northwind'));
-    await user.type(screen.getByLabelText('Name for Northwind'), 'Contoso');
-    await user.clear(screen.getByLabelText('Notes for Northwind'));
-    await user.type(screen.getByLabelText('Notes for Northwind'), 'Wholesale');
-    await user.click(screen.getByRole('button', { name: 'Save Northwind' }));
+    await user.clear(screen.getByLabelText('Name'));
+    await user.type(screen.getByLabelText('Name'), 'Contoso');
+    await user.clear(screen.getByLabelText('Notes'));
+    await user.type(screen.getByLabelText('Notes'), 'Wholesale');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(await screen.findByRole('heading', { name: 'Contoso' })).toBeInTheDocument();
     expect(screen.getByText('Wholesale')).toBeInTheDocument();
@@ -109,8 +110,8 @@ describe('ClientPage', () => {
     renderHub(client.id);
 
     expect(await screen.findByRole('heading', { name: 'Northwind' })).toBeInTheDocument();
-    expect(screen.queryByLabelText('Name for Northwind')).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Remove Northwind' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Billing details')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
   });
 
   it('shows not found when the client is missing', async () => {

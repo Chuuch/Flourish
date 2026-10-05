@@ -1,4 +1,4 @@
-import { Alert, Button } from '@/components/ui';
+import { Alert, Button, TextArea } from '@/components/ui';
 import type { TicketCommentSource } from '../api/ticket-comments.api';
 import { useTicketComments } from '../hooks/useTicketComments';
 import {
@@ -40,7 +40,7 @@ function TicketCommentManageForm({
   });
 
   return (
-    <>
+    <div className="mt-3 flex flex-col gap-3">
       {updateComment.isError ? <Alert>{updateComment.error.message}</Alert> : null}
       {deleteComment.isError ? <Alert>{deleteComment.error.message}</Alert> : null}
       <form
@@ -51,32 +51,30 @@ function TicketCommentManageForm({
         }
         noValidate
       >
-        <div>
-          <label htmlFor={`ticket-comment-edit-${comment.id}`}>
-            {t('tickets.commentFor', { label })}
-          </label>
-          <textarea
-            id={`ticket-comment-edit-${comment.id}`}
-            className="block rounded border px-2 py-1"
-            {...register('body')}
-          />
-          {errors.body ? <p role="alert">{errors.body.message}</p> : null}
-        </div>
+        <TextArea
+          id={`ticket-comment-edit-${comment.id}`}
+          label={t('tickets.commentFor', { label })}
+          error={errors.body?.message}
+          {...register('body')}
+        />
 
-        <Button type="submit" disabled={updateComment.isPending}>
-          {t('tickets.save', { label })}
-        </Button>
+        <div className="form-actions">
+          <Button type="submit" disabled={updateComment.isPending}>
+            {t('tickets.save', { label })}
+          </Button>
+          <Button
+            type="button"
+            variant="danger"
+            disabled={deleteComment.isPending}
+            onClick={() => {
+              deleteComment.mutate(comment.id);
+            }}
+          >
+            {t('tickets.removeLabel', { label })}
+          </Button>
+        </div>
       </form>
-      <Button
-        type="button"
-        disabled={deleteComment.isPending}
-        onClick={() => {
-          deleteComment.mutate(comment.id);
-        }}
-      >
-        {t('tickets.removeLabel', { label })}
-      </Button>
-    </>
+    </div>
   );
 }
 
@@ -100,24 +98,27 @@ export function TicketCommentList({
     return (
       <Alert>
         <p>{t('comments.loadError', { message: error.message })}</p>
-        <button type="button" onClick={() => void refetch()}>
+        <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
           {t('common.retry')}
-        </button>
+        </Button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>{t('comments.empty')}</p>;
+    return <p className="text-muted m-0 text-sm">{t('comments.empty')}</p>;
   }
 
   return (
     <ul>
       {data.map((comment) => (
         <li key={comment.id}>
-          <span>
-            {comment.user_id} - {comment.body}
-          </span>
+          <div className="flex flex-col gap-1">
+            <span className="text-muted text-xs font-semibold tracking-wide uppercase">
+              {comment.user_id}
+            </span>
+            <p className="m-0 text-sm leading-relaxed">{comment.body}</p>
+          </div>
           {canMutateTicketComment(role, actorUserId, comment.user_id) ? (
             <TicketCommentManageForm ticketId={ticketId} source={source} comment={comment} />
           ) : null}

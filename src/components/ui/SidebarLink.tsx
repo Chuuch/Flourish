@@ -1,7 +1,7 @@
 import { cn } from '@/lib/cn';
 import type { LucideIcon } from 'lucide-react';
-import { NavLink } from 'react-router';
 import type { ReactNode } from 'react';
+import { NavLink } from 'react-router';
 
 interface SidebarLinkProps {
   to: string;
@@ -17,15 +17,15 @@ export function SidebarLink({ to, icon: Icon, children, end }: SidebarLinkProps)
       {...(end ? { end: true } : {})}
       className={({ isActive }) =>
         cn(
-          'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm no-underline transition-colors',
+          'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm no-underline transition-colors duration-150',
           isActive
-            ? 'bg-accent/12 font-semibold text-accent'
-            : 'text-ink/80 hover:bg-line/70 hover:text-ink',
+            ? 'bg-accent/12 text-accent font-semibold'
+            : 'text-muted hover:bg-accent/8 hover:text-ink',
         )
       }
     >
-      <Icon className="size-4 shrink-0" aria-hidden="true" />
-      {children}
+      <Icon className="size-4 shrink-0 opacity-90" aria-hidden="true" />
+      <span className="truncate">{children}</span>
     </NavLink>
   );
 }

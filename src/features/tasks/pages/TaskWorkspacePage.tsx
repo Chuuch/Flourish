@@ -67,9 +67,9 @@ function TaskWorkspace({
       <main>
         <Alert>
           <p>{t('tasks.loadError', { message })}</p>
-          <button type="button" onClick={() => void refetch()}>
+          <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
             {t('common.retry')}
-          </button>
+          </Button>
         </Alert>
       </main>
     );

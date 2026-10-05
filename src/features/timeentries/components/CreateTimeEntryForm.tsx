@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { useCreateTimeEntry } from '../hooks/useCreateTimeEntry';
 import { createTimeEntrySchema, type CreateTimeEntryInput } from '../schemas/time-entry.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, Button, TextField } from '@/components/ui';
+import { Alert, Button, TextArea, TextField } from '@/components/ui';
 import { useI18n } from '@/features/i18n';
 
 export function CreateTimeEntryForm({ taskId }: { taskId: string }) {
@@ -39,14 +39,11 @@ export function CreateTimeEntryForm({ taskId }: { taskId: string }) {
         error={errors.minutes?.message}
         {...register('minutes', { valueAsNumber: true })}
       />
+      <TextArea label={t('tasks.notes')} error={errors.notes?.message} {...register('notes')} />
 
-      <div>
-        <label htmlFor="notes">{t('tasks.notes')}</label>
-        <textarea id="notes" className="block rounded border px-2 py-1" {...register('notes')} />
-        {errors.notes ? <p role="alert">{errors.notes.message}</p> : null}
+      {createTimeEntry.isError ? <Alert>{createTimeEntry.error.message}</Alert> : null}
 
-        {createTimeEntry.isError ? <Alert>{createTimeEntry.error.message}</Alert> : null}
-
+      <div className="form-actions">
         <Button type="submit" disabled={createTimeEntry.isPending}>
           {t('time.add')}
         </Button>

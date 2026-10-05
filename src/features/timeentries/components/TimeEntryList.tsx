@@ -1,4 +1,4 @@
-import { Alert, Button, TextField } from '@/components/ui';
+import { Alert, Button, TextArea, TextField } from '@/components/ui';
 import { useTimeEntries } from '../hooks/useTimeEntries';
 import {
   canMutateTimeEntry,
@@ -31,7 +31,7 @@ function TimeEntryManageForm({ taskId, entry }: { taskId: string; entry: TimeEnt
   });
 
   return (
-    <>
+    <div className="mt-3 flex flex-col gap-3">
       {updateTimeEntry.isError ? <Alert>{updateTimeEntry.error.message}</Alert> : null}
       {deleteTimeEntry.isError ? <Alert>{deleteTimeEntry.error.message}</Alert> : null}
       <form
@@ -49,31 +49,29 @@ function TimeEntryManageForm({ taskId, entry }: { taskId: string; entry: TimeEnt
           error={errors.minutes?.message}
           {...register('minutes', { valueAsNumber: true })}
         />
+        <TextArea
+          label={t('time.notesFor', { label })}
+          error={errors.notes?.message}
+          {...register('notes')}
+        />
 
-        <div>
-          <label htmlFor={`notes-${entry.id}`}>{t('time.notesFor', { label })}</label>
-          <textarea
-            id={`notes-${entry.id}`}
-            className="block rounded border px-2 py-1"
-            {...register('notes')}
-          />
-          {errors.notes ? <p role="alert">{errors.notes.message}</p> : null}
+        <div className="form-actions">
+          <Button type="submit" disabled={updateTimeEntry.isPending}>
+            {t('time.save', { label })}
+          </Button>
+          <Button
+            type="button"
+            variant="danger"
+            disabled={deleteTimeEntry.isPending}
+            onClick={() => {
+              deleteTimeEntry.mutate(entry.id);
+            }}
+          >
+            {t('time.remove', { label })}
+          </Button>
         </div>
-
-        <Button type="submit" disabled={updateTimeEntry.isPending}>
-          {t('time.save', { label })}
-        </Button>
       </form>
-      <Button
-        type="button"
-        disabled={deleteTimeEntry.isPending}
-        onClick={() => {
-          deleteTimeEntry.mutate(entry.id);
-        }}
-      >
-        {t('time.remove', { label })}
-      </Button>
-    </>
+    </div>
   );
 }
 
@@ -91,22 +89,22 @@ export function TimeEntryList({ taskId }: { taskId: string }) {
     return (
       <Alert>
         <p>{t('time.loadError', { message: error.message })}</p>
-        <button type="button" onClick={() => void refetch()}>
+        <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
           {t('common.retry')}
-        </button>
+        </Button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>{t('time.empty')}</p>;
+    return <p className="text-muted m-0 text-sm">{t('time.empty')}</p>;
   }
 
   return (
     <ul>
       {data.map((entry) => (
         <li key={entry.id}>
-          {timeEntryLabel(entry)}
+          <p className="m-0 text-sm font-medium">{timeEntryLabel(entry)}</p>
           {canMutateTimeEntry(role, actorUserId, entry.user_id) ? (
             <TimeEntryManageForm taskId={taskId} entry={entry} />
           ) : null}

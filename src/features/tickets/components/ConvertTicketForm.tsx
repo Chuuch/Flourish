@@ -3,7 +3,7 @@ import { useProjects } from '@/features/projects';
 import { useConvertTicket } from '../hooks/useConvertTicket';
 import { useState } from 'react';
 import { canCreateTasks } from '@/features/tasks/schemas/task.schema';
-import { Alert, Button } from '@/components/ui';
+import { Alert, Button, SelectField } from '@/components/ui';
 import { Link } from 'react-router';
 import { projectTasksPath } from '@/app/router/paths';
 import { useI18n } from '@/features/i18n';
@@ -42,7 +42,7 @@ export function ConvertTicketForm({
   }
 
   if (projects.data.length === 0) {
-    return <p>{t('projects.empty')}</p>;
+    return <p className="text-muted m-0 text-sm">{t('projects.empty')}</p>;
   }
 
   const created = convertTicket.data;
@@ -60,36 +60,33 @@ export function ConvertTicketForm({
       }}
       noValidate
     >
-      <div>
-        <label htmlFor={`convert-project-${ticketId}`}>
-          {t('tickets.convertOn', { title: ticketTitle })}
-        </label>
-        <select
-          id={`convert-project-${ticketId}`}
-          className="block rounded px-2 py-1"
-          value={projectId}
-          onChange={(event) => {
-            setProjectId(event.currentTarget.value);
-          }}
-        >
-          <option value="">{t('tickets.selectProject')}</option>
-          {projects.data.map((project) => (
-            <option key={project.id} value={project.id}>
-              {project.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <SelectField
+        id={`convert-project-${ticketId}`}
+        label={t('tickets.convertOn', { title: ticketTitle })}
+        value={projectId}
+        onChange={(event) => {
+          setProjectId(event.currentTarget.value);
+        }}
+        error={validationError ?? undefined}
+      >
+        <option value="">{t('tickets.selectProject')}</option>
+        {projects.data.map((project) => (
+          <option key={project.id} value={project.id}>
+            {project.name}
+          </option>
+        ))}
+      </SelectField>
 
-      {validationError ? <p role="alert">{validationError}</p> : null}
       {convertTicket.isError ? <Alert>{convertTicket.error.message}</Alert> : null}
 
-      <Button type="submit" disabled={convertTicket.isPending}>
-        {t('tickets.convert')}
-      </Button>
+      <div className="form-actions">
+        <Button type="submit" disabled={convertTicket.isPending}>
+          {t('tickets.convert')}
+        </Button>
+      </div>
 
       {created ? (
-        <p>
+        <p className="text-muted m-0 text-sm">
           <Link to={projectTasksPath(clientId, created.project_id)}>
             {t('tickets.openedAs', { title: created.title })}
           </Link>

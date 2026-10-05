@@ -78,7 +78,8 @@ describe('CreateProjectForm', () => {
     await user.type(screen.getByLabelText('Notes'), 'Launch');
     await user.click(screen.getByRole('button', { name: 'Add project' }));
 
-    expect(await screen.findByText('Website - Launch')).toBeInTheDocument();
+    expect(await screen.findByText('Website')).toBeInTheDocument();
+    expect(screen.getByText('Launch')).toBeInTheDocument();
     expect(screen.getByLabelText('Name')).toHaveValue('');
   });
 

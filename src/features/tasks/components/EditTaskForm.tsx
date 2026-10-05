@@ -8,7 +8,7 @@ import {
 import { useUpdateTask } from '../hooks/useUpdateTask';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, Button, TextField } from '@/components/ui';
+import { Alert, Button, TextArea, TextField } from '@/components/ui';
 import { AssigneeSelect } from './AssigneeSelect';
 import { useI18n } from '@/features/i18n';
 
@@ -54,17 +54,11 @@ export function EditTaskForm({ task, projectId }: { task: Task; projectId?: stri
         error={errors.title?.message}
         {...register('title')}
       />
-
-      <div>
-        <label htmlFor={`notes-${task.id}`}>{t('tasks.notesFor', { title: task.title })}</label>
-        <textarea
-          id={`notes-${task.id}`}
-          className="block rounded border px-2 py-1"
-          {...register('notes')}
-        />
-        {errors.notes ? <p role="alert">{errors.notes.message}</p> : null}
-      </div>
-
+      <TextArea
+        label={t('tasks.notesFor', { title: task.title })}
+        error={errors.notes?.message}
+        {...register('notes')}
+      />
       <AssigneeSelect
         id={`assignee-${task.id}`}
         label={t('tasks.assigneeFor', { title: task.title })}
@@ -75,9 +69,11 @@ export function EditTaskForm({ task, projectId }: { task: Task; projectId?: stri
 
       {updateTask.isError ? <Alert>{updateTask.error.message}</Alert> : null}
 
-      <Button type="submit" disabled={updateTask.isPending}>
-        {t('tasks.save', { title: task.title })}
-      </Button>
+      <div className="form-actions">
+        <Button type="submit" disabled={updateTask.isPending}>
+          {t('tasks.save', { title: task.title })}
+        </Button>
+      </div>
     </form>
   );
 }
