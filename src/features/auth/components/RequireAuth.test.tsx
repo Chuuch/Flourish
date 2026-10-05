@@ -10,22 +10,19 @@ import { useAuthStore } from '../store/auth.store';
 import { makeClient } from '@/test/factories/client';
 import { makeProject } from '@/test/factories/project';
 import { makeTask } from '@/test/factories/task';
+import { makeOrganization } from '@/test/factories/organization';
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
-const testClient = {
-  id: crypto.randomUUID(),
+const testClient = makeClient({
   organization_id: testOrg.id,
   name: 'Northwind',
-  notes: '',
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 const clientId = '44444444-4444-4444-4444-444444444444';
 

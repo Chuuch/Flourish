@@ -11,16 +11,15 @@ import { useAuthStore } from '@/features/auth';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { ClientUsersPage } from '../pages/ClientUsersPage';
 import { makeClientUser } from '@/test/factories/client-user';
+import { makeOrganization } from '@/test/factories/organization';
 
 const clientId = '44444444-4444-4444-4444-444444444444';
 const clientUsersUrl = `${env.API_URL}/clients/${clientId}/users`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore

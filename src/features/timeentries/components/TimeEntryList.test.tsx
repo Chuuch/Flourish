@@ -9,17 +9,16 @@ import { makeTimeEntry } from '@/test/factories/time-entry';
 import { useAuthStore } from '@/features/auth';
 import userEvent from '@testing-library/user-event';
 import { updateTimeEntrySchema, type TimeEntry } from '../schemas/time-entry.schema';
+import { makeOrganization } from '@/test/factories/organization';
 
 const taskId = '66666666-6666-6666-6666-666666666666';
 const timeEntriesUrl = `${env.API_URL}/tasks/${taskId}/time-entries`;
 const actorUserId = '11111111-1111-1111-1111-111111111111';
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member', userId = actorUserId) {
   useAuthStore

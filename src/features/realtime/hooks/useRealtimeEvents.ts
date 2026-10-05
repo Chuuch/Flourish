@@ -45,7 +45,7 @@ export function useRealtimeEvents(): void {
       headers,
       signal: controller.signal,
       credentials: 'include',
-      async onopen(response) {
+      async onopen(response: Response) {
         if (response.ok) {
           catchUpRealtimeQueries(queryClient, portal);
           return;
@@ -67,7 +67,7 @@ export function useRealtimeEvents(): void {
 
         throw new Error(`sse open retry: ${String(response.status)}`);
       },
-      onmessage(message) {
+      onmessage(message: { data: string }) {
         if (!message.data) {
           return;
         }
@@ -89,7 +89,7 @@ export function useRealtimeEvents(): void {
       onclose() {
         throw new Error('sse closed');
       },
-      onerror(error) {
+      onerror(error: unknown) {
         if (error instanceof FatalRealtimeError) {
           throw error;
         }

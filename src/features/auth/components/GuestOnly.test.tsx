@@ -8,13 +8,12 @@ import { env } from '@/config/env';
 import { paths } from '@/app/router/paths';
 import { screen } from '@testing-library/react';
 import { useAuthStore } from '../store/auth.store';
+import { makeOrganization } from '@/test/factories/organization';
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function renderAt(path: string) {
   const router = createMemoryRouter(routes, { initialEntries: [path] });

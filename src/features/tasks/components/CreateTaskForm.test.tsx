@@ -11,18 +11,17 @@ import { makeTask } from '@/test/factories/task';
 import { useAuthStore } from '@/features/auth';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { TasksPage } from '../pages/TasksPage';
+import { makeOrganization } from '@/test/factories/organization';
 
 const clientId = '44444444-4444-4444-4444-444444444444';
 const projectId = '55555555-5555-5555-5555-555555555555';
 const tasksUrl = `${env.API_URL}/projects/${projectId}/tasks`;
 const membersUrl = `${env.API_URL}/members`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore

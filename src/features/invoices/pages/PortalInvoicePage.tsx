@@ -1,12 +1,13 @@
-import { useI18n } from '@/features/i18n';
-import { Link, useParams } from 'react-router';
-import { usePortalInvoice } from '../hooks/usePortalInvoice';
-import { useDownloadPortalInvoicePdf } from '../hooks/useDownloadPortalInvoicePdf';
+import { paths } from '@/app/router/paths';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 import { Alert, Button } from '@/components/ui';
-import { paths } from '@/app/router/paths';
-import { invoiceStatusKey } from '../lib/invoiceStatus';
+import { useI18n } from '@/features/i18n';
+import { Link, useParams } from 'react-router';
+import { InvoiceBillingSummary } from '../components/InvoiceBillingSummary';
+import { useDownloadPortalInvoicePdf } from '../hooks/useDownloadPortalInvoicePdf';
+import { usePortalInvoice } from '../hooks/usePortalInvoice';
 import { formatEUR, formatHours } from '../lib/formatMoney';
+import { invoiceStatusKey } from '../lib/invoiceStatus';
 
 export function PortalInvoicePage() {
   const { invoiceId } = useParams();
@@ -62,10 +63,6 @@ function PortalInvoiceDetail({ invoiceId }: { invoiceId: string }) {
         <Link to={paths.portalInvoices}>{t('invoices.title')}</Link>
       </p>
       <h1>{data.number}</h1>
-      <p>{data.organization_name}</p>
-      <p>
-        {t('invoices.billTo')}: {data.client_name}
-      </p>
       <p>
         {t('invoices.statusLabel')}: {t(invoiceStatusKey[data.status])}
       </p>
@@ -78,7 +75,8 @@ function PortalInvoiceDetail({ invoiceId }: { invoiceId: string }) {
       <p>
         {t('invoices.rate')}: {formatEUR(data.rate_cents)}
       </p>
-      <p>{t('invoices.total', { amount: formatEUR(data.total_cents) })}</p>
+
+      <InvoiceBillingSummary invoice={data} />
 
       <ul>
         {data.lines.map((line) => (

@@ -6,15 +6,14 @@ import { renderWithProviders } from '@/test/render';
 import { ActivityList } from './ActivityList';
 import { screen } from '@testing-library/react';
 import { useAuthStore } from '@/features/auth';
+import { makeOrganization } from '@/test/factories/organization';
 
 const activityUrl = `${env.API_URL}/activity`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 describe('ActivityList', () => {
   it('renders activity returned by the API', async () => {

@@ -11,18 +11,17 @@ import { MemoryRouter, Route, Routes } from 'react-router';
 import { CreateCommentForm } from '@/features/comments/components/CreateCommentForm';
 import { createCommentSchema, type Comment } from '@/features/comments/schemas/comment.schema';
 import { CommentsPage } from '@/features/comments';
+import { makeOrganization } from '@/test/factories/organization';
 
 const clientId = '44444444-4444-4444-4444-444444444444';
 const projectId = '55555555-5555-5555-5555-555555555555';
 const taskId = '66666666-6666-6666-6666-666666666666';
 const commentsUrl = `${env.API_URL}/tasks/${taskId}/comments`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member', userId = crypto.randomUUID()) {
   useAuthStore

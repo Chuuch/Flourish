@@ -9,16 +9,15 @@ import { useAuthStore } from '@/features/auth';
 import userEvent from '@testing-library/user-event';
 import { CommentList } from '@/features/comments/components/CommentList';
 import { updateCommentSchema, type Comment } from '@/features/comments/schemas/comment.schema';
+import { makeOrganization } from '@/test/factories/organization';
 
 const taskId = '66666666-6666-6666-6666-666666666666';
 const commentsUrl = `${env.API_URL}/tasks/${taskId}/comments`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member', userId = crypto.randomUUID()) {
   useAuthStore

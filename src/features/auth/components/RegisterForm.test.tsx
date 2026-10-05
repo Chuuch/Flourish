@@ -9,13 +9,12 @@ import { useAuthStore } from '@/features/auth';
 import { renderWithProviders } from '@/test/render';
 import { server } from '@/test/server';
 import { RegisterForm } from './RegisterForm';
+import { makeOrganization } from '@/test/factories/organization';
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 const testUser = {
   id: crypto.randomUUID(),

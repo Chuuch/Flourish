@@ -1,6 +1,13 @@
 import { t } from '@/features/i18n';
 import { z } from 'zod';
 
+const countrySchema = z
+  .string()
+  .max(2)
+  .refine((value) => value === '' || value.length === 2, {
+    error: () => t('validation.country'),
+  });
+
 export const sessionUserSchema = z.object({
   id: z.uuid(),
   email: z.email(),
@@ -10,6 +17,18 @@ export const sessionUserSchema = z.object({
 export const sessionOrganizationSchema = z.object({
   id: z.uuid(),
   name: z.string().min(1),
+  legal_name: z.string().default(''),
+  registration_number: z.string().default(''),
+  vat_id: z.string().default(''),
+  address_line1: z.string().default(''),
+  address_line2: z.string().default(''),
+  city: z.string().default(''),
+  postal_code: z.string().default(''),
+  country: z.string().default(''),
+  default_vat_rate_bps: z.int().default(2000),
+  bank_iban: z.string().default(''),
+  bank_bic: z.string().default(''),
+  bank_name: z.string().default(''),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -64,6 +83,18 @@ export const updateOrganizationInputSchema = z.object({
     .string()
     .min(4, { error: () => t('validation.orgNameMin') })
     .max(100),
+  legal_name: z.string().max(200),
+  registration_number: z.string().max(64),
+  vat_id: z.string().max(32),
+  address_line1: z.string().max(200),
+  address_line2: z.string().max(200),
+  city: z.string().max(100),
+  postal_code: z.string().max(32),
+  country: countrySchema,
+  default_vat_rate_bps: z.number().int().min(0).max(10000),
+  bank_iban: z.string().max(64),
+  bank_bic: z.string().max(32),
+  bank_name: z.string().max(100),
 });
 
 export const authResponseSchema = z.object({

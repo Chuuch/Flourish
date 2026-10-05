@@ -7,15 +7,14 @@ import { NotificationList } from './NotificationList';
 import { screen } from '@testing-library/react';
 import { useAuthStore } from '@/features/auth';
 import userEvent from '@testing-library/user-event';
+import { makeOrganization } from '@/test/factories/organization';
 
 const notificationsUrl = `${env.API_URL}/notifications`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 describe('NotificationList', () => {
   it('renders a staff notification and marks it read', async () => {

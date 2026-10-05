@@ -7,22 +7,20 @@ import { env } from '@/config/env';
 import { renderWithProviders } from '@/test/render';
 import { server } from '@/test/server';
 import { useAuthStore } from '@/features/auth';
+import { makeOrganization } from '@/test/factories/organization';
+import { makeClient } from '@/test/factories/client';
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
-const testClient = {
-  id: crypto.randomUUID(),
+const testClient = makeClient({
   organization_id: testOrg.id,
   name: 'Northwind',
-  notes: '',
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function renderAt(path: string) {
   const router = createMemoryRouter(routes, { initialEntries: [path] });

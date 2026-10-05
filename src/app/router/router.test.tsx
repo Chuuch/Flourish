@@ -10,18 +10,17 @@ import { useAuthStore } from '@/features/auth';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { FilesPage, type ProjectFile } from '@/features/files';
 import { CreateFileForm } from '@/features/files/components/CreateFileForm';
+import { makeOrganization } from '@/test/factories/organization';
 
 const clientId = '44444444-4444-4444-4444-444444444444';
 const projectId = '55555555-5555-5555-5555-555555555555';
 const filesUrl = `${env.API_URL}/projects/${projectId}/files`;
 const uploadUrl = `${env.API_URL}/storage-put`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore

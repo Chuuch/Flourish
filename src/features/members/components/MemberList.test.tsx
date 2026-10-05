@@ -9,15 +9,14 @@ import { makeMember } from '@/test/factories/member';
 import { useAuthStore } from '@/features/auth';
 import userEvent from '@testing-library/user-event';
 import { updateMemberSchema, type Member } from '../schemas/member.schema';
+import { makeOrganization } from '@/test/factories/organization';
 
 const membersUrl = `${env.API_URL}/members`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore

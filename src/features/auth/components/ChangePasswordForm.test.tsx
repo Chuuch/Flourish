@@ -9,25 +9,23 @@ import { MemoryRouter, Route, Routes } from 'react-router';
 import { describe, expect, it } from 'vitest';
 import { useAuthStore } from '../store/auth.store';
 import { ChangePasswordForm } from './ChangePasswordForm';
+import { makeOrganization } from '@/test/factories/organization';
+import { makeClient } from '@/test/factories/client';
 
 const staffUrl = `${env.API_URL}/auth/change-password`;
 const portalUrl = `${env.API_URL}/client-auth/change-password`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
-const testClient = {
-  id: crypto.randomUUID(),
+const testClient = makeClient({
   organization_id: testOrg.id,
   name: 'Northwind',
-  notes: '',
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function renderForm() {
   return renderWithProviders(

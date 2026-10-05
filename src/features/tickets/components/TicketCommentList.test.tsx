@@ -9,27 +9,25 @@ import { makeTicketComment } from '@/test/factories/ticket-comment';
 import { useAuthStore } from '@/features/auth';
 import userEvent from '@testing-library/user-event';
 import { updateTicketCommentSchema, type TicketComment } from '../schemas/ticket-comment.schema';
+import { makeOrganization } from '@/test/factories/organization';
+import { makeClient } from '@/test/factories/client';
 
 const ticketId = '99999999-9999-9999-9999-999999999999';
 const portalUrl = `${env.API_URL}/client-auth/tickets/${ticketId}/comments`;
 const staffUrl = `${env.API_URL}/tickets/${ticketId}/comments`;
 const actorUserId = '11111111-1111-1111-1111-111111111111';
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
-const testClient = {
-  id: crypto.randomUUID(),
+const testClient = makeClient({
   organization_id: testOrg.id,
   name: 'Northwind',
-  notes: '',
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member', userId = actorUserId) {
   useAuthStore

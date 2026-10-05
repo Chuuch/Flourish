@@ -1,19 +1,20 @@
 import { clientInvoicesPath, clientPath, paths } from '@/app/router/paths';
-import { Link, useNavigate, useParams } from 'react-router';
-import { Alert, Button, TextField } from '@/components/ui';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
+import { Alert, Button, TextField } from '@/components/ui';
 import { useAuthStore } from '@/features/auth';
 import { canManageClients } from '@/features/clients/schemas/client.schema';
 import { useI18n } from '@/features/i18n';
 import { reportRange } from '@/features/reports/lib/reportRange';
-import { formatEUR, formatHours } from '../lib/formatMoney';
-import { invoiceStatusKey } from '../lib/invoiceStatus';
+import { Link, useNavigate, useParams } from 'react-router';
+import { InvoiceBillingSummary } from '../components/InvoiceBillingSummary';
 import { useDeleteInvoice } from '../hooks/useDeleteInvoice';
+import { useDownloadInvoicePdf } from '../hooks/useDownloadInvoicePdf';
 import { useInvoice } from '../hooks/useInvoice';
 import { useMarkInvoicePaid } from '../hooks/useMarkInvoicePaid';
 import { useSendInvoice } from '../hooks/useSendInvoice';
 import { useUpdateInvoice } from '../hooks/useUpdateInvoice';
-import { useDownloadInvoicePdf } from '../hooks/useDownloadInvoicePdf';
+import { formatEUR, formatHours } from '../lib/formatMoney';
+import { invoiceStatusKey } from '../lib/invoiceStatus';
 
 export function InvoicePage() {
   const { clientId, invoiceId } = useParams();
@@ -83,10 +84,6 @@ function InvoiceDetail({ clientId, invoiceId }: { clientId: string; invoiceId: s
         <Link to={clientInvoicesPath(clientId)}>{t('invoices.title')}</Link>
       </p>
       <h1>{data.number}</h1>
-      <p>{data.organization_name}</p>
-      <p>
-        {t('invoices.billTo')}: {data.client_name}
-      </p>
       <p>
         {t('invoices.statusLabel')}: {t(invoiceStatusKey[data.status])}
       </p>
@@ -99,7 +96,8 @@ function InvoiceDetail({ clientId, invoiceId }: { clientId: string; invoiceId: s
       <p>
         {t('invoices.rate')}: {formatEUR(data.rate_cents)}
       </p>
-      <p>{t('invoices.total', { amount: formatEUR(data.total_cents) })}</p>
+
+      <InvoiceBillingSummary invoice={data} />
 
       <ul>
         {data.lines.map((line) => (

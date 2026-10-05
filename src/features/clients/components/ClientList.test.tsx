@@ -8,15 +8,14 @@ import { screen } from '@testing-library/react';
 import { makeClient } from '@/test/factories/client';
 import { MemoryRouter } from 'react-router';
 import { useAuthStore } from '@/features/auth';
+import { makeOrganization } from '@/test/factories/organization';
 
 const clientsUrl = `${env.API_URL}/clients`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore

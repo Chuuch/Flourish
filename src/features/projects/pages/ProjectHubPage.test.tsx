@@ -12,13 +12,12 @@ import { MemoryRouter, Route, Routes } from 'react-router';
 import { useAuthStore } from '@/features/auth';
 import userEvent from '@testing-library/user-event';
 import { updateProjectSchema, type Project } from '../schemas/project.schema';
+import { makeOrganization } from '@/test/factories/organization';
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore
