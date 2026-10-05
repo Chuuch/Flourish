@@ -102,8 +102,10 @@ describe('MemberList', () => {
     await user.selectOptions(screen.getByLabelText('Role for linus@example.com'), 'admin');
 
     const row = (await screen.findByText('linus@example.com')).closest('li');
-    expect(row).not.toBeNull();
-    expect(row!.querySelector('[data-role="admin"]')).toHaveTextContent('Admin');
+    if (!row) {
+      throw new Error('expected member row');
+    }
+    expect(row.querySelector('[data-role="admin"]')).toHaveTextContent('Admin');
     expect(screen.getByLabelText('Role for linus@example.com')).toHaveValue('admin');
   });
 
