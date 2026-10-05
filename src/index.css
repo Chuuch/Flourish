@@ -10,7 +10,7 @@
   --surface: #ffffff;
   --control: #ffffff;
   --muted: #6b6b6b;
-  --accent: #0f766e;
+  --accent: #ff5c00;
   --accent-fg: #f0fdfa;
   --accent-soft: color-mix(in srgb, var(--accent) 8%, #ffffff);
   --danger: #7f1d1d;
