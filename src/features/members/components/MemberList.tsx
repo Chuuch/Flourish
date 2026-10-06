@@ -42,7 +42,7 @@ export function MemberList() {
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="m-0 text-sm font-bold tracking-tight">{t('members.teamHeading')}</h2>
+      <h2 className="m-0 text-sm font-semibold tracking-tight">{t('members.teamHeading')}</h2>
       {updateMember.isError ? <Alert>{updateMember.error.message}</Alert> : null}
       {deleteMember.isError ? <Alert>{deleteMember.error.message}</Alert> : null}
       <ul className="stack-list">

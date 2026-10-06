@@ -17,14 +17,14 @@ export function SidebarLink({ to, icon: Icon, children, end }: SidebarLinkProps)
       {...(end ? { end: true } : {})}
       className={({ isActive }) =>
         cn(
-          'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm no-underline transition-colors duration-150',
+          'flex items-center gap-2.5 rounded-[var(--radius-control)] px-2.5 py-1.5 text-sm no-underline transition-colors duration-150 focus-visible:outline-none focus-visible:shadow-[var(--focus-ring)]',
           isActive
-            ? 'bg-accent/12 text-accent font-semibold'
-            : 'text-muted hover:bg-accent/8 hover:text-ink',
+            ? 'bg-canvas-elevated text-ink font-semibold'
+            : 'text-muted hover:bg-canvas-elevated/70 hover:text-ink',
         )
       }
     >
-      <Icon className="size-4 shrink-0 opacity-90" aria-hidden="true" />
+      <Icon className="size-4 shrink-0 opacity-80" aria-hidden="true" />
       <span className="truncate">{children}</span>
     </NavLink>
   );

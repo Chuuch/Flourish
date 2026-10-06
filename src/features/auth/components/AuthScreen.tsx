@@ -23,7 +23,6 @@ export function AuthScreen({ title, children, footer }: AuthScreenProps) {
           <BrandMark size="lg" />
           <p>{t('home.slogan')}</p>
         </div>
-        <hr />
       </div>
     </main>
   );

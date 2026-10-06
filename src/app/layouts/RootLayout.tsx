@@ -32,12 +32,10 @@ export function RootLayout() {
 
   return (
     <div className="bg-transparent text-ink flex min-h-screen flex-col md:flex-row">
-      <aside className="border-line/80 bg-surface/85 sticky top-0 z-10 flex flex-col gap-5 border-b px-3 py-4 backdrop-blur-xl md:h-screen md:w-[15.5rem] md:shrink-0 md:border-r md:border-b-0 md:px-3.5 md:py-5">
-        <p className="flex items-center gap-2.5 px-2.5 pt-1">
-          <span className="border-line bg-accent/10 inline-grid size-8 place-items-center rounded-full border">
-            <Leaf className="text-accent size-4" aria-hidden="true" />
-          </span>
-          <span className="text-[1.05rem] font-bold tracking-tight">{t('home.brand')}</span>
+      <aside className="border-line bg-surface sticky top-0 z-10 flex flex-col gap-4 border-b px-3 py-4 md:h-screen md:w-[14.5rem] md:shrink-0 md:border-r md:border-b-0 md:px-3 md:py-5">
+        <p className="flex items-center gap-2 px-2.5 pt-0.5">
+          <Leaf className="text-accent size-4 shrink-0" aria-hidden="true" />
+          <span className="text-[0.95rem] font-semibold tracking-tight">{t('home.brand')}</span>
         </p>
 
         <nav aria-label={t('nav.main')} className="flex flex-1 flex-col gap-0.5">
@@ -46,7 +44,7 @@ export function RootLayout() {
           </SidebarLink>
           {user && !isPortal ? (
             <>
-              <p className="text-muted mt-4 mb-1 px-3 text-[0.65rem] font-bold tracking-[0.1em] uppercase">
+              <p className="text-muted mt-3.5 mb-1 px-2.5 text-[0.65rem] font-semibold tracking-[0.08em] uppercase">
                 {t('nav.main')}
               </p>
               <SidebarLink to={paths.members} icon={UsersRound}>
@@ -80,12 +78,12 @@ export function RootLayout() {
               ) : null}
               {isPortal ? (
                 client ? (
-                  <p className="text-muted mt-4 px-3 text-xs font-medium tracking-wide">
+                  <p className="text-muted mt-3.5 truncate px-2.5 text-xs font-medium">
                     {client.name}
                   </p>
                 ) : null
               ) : organization ? (
-                <p className="text-muted mt-4 px-3 text-xs font-medium tracking-wide">
+                <p className="text-muted mt-3.5 truncate px-2.5 text-xs font-medium">
                   {organization.name}
                 </p>
               ) : null}
@@ -95,7 +93,7 @@ export function RootLayout() {
               <Button
                 type="button"
                 variant="ghost"
-                className="mt-1 justify-start px-3"
+                className="mt-1 justify-start px-2.5"
                 onClick={() => {
                   logout.mutate();
                 }}
@@ -120,13 +118,13 @@ export function RootLayout() {
           )}
         </nav>
 
-        <div className="border-line mt-auto flex flex-col gap-2.5 border-t pt-3.5">
+        <div className="border-line mt-auto flex flex-col gap-2 border-t pt-3">
           <ThemeToggle />
           <LocaleSwitcher />
         </div>
       </aside>
 
-      <div className="flex-1 px-4 py-7 md:px-10 md:py-9">
+      <div className="flex-1 px-4 py-6 md:px-8 md:py-8">
         <Outlet />
       </div>
     </div>

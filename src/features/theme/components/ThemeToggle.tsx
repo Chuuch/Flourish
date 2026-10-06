@@ -13,7 +13,7 @@ export function ThemeToggle() {
     <Button
       type="button"
       variant="ghost"
-      className="w-full justify-start px-3"
+      className="w-full justify-start px-2.5"
       aria-pressed={isDark}
       onClick={toggleTheme}
     >

@@ -84,7 +84,7 @@ export function ReportList({ fromDate, toDate, onRangeChange }: ReportListProps)
       {data && data.total_minutes > 0 ? (
         <div className="page-grid page-grid-3">
           <section className="flex flex-col gap-2">
-            <h2 className="m-0 text-sm font-bold tracking-tight">{t('reports.byClient')}</h2>
+            <h2 className="m-0 text-sm font-semibold tracking-tight">{t('reports.byClient')}</h2>
             <ul className="stack-list">
               {data.by_client.map((row) => (
                 <li key={row.client_id}>
@@ -97,7 +97,7 @@ export function ReportList({ fromDate, toDate, onRangeChange }: ReportListProps)
             </ul>
           </section>
           <section className="flex flex-col gap-2">
-            <h2 className="m-0 text-sm font-bold tracking-tight">{t('reports.byProject')}</h2>
+            <h2 className="m-0 text-sm font-semibold tracking-tight">{t('reports.byProject')}</h2>
             <ul className="stack-list">
               {data.by_project.map((row) => (
                 <li key={row.project_id}>
@@ -113,7 +113,7 @@ export function ReportList({ fromDate, toDate, onRangeChange }: ReportListProps)
             </ul>
           </section>
           <section className="flex flex-col gap-2">
-            <h2 className="m-0 text-sm font-bold tracking-tight">{t('reports.byMember')}</h2>
+            <h2 className="m-0 text-sm font-semibold tracking-tight">{t('reports.byMember')}</h2>
             <ul className="stack-list">
               {data.by_member.map((row) => (
                 <li key={row.user_id}>

@@ -45,7 +45,7 @@ export function OrganizationNameForm() {
 
   return (
     <div className="panel-card">
-      <h2 className="m-0 text-sm font-bold tracking-tight">{t('auth.organizationHeading')}</h2>
+      <h2 className="m-0 text-sm font-semibold tracking-tight">{t('auth.organizationHeading')}</h2>
       <form
         className="mt-3"
         onSubmit={(event) =>

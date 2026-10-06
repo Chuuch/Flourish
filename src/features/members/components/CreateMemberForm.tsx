@@ -44,7 +44,7 @@ export function CreateMemberForm() {
         noValidate
       >
         <div className="space-y-1">
-          <h2 className="m-0 text-sm font-bold tracking-tight">{t('members.inviteHeading')}</h2>
+          <h2 className="m-0 text-sm font-semibold tracking-tight">{t('members.inviteHeading')}</h2>
           <p className="text-muted m-0 text-sm leading-relaxed">{t('members.inviteDescription')}</p>
         </div>
 
