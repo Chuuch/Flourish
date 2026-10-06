@@ -5,6 +5,8 @@ export const bg: Record<MessageKey, string> = {
   'nav.home': 'Начало',
   'nav.members': 'Членове',
   'nav.clients': 'Клиенти',
+  'nav.tasks': 'Задачи',
+  'nav.tickets': 'Тикети',
   'nav.activity': 'Активност',
   'nav.reports': 'Отчети',
   'nav.notifications': 'Известия',

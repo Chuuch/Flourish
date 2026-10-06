@@ -12,6 +12,7 @@ export const paths = {
   clients: '/clients',
   projects: '/projects',
   tasks: '/tasks',
+  tickets: '/tickets',
   portal: '/portal',
   portalLogin: '/portal/login',
   portalAccount: '/portal/account',

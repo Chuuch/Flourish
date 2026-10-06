@@ -311,6 +311,42 @@ export const routes: RouteObject[] = [
         },
       },
       {
+        path: 'tasks',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { HomePage: TasksHomePage } = await import('@/features/home/pages/HomePage');
+          const { RequireAuth: RequireStaffAuth } =
+            await import('@/features/auth/components/RequireAuth');
+          return {
+            Component: function TasksRoute() {
+              return (
+                <RequireStaffAuth>
+                  <TasksHomePage />
+                </RequireStaffAuth>
+              );
+            },
+          };
+        },
+      },
+      {
+        path: 'tickets',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { OrgTicketsPage } = await import('@/features/tickets/pages/OrgTicketsPage');
+          const { RequireAuth: RequireStaffAuth } =
+            await import('@/features/auth/components/RequireAuth');
+          return {
+            Component: function TicketsRoute() {
+              return (
+                <RequireStaffAuth>
+                  <OrgTicketsPage />
+                </RequireStaffAuth>
+              );
+            },
+          };
+        },
+      },
+      {
         path: 'clients',
         element: (
           <RequireAuth>

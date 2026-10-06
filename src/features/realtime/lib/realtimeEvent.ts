@@ -1,4 +1,5 @@
 import { activityKeys } from '@/features/activity/api/activity.queries';
+import { navKeys } from '@/features/nav/api/nav.queries';
 import { notificationKeys } from '@/features/notifications/api/notifications.queries';
 import type { QueryClient } from '@tanstack/react-query';
 import z from 'zod';
@@ -20,6 +21,7 @@ export function applyRealtimeEvent(
 
   if (event.channel === 'notification') {
     void queryClient.invalidateQueries({ queryKey: notificationKeys.list(portal) });
+    void queryClient.invalidateQueries({ queryKey: navKeys.counts(portal) });
   }
 }
 
@@ -28,4 +30,5 @@ export function catchUpRealtimeQueries(queryClient: QueryClient, portal: boolean
     void queryClient.invalidateQueries({ queryKey: activityKeys.all });
   }
   void queryClient.invalidateQueries({ queryKey: notificationKeys.list(portal) });
+  void queryClient.invalidateQueries({ queryKey: navKeys.counts(portal) });
 }

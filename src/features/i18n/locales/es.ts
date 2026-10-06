@@ -5,6 +5,8 @@ export const es: Record<MessageKey, string> = {
   'nav.home': 'Inicio',
   'nav.members': 'Miembros',
   'nav.clients': 'Clientes',
+  'nav.tasks': 'Tareas',
+  'nav.tickets': 'Tickets',
   'nav.activity': 'Actividad',
   'nav.reports': 'Informes',
   'nav.notifications': 'Notificaciones',

@@ -5,6 +5,8 @@ export const fr: Record<MessageKey, string> = {
   'nav.home': 'Accueil',
   'nav.members': 'Membres',
   'nav.clients': 'Clients',
+  'nav.tasks': 'Tâches',
+  'nav.tickets': 'Tickets',
   'nav.activity': 'Activité',
   'nav.reports': 'Rapports',
   'nav.notifications': 'Notifications',

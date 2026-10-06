@@ -6,6 +6,9 @@ import { describe, expect, it } from 'vitest';
 import { RootLayout } from './RootLayout';
 import { makeOrganization } from '@/test/factories/organization';
 import { makeClient } from '@/test/factories/client';
+import { server } from '@/test/server';
+import { HttpResponse, http as mswHttp } from 'msw';
+import { env } from '@/config/env';
 
 const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
@@ -18,6 +21,18 @@ const testClient = makeClient({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
 });
+
+function mockNavCounts() {
+  server.use(
+    mswHttp.get(`${env.API_URL}/nav/counts`, () =>
+      HttpResponse.json({ tasks: 2, tickets: 3, unread_notifications: 1 }),
+    ),
+    mswHttp.get(`${env.API_URL}/client-auth/nav/counts`, () =>
+      HttpResponse.json({ tasks: 0, tickets: 0, unread_notifications: 4 }),
+    ),
+    mswHttp.get(`${env.API_URL}/clients`, () => HttpResponse.json([])),
+  );
+}
 
 function renderLayout() {
   return renderWithProviders(
@@ -45,15 +60,18 @@ describe('RootLayout', () => {
     expect(screen.getByText('page')).toBeInTheDocument();
   });
 
-  it('shows staff links when signed in', () => {
+  it('shows staff links when signed in', async () => {
+    mockNavCounts();
     useAuthStore
       .getState()
       .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
 
     renderLayout();
 
-    expect(screen.getByRole('link', { name: 'Members' })).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'Members' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Clients' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Tasks' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Tickets' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Activity' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Reports' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Notifications' })).toBeInTheDocument();
@@ -63,7 +81,8 @@ describe('RootLayout', () => {
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument();
   });
 
-  it('hides staff links for a client session', () => {
+  it('hides staff links for a client session', async () => {
+    mockNavCounts();
     useAuthStore
       .getState()
       .setPortalSession(
@@ -76,7 +95,7 @@ describe('RootLayout', () => {
 
     renderLayout();
 
-    expect(screen.getByText('Northwind')).toBeInTheDocument();
+    expect(await screen.findByText('Northwind')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Notifications' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Members' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Clients' })).not.toBeInTheDocument();
