@@ -10,8 +10,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<ButtonVariant, string> = {
-  default:
-    'border-line bg-surface text-ink hover:bg-canvas-elevated focus-visible:border-accent',
+  default: 'border-line bg-surface text-ink hover:bg-canvas-elevated focus-visible:border-accent',
   primary:
     'border-transparent bg-accent text-accent-fg hover:opacity-90 focus-visible:border-accent',
   ghost:

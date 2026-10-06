@@ -13,8 +13,8 @@ import { makeTask } from '@/test/factories/task';
 import { convertTicketSchema } from '../schemas/ticket.schema';
 import { makeOrganization } from '@/test/factories/organization';
 
-const clientId = '44444444-4444-4444-4444-444444444444';
-const ticketId = '99999999-9999-9999-9999-999999999999';
+const clientId = '44444444-4444-4444-8444-444444444444';
+const ticketId = '99999999-9999-4999-8999-999999999999';
 const projectsUrl = `${env.API_URL}/clients/${clientId}/projects`;
 const convertUrl = `${env.API_URL}/tickets/${ticketId}/convert`;
 

@@ -75,7 +75,7 @@ export const de: Record<MessageKey, string> = {
   'auth.city': 'City',
   'auth.postalCode': 'Postal code',
   'auth.country': 'Country (ISO)',
-  'auth.defaultVatRate': 'Default VAT rate (bps)',
+  'auth.defaultVatRate': 'Default VAT rate (%)',
   'auth.bankHeading': 'Bankverbindung',
   'auth.bankIban': 'IBAN',
   'auth.bankBic': 'BIC',

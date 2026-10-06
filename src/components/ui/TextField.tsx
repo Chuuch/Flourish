@@ -22,7 +22,8 @@ export function TextField({ label, error, hint, id, className, ...props }: TextF
         aria-describedby={error ? errorId : hint ? hintId : undefined}
         className={cn(
           'block w-full rounded-[var(--radius-control)] border border-line bg-control px-3 py-2 text-sm text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-muted/55 focus-visible:border-accent focus-visible:shadow-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-55',
-          error && 'border-danger/50 focus-visible:border-danger focus-visible:shadow-[0_0_0_3px_color-mix(in_srgb,var(--danger)_18%,transparent)]',
+          error &&
+            'border-danger/50 focus-visible:border-danger focus-visible:shadow-[0_0_0_3px_color-mix(in_srgb,var(--danger)_18%,transparent)]',
           className,
         )}
         {...props}

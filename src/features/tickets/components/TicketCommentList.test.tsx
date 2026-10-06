@@ -12,10 +12,10 @@ import { updateTicketCommentSchema, type TicketComment } from '../schemas/ticket
 import { makeOrganization } from '@/test/factories/organization';
 import { makeClient } from '@/test/factories/client';
 
-const ticketId = '99999999-9999-9999-9999-999999999999';
+const ticketId = '99999999-9999-4999-8999-999999999999';
 const portalUrl = `${env.API_URL}/client-auth/tickets/${ticketId}/comments`;
 const staffUrl = `${env.API_URL}/tickets/${ticketId}/comments`;
-const actorUserId = '11111111-1111-1111-1111-111111111111';
+const actorUserId = '11111111-1111-4111-8111-111111111111';
 
 const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
@@ -67,9 +67,8 @@ describe('TicketCommentList', () => {
 
     renderWithProviders(<TicketCommentList ticketId={ticketId} />);
 
-    expect(
-      await screen.findByText(`${authorId} - Can you try another browser?`),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(authorId)).toBeInTheDocument();
+    expect(screen.getByText('Can you try another browser?')).toBeInTheDocument();
     expect(screen.getByText(/Still broken on Safari/)).toBeInTheDocument();
   });
 
@@ -165,7 +164,8 @@ describe('TicketCommentList', () => {
     );
     await user.click(screen.getByRole('button', { name: 'Save Still broken on Safari' }));
 
-    expect(await screen.findByText(`${actorUserId} - Works after refresh`)).toBeInTheDocument();
+    expect(await screen.findByText(actorUserId)).toBeInTheDocument();
+    expect(screen.getByText('Works after refresh')).toBeInTheDocument();
   });
 
   it('removes a portal comment', async () => {
@@ -215,7 +215,8 @@ describe('TicketCommentList', () => {
     await user.type(screen.getByLabelText('Comment for Staff reply'), 'Need a HAR file');
     await user.click(screen.getByRole('button', { name: 'Save Staff reply' }));
 
-    expect(await screen.findByText(`${comment.user_id} - Need a HAR file`)).toBeInTheDocument();
+    expect(await screen.findByText(comment.user_id)).toBeInTheDocument();
+    expect(screen.getByText('Need a HAR file')).toBeInTheDocument();
   });
 
   it('hides manage controls on another staff member comment', async () => {

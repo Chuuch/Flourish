@@ -13,8 +13,8 @@ import { MemoryRouter, Route, Routes } from 'react-router';
 import { TasksPage } from '../pages/TasksPage';
 import { makeOrganization } from '@/test/factories/organization';
 
-const clientId = '44444444-4444-4444-4444-444444444444';
-const projectId = '55555555-5555-5555-5555-555555555555';
+const clientId = '44444444-4444-4444-8444-444444444444';
+const projectId = '55555555-5555-5555-8555-555555555555';
 const tasksUrl = `${env.API_URL}/projects/${projectId}/tasks`;
 const membersUrl = `${env.API_URL}/members`;
 
@@ -86,7 +86,8 @@ describe('CreateTaskForm', () => {
     await user.selectOptions(screen.getByLabelText('Status'), 'in_progress');
     await user.click(screen.getByRole('button', { name: 'Add task' }));
 
-    expect(await screen.findByRole('link', { name: 'Fix login - OAuth' })).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'Fix login' })).toBeInTheDocument();
+    expect(screen.getByText('OAuth')).toBeInTheDocument();
     expect(screen.getByLabelText('Status for Fix login')).toHaveValue('in_progress');
     expect(screen.getByLabelText('Title')).toHaveValue('');
   });

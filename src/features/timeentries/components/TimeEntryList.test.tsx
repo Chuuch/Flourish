@@ -11,9 +11,9 @@ import userEvent from '@testing-library/user-event';
 import { updateTimeEntrySchema, type TimeEntry } from '../schemas/time-entry.schema';
 import { makeOrganization } from '@/test/factories/organization';
 
-const taskId = '66666666-6666-6666-6666-666666666666';
+const taskId = '66666666-6666-4666-8666-666666666666';
 const timeEntriesUrl = `${env.API_URL}/tasks/${taskId}/time-entries`;
-const actorUserId = '11111111-1111-1111-1111-111111111111';
+const actorUserId = '11111111-1111-4111-8111-111111111111';
 
 const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',

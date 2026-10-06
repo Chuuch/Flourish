@@ -15,7 +15,7 @@ import { updateTicketSchema } from '../schemas/ticket.schema';
 import { useAuthStore } from '@/features/auth';
 import { makeOrganization } from '@/test/factories/organization';
 
-const clientId = '44444444-4444-4444-4444-444444444444';
+const clientId = '44444444-4444-4444-8444-444444444444';
 const ticketsUrl = `${env.API_URL}/clients/${clientId}/tickets`;
 const projectsUrl = `${env.API_URL}/clients/${clientId}/projects`;
 
@@ -53,9 +53,11 @@ describe('AgencyTicketList', () => {
 
     renderWithProviders(<AgencyTicketList clientId={clientId} />);
 
-    expect(await screen.findByText('Login button broken (bug)')).toBeInTheDocument();
+    expect(await screen.findByText('Login button broken')).toBeInTheDocument();
+    expect(screen.getByText('(bug)')).toBeInTheDocument();
     expect(screen.getByText('Clicking Sign in does nothing on mobile.')).toBeInTheDocument();
-    expect(screen.getByText('Add export (feature)')).toBeInTheDocument();
+    expect(screen.getByText('Add export')).toBeInTheDocument();
+    expect(screen.getByText('(feature)')).toBeInTheDocument();
     expect(screen.getByLabelText('Status for Login button broken')).toHaveValue('open');
   });
 

@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Alert, Button, FieldGrid, FormSection, TextField } from '@/components/ui';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
@@ -8,7 +9,16 @@ import {
   updateOrganizationInputSchema,
   type UpdateOrganizationInput,
 } from '@/features/auth/schemas/auth.schema';
+import { vatBpsToPercent, vatPercentToBps } from '@/features/invoices/lib/formatMoney';
 import { useUpdateOrganization } from '../hooks/useUpdateOrganization';
+
+const organizationFormSchema = updateOrganizationInputSchema
+  .omit({ default_vat_rate_bps: true })
+  .extend({
+    default_vat_rate_percent: z.number().min(0).max(100),
+  });
+
+type OrganizationFormInput = z.infer<typeof organizationFormSchema>;
 
 export function OrganizationNameForm() {
   const role = useAuthStore((state) => state.role);
@@ -20,8 +30,8 @@ export function OrganizationNameForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<UpdateOrganizationInput>({
-    resolver: zodResolver(updateOrganizationInputSchema),
+  } = useForm<OrganizationFormInput>({
+    resolver: zodResolver(organizationFormSchema),
     values: {
       name: organization?.name ?? '',
       legal_name: organization?.legal_name ?? '',
@@ -32,7 +42,7 @@ export function OrganizationNameForm() {
       city: organization?.city ?? '',
       postal_code: organization?.postal_code ?? '',
       country: organization?.country ?? '',
-      default_vat_rate_bps: organization?.default_vat_rate_bps ?? 2000,
+      default_vat_rate_percent: vatBpsToPercent(organization?.default_vat_rate_bps ?? 2000),
       bank_iban: organization?.bank_iban ?? '',
       bank_bic: organization?.bank_bic ?? '',
       bank_name: organization?.bank_name ?? '',
@@ -50,7 +60,11 @@ export function OrganizationNameForm() {
         className="mt-3"
         onSubmit={(event) =>
           void handleSubmit((input) => {
-            updateOrganization.mutate(input);
+            const payload: UpdateOrganizationInput = {
+              ...input,
+              default_vat_rate_bps: vatPercentToBps(input.default_vat_rate_percent),
+            };
+            updateOrganization.mutate(payload);
           })(event)
         }
         noValidate
@@ -80,8 +94,13 @@ export function OrganizationNameForm() {
             />
             <TextField
               label={t('auth.defaultVatRate')}
-              error={errors.default_vat_rate_bps?.message}
-              {...register('default_vat_rate_bps', { valueAsNumber: true })}
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              min={0}
+              max={100}
+              error={errors.default_vat_rate_percent?.message}
+              {...register('default_vat_rate_percent', { valueAsNumber: true })}
             />
           </FieldGrid>
         </FormSection>

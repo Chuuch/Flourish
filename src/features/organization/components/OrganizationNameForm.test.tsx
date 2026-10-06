@@ -34,8 +34,9 @@ describe('OrganizationNameForm', () => {
 
     server.use(
       mswHttp.patch(`${env.API_URL}/organization`, async ({ request }) => {
-        const body = (await request.json()) as { name: string };
+        const body = (await request.json()) as { name: string; default_vat_rate_bps: number };
         expect(body.name).toBe('Northwind');
+        expect(body.default_vat_rate_bps).toBe(2000);
         return HttpResponse.json({
           ...testOrg,
           name: body.name,
@@ -44,6 +45,8 @@ describe('OrganizationNameForm', () => {
     );
 
     renderWithProviders(<OrganizationNameForm />);
+
+    expect(screen.getByLabelText('Default VAT rate (%)')).toHaveValue(20);
 
     await user.clear(screen.getByLabelText('Organization name'));
     await user.type(screen.getByLabelText('Organization name'), 'Northwind');

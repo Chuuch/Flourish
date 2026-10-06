@@ -3,6 +3,7 @@
 Build interfaces that feel intentionally designed, not AI-generated.
 
 ## Avoid
+
 - Gradient backgrounds
 - Glassmorphism
 - Excessive rounded cards
@@ -21,6 +22,7 @@ Build interfaces that feel intentionally designed, not AI-generated.
 - Generic SaaS landing-page aesthetics
 
 ## Prefer
+
 - Strong typographic hierarchy
 - A deliberate spacing scale
 - Restrained borders

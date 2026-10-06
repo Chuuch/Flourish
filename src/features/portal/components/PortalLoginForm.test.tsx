@@ -78,6 +78,7 @@ describe('PortalLoginForm', () => {
         });
       }),
       mswHttp.get(ticketsUrl, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/client-auth/invoices`, () => HttpResponse.json([])),
     );
 
     const router = createMemoryRouter(routes, { initialEntries: ['/portal/login'] });
@@ -88,8 +89,8 @@ describe('PortalLoginForm', () => {
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
     expect(await screen.findByRole('heading', { name: 'Portal' })).toBeInTheDocument();
-    expect(screen.getByText('pat@example.com')).toBeInTheDocument();
-    expect(screen.getAllByText('Northwind')).toHaveLength(2);
+    expect(screen.getByText(/pat@example.com/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Northwind/)).toHaveLength(2);
     expect(useAuthStore.getState().role).toBe('client');
     expect(useAuthStore.getState().client?.name).toBe('Northwind');
   });

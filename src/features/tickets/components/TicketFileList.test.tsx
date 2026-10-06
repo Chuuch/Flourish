@@ -12,10 +12,10 @@ import type { TicketFile } from '../schemas/ticket-file.schema';
 import { makeOrganization } from '@/test/factories/organization';
 import { makeClient } from '@/test/factories/client';
 
-const ticketId = '99999999-9999-9999-9999-999999999999';
+const ticketId = '99999999-9999-4999-8999-999999999999';
 const portalFilesUrl = `${env.API_URL}/client-auth/tickets/${ticketId}/files`;
 const staffFilesUrl = `${env.API_URL}/tickets/${ticketId}/files`;
-const actorUserId = '11111111-1111-1111-1111-111111111111';
+const actorUserId = '11111111-1111-4111-8111-111111111111';
 
 const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',

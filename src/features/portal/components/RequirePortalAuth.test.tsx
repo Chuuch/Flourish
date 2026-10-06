@@ -45,13 +45,16 @@ describe('RequirePortalAuth', () => {
         'client',
       );
 
-    server.use(mswHttp.get(`${env.API_URL}/client-auth/tickets`, () => HttpResponse.json([])));
+    server.use(
+      mswHttp.get(`${env.API_URL}/client-auth/tickets`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/client-auth/invoices`, () => HttpResponse.json([])),
+    );
 
     renderAt('/portal');
 
     expect(await screen.findByRole('heading', { name: 'Portal' })).toBeInTheDocument();
-    expect(screen.getByText('pat@example.com')).toBeInTheDocument();
-    expect(screen.getAllByText('Northwind')).toHaveLength(2);
+    expect(screen.getByText(/pat@example.com/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Northwind/)).toHaveLength(2);
   });
 
   it('sends a staff session home', async () => {

@@ -13,9 +13,9 @@ import { createCommentSchema, type Comment } from '@/features/comments/schemas/c
 import { CommentsPage } from '@/features/comments';
 import { makeOrganization } from '@/test/factories/organization';
 
-const clientId = '44444444-4444-4444-4444-444444444444';
-const projectId = '55555555-5555-5555-5555-555555555555';
-const taskId = '66666666-6666-6666-6666-666666666666';
+const clientId = '44444444-4444-4444-8444-444444444444';
+const projectId = '55555555-5555-5555-8555-555555555555';
+const taskId = '66666666-6666-4666-8666-666666666666';
 const commentsUrl = `${env.API_URL}/tasks/${taskId}/comments`;
 
 const testOrg = makeOrganization({
@@ -85,7 +85,8 @@ describe('CreateCommentForm', () => {
     await user.type(screen.getByLabelText('Body'), 'Check the OAuth redirect');
     await user.click(screen.getByRole('button', { name: 'Add comment' }));
 
-    expect(await screen.findByText(`${userId} - Check the OAuth redirect`)).toBeInTheDocument();
+    expect(await screen.findByText(userId)).toBeInTheDocument();
+    expect(screen.getByText('Check the OAuth redirect')).toBeInTheDocument();
     expect(screen.getByLabelText('Body')).toHaveValue('');
   });
 

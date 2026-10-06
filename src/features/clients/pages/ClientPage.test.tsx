@@ -116,7 +116,7 @@ describe('ClientPage', () => {
 
   it('shows not found when the client is missing', async () => {
     signInAs('owner');
-    const clientId = '44444444-4444-4444-4444-444444444444';
+    const clientId = '44444444-4444-4444-8444-444444444444';
 
     server.use(mswHttp.get(`${env.API_URL}/clients`, () => HttpResponse.json([])));
 

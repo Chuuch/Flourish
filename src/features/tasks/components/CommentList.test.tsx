@@ -11,7 +11,7 @@ import { CommentList } from '@/features/comments/components/CommentList';
 import { updateCommentSchema, type Comment } from '@/features/comments/schemas/comment.schema';
 import { makeOrganization } from '@/test/factories/organization';
 
-const taskId = '66666666-6666-6666-6666-666666666666';
+const taskId = '66666666-6666-4666-8666-666666666666';
 const commentsUrl = `${env.API_URL}/tasks/${taskId}/comments`;
 
 const testOrg = makeOrganization({
@@ -40,7 +40,8 @@ describe('CommentList', () => {
 
     renderWithProviders(<CommentList taskId={taskId} />);
 
-    expect(await screen.findByText(`${authorId} - Check the OAuth redirect`)).toBeInTheDocument();
+    expect(await screen.findByText(authorId)).toBeInTheDocument();
+    expect(screen.getByText('Check the OAuth redirect')).toBeInTheDocument();
   });
 
   it('renders an empty state', async () => {
@@ -91,7 +92,8 @@ describe('CommentList', () => {
     await user.type(screen.getByLabelText('Edit body'), 'Fixed draft');
     await user.click(screen.getByRole('button', { name: 'Save' }));
 
-    expect(await screen.findByText(`${authorId} - Fixed draft`)).toBeInTheDocument();
+    expect(await screen.findByText(authorId)).toBeInTheDocument();
+    expect(screen.getByText('Fixed draft')).toBeInTheDocument();
   });
 
   it('hides edit and delete for another member', async () => {

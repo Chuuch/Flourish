@@ -25,7 +25,8 @@ describe('InboxList', () => {
     renderWithProviders(<InboxList />);
 
     expect(await screen.findByText('Mine')).toBeInTheDocument();
-    expect(screen.getByText('Open - Pick this up')).toBeInTheDocument();
+    expect(screen.getByText('Open')).toBeInTheDocument();
+    expect(screen.getByText('Pick this up')).toBeInTheDocument();
   });
 
   it('renders an empty state', async () => {

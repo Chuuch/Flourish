@@ -73,7 +73,7 @@ export const en = {
   'auth.city': 'City',
   'auth.postalCode': 'Postal code',
   'auth.country': 'Country (ISO)',
-  'auth.defaultVatRate': 'Default VAT rate (bps)',
+  'auth.defaultVatRate': 'Default VAT rate (%)',
   'auth.bankHeading': 'Bank details',
   'auth.bankIban': 'IBAN',
   'auth.bankBic': 'BIC',

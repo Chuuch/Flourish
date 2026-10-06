@@ -13,8 +13,8 @@ import { updateTaskSchema } from '../schemas/task.schema';
 import { useAuthStore } from '@/features/auth';
 import { makeOrganization } from '@/test/factories/organization';
 
-const clientId = '44444444-4444-4444-4444-444444444444';
-const projectId = '55555555-5555-5555-5555-555555555555';
+const clientId = '44444444-4444-4444-8444-444444444444';
+const projectId = '55555555-5555-5555-8555-555555555555';
 const tasksUrl = `${env.API_URL}/projects/${projectId}/tasks`;
 
 const testOrg = makeOrganization({
@@ -51,10 +51,11 @@ describe('TaskList', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByRole('link', { name: 'Fix login - OAuth' })).toHaveAttribute(
+    expect(await screen.findByRole('link', { name: 'Fix login' })).toHaveAttribute(
       'href',
       `/clients/${clientId}/projects/${projectId}/tasks/${login.id}`,
     );
+    expect(screen.getByText('OAuth')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Ship site' })).toBeInTheDocument();
     expect(screen.getAllByRole('link', { name: 'Comments' })[0]).toHaveAttribute(
       'href',

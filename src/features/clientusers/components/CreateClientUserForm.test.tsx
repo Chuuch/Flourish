@@ -13,7 +13,7 @@ import { ClientUsersPage } from '../pages/ClientUsersPage';
 import { makeClientUser } from '@/test/factories/client-user';
 import { makeOrganization } from '@/test/factories/organization';
 
-const clientId = '44444444-4444-4444-4444-444444444444';
+const clientId = '44444444-4444-4444-8444-444444444444';
 const clientUsersUrl = `${env.API_URL}/clients/${clientId}/users`;
 
 const testOrg = makeOrganization({

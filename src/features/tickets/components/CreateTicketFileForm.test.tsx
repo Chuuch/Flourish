@@ -10,7 +10,7 @@ import { HttpResponse, http as mswHttp } from 'msw';
 import { type TicketFile } from '../schemas/ticket-file.schema';
 import { makeTicketFile } from '@/test/factories/ticket-file';
 
-const ticketId = '99999999-9999-9999-9999-999999999999';
+const ticketId = '99999999-9999-4999-8999-999999999999';
 const filesUrl = `${env.API_URL}/client-auth/tickets/${ticketId}/files`;
 const uploadUrl = `${env.API_URL}/storage-put`;
 
