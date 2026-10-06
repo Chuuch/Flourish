@@ -4,7 +4,7 @@ import { getAccessToken, refreshAccessToken } from '@/lib/api/client';
 import { notifyUnauthorized } from '@/lib/api/session';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   applyRealtimeEvent,
   catchUpRealtimeQueries,
@@ -18,12 +18,14 @@ export function useRealtimeEvents(): void {
   const user = useAuthStore((state) => state.user);
   const role = useAuthStore((state) => state.role);
   const portal = role === 'client';
+  const refreshedForAuthError = useRef(false);
 
   useEffect(() => {
     if (!user || !role) {
       return;
     }
 
+    refreshedForAuthError.current = false;
     const path = portal ? '/client-auth/events' : '/events';
     const url = `${env.API_URL}${path}`;
     const controller = new AbortController();
@@ -52,7 +54,13 @@ export function useRealtimeEvents(): void {
         }
 
         if (response.status === 401) {
+          if (refreshedForAuthError.current) {
+            notifyUnauthorized();
+            throw new FatalRealtimeError('unauthorized');
+          }
+
           try {
+            refreshedForAuthError.current = true;
             await refreshAccessToken();
           } catch {
             notifyUnauthorized();

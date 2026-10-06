@@ -1,6 +1,6 @@
 import { Alert, Button } from '@/components/ui';
 import { useProjects } from '../hooks/useProjects';
-import { projectFilesPath, projectPath } from '@/app/router/paths';
+import { projectFilesPath, projectPath, projectTasksPath } from '@/app/router/paths';
 import { Link } from 'react-router';
 import { useI18n } from '@/features/i18n';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
@@ -45,6 +45,12 @@ export function ProjectList({ clientId }: { clientId: string }) {
               ) : null}
             </div>
             <div className="action-bar shrink-0">
+              <Link
+                to={projectTasksPath(clientId, project.id)}
+                className="text-muted hover:text-accent text-sm no-underline"
+              >
+                {t('common.tasks')}
+              </Link>
               <Link
                 to={projectFilesPath(clientId, project.id)}
                 className="text-muted hover:text-accent text-sm no-underline"

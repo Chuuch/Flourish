@@ -8,6 +8,7 @@ import { screen } from '@testing-library/react';
 import { makeTask } from '@/test/factories/task';
 import { MemoryRouter } from 'react-router';
 import userEvent from '@testing-library/user-event';
+import { chooseSelectOption } from '@/test/select';
 import type { Task } from '../schemas/task.schema';
 import { updateTaskSchema } from '../schemas/task.schema';
 import { useAuthStore } from '@/features/auth';
@@ -90,11 +91,17 @@ describe('TaskList', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByLabelText('Status for Fix login')).toHaveValue('todo');
+    expect(await screen.findByLabelText('Status for Fix login')).toHaveAttribute(
+      'data-value',
+      'todo',
+    );
 
-    await user.selectOptions(screen.getByLabelText('Status for Fix login'), 'done');
+    await chooseSelectOption(user, 'Status for Fix login', 'done');
 
-    expect(await screen.findByLabelText('Status for Fix login')).toHaveValue('done');
+    expect(await screen.findByLabelText('Status for Fix login')).toHaveAttribute(
+      'data-value',
+      'done',
+    );
   });
 
   it('renders a version conflict on update', async () => {
@@ -124,9 +131,12 @@ describe('TaskList', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByLabelText('Status for Fix login')).toHaveValue('todo');
+    expect(await screen.findByLabelText('Status for Fix login')).toHaveAttribute(
+      'data-value',
+      'todo',
+    );
 
-    await user.selectOptions(screen.getByLabelText('Status for Fix login'), 'done');
+    await chooseSelectOption(user, 'Status for Fix login', 'done');
 
     expect(await screen.findByRole('alert')).toHaveTextContent('task was updated by someone else');
   });
@@ -139,7 +149,9 @@ describe('TaskList', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByText('No tasks yet.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('No tasks yet. Use Add task above to create one.'),
+    ).toBeInTheDocument();
   });
 
   it('renders the API error response', async () => {
@@ -210,7 +222,9 @@ describe('TaskList', () => {
 
     await user.click(await screen.findByRole('button', { name: 'Remove Fix login' }));
 
-    expect(await screen.findByText('No tasks yet.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('No tasks yet. Use Add task above to create one.'),
+    ).toBeInTheDocument();
   });
 
   it('shows a forbidden error from the API', async () => {

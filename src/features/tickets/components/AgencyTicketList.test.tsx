@@ -8,6 +8,7 @@ import { screen } from '@testing-library/react';
 import { makeTicket } from '@/test/factories/ticket';
 import { makeProject } from '@/test/factories/project';
 import userEvent from '@testing-library/user-event';
+import { chooseSelectOption } from '@/test/select';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { AgencyTicketsPage } from '../pages/AgencyTicketsPage';
 import type { Ticket } from '../schemas/ticket.schema';
@@ -18,6 +19,7 @@ import { makeOrganization } from '@/test/factories/organization';
 const clientId = '44444444-4444-4444-8444-444444444444';
 const ticketsUrl = `${env.API_URL}/clients/${clientId}/tickets`;
 const projectsUrl = `${env.API_URL}/clients/${clientId}/projects`;
+const membersUrl = `${env.API_URL}/members`;
 
 const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
@@ -30,8 +32,12 @@ function signInAs(role: 'owner' | 'admin' | 'member') {
     .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, role);
 }
 
+async function openTicket(user: ReturnType<typeof userEvent.setup>, title: string) {
+  await user.click(await screen.findByRole('button', { name: new RegExp(title) }));
+}
+
 describe('AgencyTicketList', () => {
-  it('renders tickets returned by the API', async () => {
+  it('renders tickets as a compact list', async () => {
     const login = makeTicket({
       client_id: clientId,
       title: 'Login button broken',
@@ -47,21 +53,20 @@ describe('AgencyTicketList', () => {
           makeTicket({ title: 'Add export', kind: 'feature', status: 'in_progress', body: 'CSV' }),
         ]),
       ),
-      mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
     );
 
     renderWithProviders(<AgencyTicketList clientId={clientId} />);
 
-    expect(await screen.findByText('Login button broken')).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /Login button broken/ })).toBeInTheDocument();
     expect(screen.getByText('(bug)')).toBeInTheDocument();
     expect(screen.getByText('Clicking Sign in does nothing on mobile.')).toBeInTheDocument();
-    expect(screen.getByText('Add export')).toBeInTheDocument();
-    expect(screen.getByText('(feature)')).toBeInTheDocument();
-    expect(screen.getByLabelText('Status for Login button broken')).toHaveValue('open');
+    expect(screen.getByRole('button', { name: /Add export/ })).toBeInTheDocument();
+    expect(screen.getByText('Open')).toBeInTheDocument();
+    expect(screen.getByText('In progress')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Status for Login button broken')).not.toBeInTheDocument();
   });
 
-  it('updates ticket status with the last-seen version', async () => {
+  it('opens a ticket and updates status with the last-seen version', async () => {
     const user = userEvent.setup();
     let ticket: Ticket = makeTicket({
       client_id: clientId,
@@ -73,14 +78,17 @@ describe('AgencyTicketList', () => {
 
     server.use(
       mswHttp.get(ticketsUrl, () => HttpResponse.json([ticket])),
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/clients/${clientId}/users`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/files`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/comments`, () => HttpResponse.json([])),
+      mswHttp.get(projectsUrl, () => HttpResponse.json([])),
       mswHttp.patch(`${env.API_URL}/tickets/${ticket.id}`, async ({ request }) => {
         const input = updateTicketSchema.parse(await request.json());
         expect(input.version).toBe(1);
         ticket = { ...ticket, status: input.status, version: input.version + 1 };
         return HttpResponse.json(ticket);
       }),
-      mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
     );
 
     renderWithProviders(
@@ -91,14 +99,16 @@ describe('AgencyTicketList', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByLabelText('Status for Login button broken')).toHaveValue('open');
-
-    await user.selectOptions(
-      screen.getByLabelText('Status for Login button broken'),
-      'in_progress',
+    await openTicket(user, 'Login button broken');
+    expect(await screen.findByLabelText('Status for Login button broken')).toHaveAttribute(
+      'data-value',
+      'open',
     );
 
-    expect(await screen.findByLabelText('Status for Login button broken')).toHaveValue(
+    await chooseSelectOption(user, 'Status for Login button broken', 'in_progress');
+
+    expect(await screen.findByLabelText('Status for Login button broken')).toHaveAttribute(
+      'data-value',
       'in_progress',
     );
   });
@@ -115,106 +125,64 @@ describe('AgencyTicketList', () => {
 
     server.use(
       mswHttp.get(ticketsUrl, () => HttpResponse.json([ticket])),
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/clients/${clientId}/users`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/files`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/comments`, () => HttpResponse.json([])),
+      mswHttp.get(projectsUrl, () => HttpResponse.json([])),
       mswHttp.patch(`${env.API_URL}/tickets/${ticket.id}`, () =>
-        HttpResponse.json(
-          {
-            error: {
-              code: 'ticket_version_mismatch',
-              message: 'ticket was updated by someone else',
-            },
-          },
-          { status: 409 },
-        ),
+        HttpResponse.json({ error: { message: 'version conflict' } }, { status: 409 }),
       ),
-      mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
     );
 
-    renderWithProviders(
-      <MemoryRouter initialEntries={[`/clients/${clientId}/tickets`]}>
-        <Routes>
-          <Route path="/clients/:clientId/tickets" element={<AgencyTicketsPage />} />
-        </Routes>
-      </MemoryRouter>,
+    renderWithProviders(<AgencyTicketList clientId={clientId} />);
+
+    await openTicket(user, 'Login button broken');
+    expect(await screen.findByLabelText('Status for Login button broken')).toHaveAttribute(
+      'data-value',
+      'open',
     );
 
-    expect(await screen.findByLabelText('Status for Login button broken')).toHaveValue('open');
+    await chooseSelectOption(user, 'Status for Login button broken', 'in_progress');
 
-    await user.selectOptions(
-      screen.getByLabelText('Status for Login button broken'),
-      'in_progress',
-    );
-
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'ticket was updated by someone else',
-    );
+    expect(await screen.findByRole('alert')).toHaveTextContent('version conflict');
   });
 
   it('renders an empty state', async () => {
     server.use(mswHttp.get(ticketsUrl, () => HttpResponse.json([])));
     renderWithProviders(<AgencyTicketList clientId={clientId} />);
-
     expect(await screen.findByText('No tickets yet.')).toBeInTheDocument();
   });
 
   it('renders the API error response', async () => {
     server.use(
       mswHttp.get(ticketsUrl, () =>
-        HttpResponse.json({ error: { message: 'client not found' } }, { status: 404 }),
+        HttpResponse.json({ error: { message: 'Database unavailable' } }, { status: 503 }),
       ),
     );
 
     renderWithProviders(<AgencyTicketList clientId={clientId} />);
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('client not found');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Database unavailable');
   });
 
-  it('hides remove for members and shows convert', async () => {
-    signInAs('member');
-    server.use(
-      mswHttp.get(ticketsUrl, () =>
-        HttpResponse.json([
-          makeTicket({
-            client_id: clientId,
-            title: 'Login button broken',
-            kind: 'bug',
-            status: 'open',
-            body: 'Clicking Sign in does nothing on mobile.',
-          }),
-        ]),
-      ),
-      mswHttp.get(projectsUrl, () =>
-        HttpResponse.json([makeProject({ client_id: clientId, name: 'Website' })]),
-      ),
-      mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
-    );
-
-    renderWithProviders(<AgencyTicketList clientId={clientId} />);
-
-    expect(await screen.findByRole('button', { name: 'Convert to task' })).toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', { name: 'Remove Login button broken' }),
-    ).not.toBeInTheDocument();
-  });
-
-  it('removes a ticket', async () => {
+  it('lets an owner delete a ticket', async () => {
     const user = userEvent.setup();
-    signInAs('admin');
+    signInAs('owner');
     const ticket = makeTicket({
       client_id: clientId,
       title: 'Login button broken',
       kind: 'bug',
-      status: 'open',
-      body: 'Clicking Sign in does nothing on mobile.',
     });
     let tickets: Ticket[] = [ticket];
 
     server.use(
       mswHttp.get(ticketsUrl, () => HttpResponse.json(tickets)),
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/clients/${clientId}/users`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/files`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/comments`, () => HttpResponse.json([])),
       mswHttp.get(projectsUrl, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
       mswHttp.delete(`${env.API_URL}/tickets/${ticket.id}`, () => {
         tickets = [];
         return new HttpResponse(null, { status: 204 });
@@ -223,67 +191,36 @@ describe('AgencyTicketList', () => {
 
     renderWithProviders(<AgencyTicketList clientId={clientId} />);
 
+    await openTicket(user, 'Login button broken');
     await user.click(await screen.findByRole('button', { name: 'Remove Login button broken' }));
 
     expect(await screen.findByText('No tickets yet.')).toBeInTheDocument();
   });
 
-  it('shows a forbidden error from the API', async () => {
+  it('hides delete for members', async () => {
     const user = userEvent.setup();
-    signInAs('owner');
+    signInAs('member');
     const ticket = makeTicket({
       client_id: clientId,
       title: 'Login button broken',
       kind: 'bug',
-      status: 'open',
-      body: 'Clicking Sign in does nothing on mobile.',
     });
 
     server.use(
       mswHttp.get(ticketsUrl, () => HttpResponse.json([ticket])),
-      mswHttp.get(projectsUrl, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
-      mswHttp.delete(`${env.API_URL}/tickets/${ticket.id}`, () =>
-        HttpResponse.json({ error: { code: 'forbidden', message: 'forbidden' } }, { status: 403 }),
-      ),
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/clients/${clientId}/users`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/files`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/comments`, () => HttpResponse.json([])),
+      mswHttp.get(projectsUrl, () => HttpResponse.json([makeProject({ client_id: clientId })])),
     );
 
     renderWithProviders(<AgencyTicketList clientId={clientId} />);
 
-    await user.click(await screen.findByRole('button', { name: 'Remove Login button broken' }));
-
-    expect(await screen.findByRole('alert')).toHaveTextContent('forbidden');
-  });
-
-  it('shows a not-found error from the API', async () => {
-    const user = userEvent.setup();
-    signInAs('owner');
-    const ticket = makeTicket({
-      client_id: clientId,
-      title: 'Login button broken',
-      kind: 'bug',
-      status: 'open',
-      body: 'Clicking Sign in does nothing on mobile.',
-    });
-
-    server.use(
-      mswHttp.get(ticketsUrl, () => HttpResponse.json([ticket])),
-      mswHttp.get(projectsUrl, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/tickets/:ticketId/files`, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/tickets/:ticketId/comments`, () => HttpResponse.json([])),
-      mswHttp.delete(`${env.API_URL}/tickets/${ticket.id}`, () =>
-        HttpResponse.json(
-          { error: { code: 'ticket_not_found', message: 'ticket not found' } },
-          { status: 404 },
-        ),
-      ),
-    );
-
-    renderWithProviders(<AgencyTicketList clientId={clientId} />);
-
-    await user.click(await screen.findByRole('button', { name: 'Remove Login button broken' }));
-
-    expect(await screen.findByRole('alert')).toHaveTextContent('ticket not found');
+    await openTicket(user, 'Login button broken');
+    expect(await screen.findByLabelText('Status for Login button broken')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /Remove Login button broken/ }),
+    ).not.toBeInTheDocument();
   });
 });

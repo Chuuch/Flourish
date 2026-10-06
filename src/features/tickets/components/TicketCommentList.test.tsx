@@ -50,6 +50,7 @@ function signInPortal(userId = actorUserId) {
 describe('TicketCommentList', () => {
   it('renders comments returned by the portal API', async () => {
     const authorId = crypto.randomUUID();
+    signInPortal();
     const comment = makeTicketComment({
       ticket_id: ticketId,
       user_id: authorId,
@@ -73,7 +74,9 @@ describe('TicketCommentList', () => {
   });
 
   it('requests the staff path', async () => {
+    signInAs('owner');
     server.use(
+      mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
       mswHttp.get(staffUrl, () =>
         HttpResponse.json([makeTicketComment({ ticket_id: ticketId, body: 'Staff reply' })]),
       ),
@@ -81,7 +84,7 @@ describe('TicketCommentList', () => {
 
     renderWithProviders(<TicketCommentList ticketId={ticketId} source="staff" />);
 
-    expect(await screen.findByText(/Staff reply/)).toBeInTheDocument();
+    expect(await screen.findByText('Staff reply', { selector: 'p' })).toBeInTheDocument();
   });
 
   it('renders an empty state', async () => {
@@ -122,13 +125,9 @@ describe('TicketCommentList', () => {
 
     renderWithProviders(<TicketCommentList ticketId={ticketId} />);
 
-    expect(await screen.findByLabelText('Comment for Still broken on Safari')).toBeInTheDocument();
-    expect(
-      screen.queryByLabelText('Comment for Can you try another browser?'),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', { name: 'Remove Can you try another browser?' }),
-    ).not.toBeInTheDocument();
+    expect(await screen.findByText('Still broken on Safari')).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Edit' })).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: 'Delete' })).toHaveLength(1);
   });
 
   it('updates a portal comment', async () => {
@@ -153,18 +152,12 @@ describe('TicketCommentList', () => {
 
     renderWithProviders(<TicketCommentList ticketId={ticketId} />);
 
-    expect(await screen.findByLabelText('Comment for Still broken on Safari')).toHaveValue(
-      'Still broken on Safari',
-    );
+    await user.click(await screen.findByRole('button', { name: 'Edit' }));
+    await user.clear(screen.getByLabelText('Edit body'));
+    await user.type(screen.getByLabelText('Edit body'), 'Works after refresh');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
 
-    await user.clear(screen.getByLabelText('Comment for Still broken on Safari'));
-    await user.type(
-      screen.getByLabelText('Comment for Still broken on Safari'),
-      'Works after refresh',
-    );
-    await user.click(screen.getByRole('button', { name: 'Save Still broken on Safari' }));
-
-    expect(await screen.findByText(actorUserId)).toBeInTheDocument();
+    expect(await screen.findByText('pat@northwind.test')).toBeInTheDocument();
     expect(screen.getByText('Works after refresh')).toBeInTheDocument();
   });
 
@@ -187,7 +180,7 @@ describe('TicketCommentList', () => {
 
     renderWithProviders(<TicketCommentList ticketId={ticketId} />);
 
-    await user.click(await screen.findByRole('button', { name: 'Remove Still broken on Safari' }));
+    await user.click(await screen.findByRole('button', { name: 'Delete' }));
 
     expect(await screen.findByText('No comments yet.')).toBeInTheDocument();
   });
@@ -201,6 +194,7 @@ describe('TicketCommentList', () => {
     });
 
     server.use(
+      mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
       mswHttp.get(staffUrl, () => HttpResponse.json([comment])),
       mswHttp.patch(`${env.API_URL}/ticket-comments/${comment.id}`, async ({ request }) => {
         const input = updateTicketCommentSchema.parse(await request.json());
@@ -211,17 +205,28 @@ describe('TicketCommentList', () => {
 
     renderWithProviders(<TicketCommentList ticketId={ticketId} source="staff" />);
 
-    await user.clear(await screen.findByLabelText('Comment for Staff reply'));
-    await user.type(screen.getByLabelText('Comment for Staff reply'), 'Need a HAR file');
-    await user.click(screen.getByRole('button', { name: 'Save Staff reply' }));
+    await user.click(await screen.findByRole('button', { name: 'Edit' }));
+    await user.clear(screen.getByLabelText('Edit body'));
+    await user.type(screen.getByLabelText('Edit body'), 'Need a HAR file');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
 
-    expect(await screen.findByText(comment.user_id)).toBeInTheDocument();
-    expect(screen.getByText('Need a HAR file')).toBeInTheDocument();
+    expect(await screen.findByText('Need a HAR file')).toBeInTheDocument();
   });
 
   it('hides manage controls on another staff member comment', async () => {
     signInAs('member');
     server.use(
+      mswHttp.get(`${env.API_URL}/members`, () =>
+        HttpResponse.json([
+          {
+            user_id: actorUserId,
+            email: 'ada@example.com',
+            display_name: '',
+            role: 'member',
+            created_at: '2026-09-11T11:12:20Z',
+          },
+        ]),
+      ),
       mswHttp.get(staffUrl, () =>
         HttpResponse.json([
           makeTicketComment({
@@ -238,8 +243,9 @@ describe('TicketCommentList', () => {
 
     renderWithProviders(<TicketCommentList ticketId={ticketId} source="staff" />);
 
-    expect(await screen.findByLabelText('Comment for Need a HAR file')).toBeInTheDocument();
-    expect(screen.queryByLabelText('Comment for Staff reply')).not.toBeInTheDocument();
+    expect(await screen.findByText('Need a HAR file')).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Edit' })).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: 'Delete' })).toHaveLength(1);
   });
 
   it('shows a forbidden error from the API', async () => {
@@ -259,7 +265,8 @@ describe('TicketCommentList', () => {
 
     renderWithProviders(<TicketCommentList ticketId={ticketId} />);
 
-    await user.click(await screen.findByRole('button', { name: 'Save Still broken on Safari' }));
+    await user.click(await screen.findByRole('button', { name: 'Edit' }));
+    await user.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('forbidden');
   });
@@ -270,6 +277,7 @@ describe('TicketCommentList', () => {
     const comment = makeTicketComment({ body: 'Staff reply' });
 
     server.use(
+      mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
       mswHttp.get(staffUrl, () => HttpResponse.json([comment])),
       mswHttp.delete(`${env.API_URL}/ticket-comments/${comment.id}`, () =>
         HttpResponse.json(
@@ -281,7 +289,7 @@ describe('TicketCommentList', () => {
 
     renderWithProviders(<TicketCommentList ticketId={ticketId} source="staff" />);
 
-    await user.click(await screen.findByRole('button', { name: 'Remove Staff reply' }));
+    await user.click(await screen.findByRole('button', { name: 'Delete' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('comment not found');
   });

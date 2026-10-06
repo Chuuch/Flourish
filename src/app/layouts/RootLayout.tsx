@@ -2,13 +2,12 @@ import { Button, SidebarLink } from '@/components/ui';
 import { useAuthStore } from '@/features/auth';
 import { useLogout } from '@/features/auth/hooks/useLogout';
 import { LocaleSwitcher, useI18n } from '@/features/i18n';
+import { StaffSidebarNav } from '@/features/nav/components/StaffSidebarNav';
+import { useNavCounts } from '@/features/nav/hooks/useNavCounts';
 import { ThemeToggle } from '@/features/theme';
 import {
   Bell,
-  Building2,
-  ChartColumn,
   DoorOpen,
-  History,
   House,
   Leaf,
   LogIn,
@@ -16,7 +15,6 @@ import {
   Receipt,
   Settings,
   UserPlus,
-  UsersRound,
 } from 'lucide-react';
 import { Outlet } from 'react-router';
 import { paths } from '../router/paths';
@@ -29,65 +27,41 @@ export function RootLayout() {
   const logout = useLogout();
   const isPortal = role === 'client';
   const { t } = useI18n();
+  const { data: counts } = useNavCounts();
 
   return (
     <div className="bg-transparent text-ink flex min-h-screen flex-col md:flex-row">
-      <aside className="border-line bg-surface sticky top-0 z-10 flex flex-col gap-4 border-b px-3 py-4 md:h-screen md:w-[14.5rem] md:shrink-0 md:border-r md:border-b-0 md:px-3 md:py-5">
+      <aside className="border-line bg-surface sticky top-0 z-10 flex max-h-screen flex-col gap-4 overflow-y-auto border-b px-3 py-4 md:h-screen md:w-[18rem] md:shrink-0 md:border-r md:border-b-0 md:px-3 md:py-5">
         <p className="flex items-center gap-2 px-2.5 pt-0.5">
           <Leaf className="text-accent size-4 shrink-0" aria-hidden="true" />
           <span className="text-[0.95rem] font-semibold tracking-tight">{t('home.brand')}</span>
         </p>
 
         <nav aria-label={t('nav.main')} className="flex flex-1 flex-col gap-0.5">
-          <SidebarLink to={isPortal ? paths.portal : paths.home} icon={House} end>
-            {t('nav.home')}
-          </SidebarLink>
-          {user && !isPortal ? (
+          {user && !isPortal ? <StaffSidebarNav /> : null}
+
+          {user && isPortal ? (
             <>
-              <p className="text-muted mt-3.5 mb-1 px-2.5 text-[0.65rem] font-semibold tracking-[0.08em] uppercase">
-                {t('nav.main')}
-              </p>
-              <SidebarLink to={paths.members} icon={UsersRound}>
-                {t('nav.members')}
+              <SidebarLink to={paths.portal} icon={House} end>
+                {t('nav.home')}
               </SidebarLink>
-              <SidebarLink to={paths.clients} icon={Building2}>
-                {t('nav.clients')}
-              </SidebarLink>
-              <SidebarLink to={paths.activity} icon={History}>
-                {t('nav.activity')}
-              </SidebarLink>
-              <SidebarLink to={paths.reports} icon={ChartColumn}>
-                {t('nav.reports')}
-              </SidebarLink>
-              <SidebarLink to={paths.notifications} icon={Bell}>
+              <SidebarLink
+                to={paths.portalNotifications}
+                icon={Bell}
+                count={counts?.unread_notifications}
+                badge="unread"
+              >
                 {t('nav.notifications')}
               </SidebarLink>
-            </>
-          ) : null}
-          {user ? (
-            <>
-              {isPortal ? (
-                <>
-                  <SidebarLink to={paths.portalNotifications} icon={Bell}>
-                    {t('nav.notifications')}
-                  </SidebarLink>
-                  <SidebarLink to={paths.portalInvoices} icon={Receipt}>
-                    {t('common.invoices')}
-                  </SidebarLink>
-                </>
-              ) : null}
-              {isPortal ? (
-                client ? (
-                  <p className="text-muted mt-3.5 truncate px-2.5 text-xs font-medium">
-                    {client.name}
-                  </p>
-                ) : null
-              ) : organization ? (
+              <SidebarLink to={paths.portalInvoices} icon={Receipt}>
+                {t('common.invoices')}
+              </SidebarLink>
+              {client ? (
                 <p className="text-muted mt-3.5 truncate px-2.5 text-xs font-medium">
-                  {organization.name}
+                  {client.name}
                 </p>
               ) : null}
-              <SidebarLink to={isPortal ? paths.portalAccount : paths.account} icon={Settings}>
+              <SidebarLink to={paths.portalAccount} icon={Settings}>
                 {t('nav.account')}
               </SidebarLink>
               <Button
@@ -103,8 +77,38 @@ export function RootLayout() {
                 {t('nav.signOut')}
               </Button>
             </>
-          ) : (
+          ) : null}
+
+          {user && !isPortal ? (
             <>
+              {organization ? (
+                <p className="text-muted mt-3.5 truncate px-2.5 text-xs font-medium">
+                  {organization.name}
+                </p>
+              ) : null}
+              <SidebarLink to={paths.account} icon={Settings}>
+                {t('nav.account')}
+              </SidebarLink>
+              <Button
+                type="button"
+                variant="ghost"
+                className="mt-1 justify-start px-2.5"
+                onClick={() => {
+                  logout.mutate();
+                }}
+                disabled={logout.isPending}
+              >
+                <LogOut className="size-4" aria-hidden="true" />
+                {t('nav.signOut')}
+              </Button>
+            </>
+          ) : null}
+
+          {!user ? (
+            <>
+              <SidebarLink to={paths.home} icon={House} end>
+                {t('nav.home')}
+              </SidebarLink>
               <SidebarLink to={paths.login} icon={LogIn}>
                 {t('nav.signIn')}
               </SidebarLink>
@@ -115,7 +119,7 @@ export function RootLayout() {
                 {t('nav.clientSignIn')}
               </SidebarLink>
             </>
-          )}
+          ) : null}
         </nav>
 
         <div className="border-line mt-auto flex flex-col gap-2 border-t pt-3">

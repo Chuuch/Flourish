@@ -9,6 +9,8 @@ import { SessionGate } from './SessionGate';
 
 const meUrl = `${env.API_URL}/auth/me`;
 const portalMeUrl = `${env.API_URL}/client-auth/me`;
+const refreshUrl = `${env.API_URL}/auth/refresh`;
+const portalRefreshUrl = `${env.API_URL}/client-auth/refresh`;
 
 const sessionUser = {
   id: crypto.randomUUID(),
@@ -34,6 +36,14 @@ const sessionClient = {
 describe('SessionGate', () => {
   it('restores the session from /auth/me', async () => {
     server.use(
+      mswHttp.post(refreshUrl, () =>
+        HttpResponse.json({
+          access_token: 'restored',
+          user: sessionUser,
+          organization: sessionOrg,
+          role: 'owner',
+        }),
+      ),
       mswHttp.get(meUrl, () =>
         HttpResponse.json({
           access_token: 'restored',
@@ -57,17 +67,25 @@ describe('SessionGate', () => {
   });
 
   it('restores the session from /client-auth/me', async () => {
+    const portalUser = { id: crypto.randomUUID(), email: 'pat@example.com' };
+
     server.use(
-      mswHttp.get(meUrl, () =>
-        HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 }),
-      ),
-      mswHttp.post(`${env.API_URL}/auth/refresh`, () =>
+      mswHttp.post(refreshUrl, () =>
         HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 }),
+      ),
+      mswHttp.post(portalRefreshUrl, () =>
+        HttpResponse.json({
+          access_token: 'restored',
+          user: portalUser,
+          organization: sessionOrg,
+          client: sessionClient,
+          role: 'client',
+        }),
       ),
       mswHttp.get(portalMeUrl, () =>
         HttpResponse.json({
           access_token: 'restored',
-          user: { id: crypto.randomUUID(), email: 'pat@example.com' },
+          user: portalUser,
           organization: sessionOrg,
           client: sessionClient,
           role: 'client',
@@ -89,16 +107,10 @@ describe('SessionGate', () => {
 
   it('renders children when there is no session', async () => {
     server.use(
-      mswHttp.get(meUrl, () =>
-        HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 }),
-      ),
-      mswHttp.post(`${env.API_URL}/auth/refresh`, () =>
+      mswHttp.post(refreshUrl, () =>
         HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 }),
       ),
-      mswHttp.get(portalMeUrl, () =>
-        HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 }),
-      ),
-      mswHttp.post(`${env.API_URL}/client-auth/refresh`, () =>
+      mswHttp.post(portalRefreshUrl, () =>
         HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 }),
       ),
     );

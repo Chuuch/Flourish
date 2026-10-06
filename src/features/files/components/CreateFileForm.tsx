@@ -2,13 +2,14 @@ import { useAuthStore } from '@/features/auth';
 import { useUploadFIle } from '../hooks/useUploadFile';
 import { useRef, useState } from 'react';
 import { canManageFiles, isAllowedFile, MAX_FILE_SIZE_BYTES } from '../schemas/file.schema';
-import { Alert, Button } from '@/components/ui';
+import { Alert, Button, FileField } from '@/components/ui';
 import { useI18n } from '@/features/i18n';
 
 export function CreateFileForm({ projectId }: { projectId: string }) {
   const role = useAuthStore((state) => state.role);
   const uploadFile = useUploadFIle(projectId);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [pickerKey, setPickerKey] = useState(0);
   const [validationError, setValidationError] = useState<string | null>(null);
   const { t } = useI18n();
 
@@ -36,26 +37,21 @@ export function CreateFileForm({ projectId }: { projectId: string }) {
         setValidationError(null);
         uploadFile.mutate(file, {
           onSuccess: () => {
-            if (inputRef.current) {
-              inputRef.current.value = '';
-            }
+            setPickerKey((key) => key + 1);
           },
         });
       }}
       noValidate
     >
-      <div>
-        <label htmlFor="file">{t('files.file')}</label>
-        <input
-          id="file"
-          ref={inputRef}
-          type="file"
-          accept=".pdf,.png,.jpeg,.jpg,.webp,.txt,.zip,.application/pdf,image/png,image/jpeg,image/webp,text/plain,application/zip"
-          className="file-input"
-        />
-      </div>
+      <FileField
+        key={pickerKey}
+        id="file"
+        ref={inputRef}
+        label={t('files.file')}
+        accept=".pdf,.png,.jpeg,.jpg,.webp,.txt,.zip,.application/pdf,image/png,image/jpeg,image/webp,text/plain,application/zip"
+        error={validationError ?? undefined}
+      />
 
-      {validationError ? <p role="alert">{validationError}</p> : null}
       {uploadFile.isError ? <Alert>{uploadFile.error.message}</Alert> : null}
 
       <div className="form-actions">

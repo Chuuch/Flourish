@@ -1,6 +1,7 @@
 import { env } from '@/config/env';
 import { renderWithProviders } from '@/test/render';
 import userEvent from '@testing-library/user-event';
+import { chooseSelectOption } from '@/test/select';
 import { describe, expect, it } from 'vitest';
 import { CreateTicketForm } from './CreateTicketForm';
 import { screen } from '@testing-library/react';
@@ -83,12 +84,12 @@ describe('CreateTicketForm', () => {
 
     expect(await screen.findByText('No tickets yet.')).toBeInTheDocument();
 
-    await user.selectOptions(screen.getByLabelText('Kind'), 'bug');
+    await chooseSelectOption(user, 'Kind', 'bug');
     await user.type(screen.getByLabelText('Title'), 'Login button broken');
     await user.type(screen.getByLabelText('Body'), 'Clicking Sign in does nothing on mobile.');
     await user.click(screen.getByRole('button', { name: 'Submit ticket' }));
 
-    expect(await screen.findByText('Login button broken (bug) — open')).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /Login button broken/ })).toBeInTheDocument();
     expect(screen.getByLabelText('Title')).toHaveValue('');
   });
 

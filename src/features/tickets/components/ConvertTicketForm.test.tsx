@@ -1,6 +1,7 @@
 import { env } from '@/config/env';
 import { renderWithProviders } from '@/test/render';
 import userEvent from '@testing-library/user-event';
+import { chooseSelectOption } from '@/test/select';
 import { describe, expect, it } from 'vitest';
 import { ConvertTicketForm } from './ConvertTicketForm';
 import { screen } from '@testing-library/react';
@@ -106,10 +107,7 @@ describe('ConvertTicketForm', () => {
       </MemoryRouter>,
     );
 
-    await user.selectOptions(
-      await screen.findByLabelText('Convert Login button broken on'),
-      website.id,
-    );
+    await chooseSelectOption(user, 'Convert Login button broken on', website.id);
     await user.click(screen.getByRole('button', { name: 'Convert to task' }));
 
     expect(
@@ -139,10 +137,7 @@ describe('ConvertTicketForm', () => {
       </MemoryRouter>,
     );
 
-    await user.selectOptions(
-      await screen.findByLabelText('Convert Login button broken on'),
-      website.id,
-    );
+    await chooseSelectOption(user, 'Convert Login button broken on', website.id);
     await user.click(screen.getByRole('button', { name: 'Convert to task' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('ticket already converted');

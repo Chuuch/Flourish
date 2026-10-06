@@ -277,7 +277,7 @@ main.client-hub {
 }
 
 .settings-disclosure > *:not(summary) {
-  padding: 0.9rem 1rem 1rem;
+  padding: 1.15rem 1.25rem 1.25rem;
 }
 
 .settings-disclosure form {
@@ -285,6 +285,7 @@ main.client-hub {
   background: transparent;
   padding: 0;
   box-shadow: none;
+  gap: 1.15rem;
 }
 
 .hub-grid {
@@ -596,11 +597,11 @@ main a:focus-visible {
 main form {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 1.15rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-panel);
   background: var(--surface);
-  padding: 1rem;
+  padding: 1.35rem 1.4rem;
 }
 
 main li form {
@@ -642,14 +643,14 @@ main p[role='alert'] {
 .form-section {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
   padding-top: 0.15rem;
 }
 
 .form-section + .form-section {
-  margin-top: 0.25rem;
+  margin-top: 0.65rem;
   border-top: 1px solid var(--line);
-  padding-top: 0.95rem;
+  padding-top: 1.25rem;
 }
 
 .form-section > h2,
@@ -664,7 +665,7 @@ main p[role='alert'] {
 
 .field-grid {
   display: grid;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 @media (min-width: 640px) {
@@ -688,7 +689,8 @@ main p[role='alert'] {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  padding-top: 0.2rem;
+  margin-top: 0.35rem;
+  padding-top: 0.85rem;
 }
 
 .page-header {
@@ -760,11 +762,11 @@ main p[role='alert'] {
 .detail-panel {
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  gap: 1.1rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-panel);
   background: var(--surface);
-  padding: 1rem;
+  padding: 1.25rem 1.35rem;
 }
 
 .ticket-list {
@@ -851,20 +853,11 @@ main p[role='alert'] {
   padding: 0.5rem 0 !important;
 }
 
-.file-input::file-selector-button {
-  margin-right: 0.75rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-control);
-  background: var(--surface);
-  padding: 0.3rem 0.6rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.file-input::file-selector-button:hover {
-  background: var(--canvas-elevated);
+.file-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 0.85rem;
 }
 
 .stack-list {
@@ -909,7 +902,7 @@ main p[role='alert'] {
   border: 1px solid var(--line);
   border-radius: var(--radius-panel);
   background: var(--surface);
-  padding: 1rem;
+  padding: 1.35rem 1.4rem;
 }
 
 .panel-card > form,
@@ -917,6 +910,7 @@ main .panel-card form {
   border: 0;
   background: transparent;
   padding: 0;
+  gap: 1.15rem;
 }
 
 .stat-pill {

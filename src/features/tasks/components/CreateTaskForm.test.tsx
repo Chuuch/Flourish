@@ -1,6 +1,7 @@
 import { env } from '@/config/env';
 import { renderWithProviders } from '@/test/render';
 import userEvent from '@testing-library/user-event';
+import { chooseSelectOption } from '@/test/select';
 import { describe, expect, it } from 'vitest';
 import { CreateTaskForm } from './CreateTaskForm';
 import { screen } from '@testing-library/react';
@@ -79,16 +80,21 @@ describe('CreateTaskForm', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByText('No tasks yet.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('No tasks yet. Use Add task above to create one.'),
+    ).toBeInTheDocument();
 
     await user.type(screen.getByLabelText('Title'), 'Fix login');
     await user.type(screen.getByLabelText('Notes'), 'OAuth');
-    await user.selectOptions(screen.getByLabelText('Status'), 'in_progress');
+    await chooseSelectOption(user, 'Status', 'in_progress');
     await user.click(screen.getByRole('button', { name: 'Add task' }));
 
     expect(await screen.findByRole('link', { name: 'Fix login' })).toBeInTheDocument();
     expect(screen.getByText('OAuth')).toBeInTheDocument();
-    expect(screen.getByLabelText('Status for Fix login')).toHaveValue('in_progress');
+    expect(screen.getByLabelText('Status for Fix login')).toHaveAttribute(
+      'data-value',
+      'in_progress',
+    );
     expect(screen.getByLabelText('Title')).toHaveValue('');
   });
 
