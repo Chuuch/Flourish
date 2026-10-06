@@ -35,21 +35,26 @@ export function ClientUserList({ clientId }: { clientId: string }) {
   return (
     <>
       {deleteClientUser.isError ? <Alert>{deleteClientUser.error.message}</Alert> : null}
-      <ul>
+      <ul className="stack-list">
         {data.map((clientUser) => (
           <li key={clientUser.user_id}>
-            {clientUser.email}
-            {canManage ? (
-              <Button
-                type="button"
-                disabled={deleteClientUser.isPending}
-                onClick={() => {
-                  deleteClientUser.mutate(clientUser.user_id);
-                }}
-              >
-                {t('clientUsers.remove', { email: clientUser.email })}
-              </Button>
-            ) : null}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="m-0 min-w-0 truncate text-sm font-semibold">{clientUser.email}</p>
+              {canManage ? (
+                <Button
+                  type="button"
+                  variant="danger"
+                  size="sm"
+                  disabled={deleteClientUser.isPending}
+                  aria-label={t('clientUsers.remove', { email: clientUser.email })}
+                  onClick={() => {
+                    deleteClientUser.mutate(clientUser.user_id);
+                  }}
+                >
+                  {t('common.delete')}
+                </Button>
+              ) : null}
+            </div>
           </li>
         ))}
       </ul>

@@ -9,6 +9,7 @@ import { makeTask } from '@/test/factories/task';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { useAuthStore } from '@/features/auth';
 import userEvent from '@testing-library/user-event';
+import { chooseSelectOption } from '@/test/select';
 import { updateTaskSchema, type Task } from '../schemas/task.schema';
 import { makeOrganization } from '@/test/factories/organization';
 
@@ -87,11 +88,17 @@ describe('TaskWorkspacePage', () => {
 
     renderWorkspace(clientId, task.project_id, task.id);
 
-    expect(await screen.findByLabelText('Status for Fix login')).toHaveValue('todo');
+    expect(await screen.findByLabelText('Status for Fix login')).toHaveAttribute(
+      'data-value',
+      'todo',
+    );
 
-    await user.selectOptions(screen.getByLabelText('Status for Fix login'), 'done');
+    await chooseSelectOption(user, 'Status for Fix login', 'done');
 
-    expect(await screen.findByLabelText('Status for Fix login')).toHaveValue('done');
+    expect(await screen.findByLabelText('Status for Fix login')).toHaveAttribute(
+      'data-value',
+      'done',
+    );
   });
 
   it('hides manage controls for members', async () => {

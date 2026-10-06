@@ -1,6 +1,7 @@
 import { env } from '@/config/env';
 import { renderWithProviders } from '@/test/render';
 import userEvent from '@testing-library/user-event';
+import { chooseSelectOption } from '@/test/select';
 import { describe, expect, it } from 'vitest';
 import { CreateMemberForm } from './CreateMemberForm';
 import { screen } from '@testing-library/react';
@@ -63,7 +64,7 @@ describe('CreateMemberForm', () => {
     expect(await screen.findByText('No members yet.')).toBeInTheDocument();
 
     await user.type(screen.getByLabelText('Email'), 'grace@example.com');
-    await user.selectOptions(screen.getByLabelText('Role'), 'admin');
+    await chooseSelectOption(user, 'Role', 'admin');
     await user.click(screen.getByRole('button', { name: 'Invite member' }));
 
     expect(await screen.findByText('grace@example.com')).toBeInTheDocument();

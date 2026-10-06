@@ -49,6 +49,10 @@ describe('ProjectList', () => {
     );
     expect(screen.getByText('Launch')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Brand' })).toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: 'Tasks' })[0]).toHaveAttribute(
+      'href',
+      `/clients/${clientId}/projects/${website.id}/tasks`,
+    );
     expect(screen.getAllByRole('link', { name: 'Files' })[0]).toHaveAttribute(
       'href',
       `/clients/${clientId}/projects/${website.id}/files`,

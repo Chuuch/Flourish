@@ -41,7 +41,7 @@ describe('RootLayout', () => {
     expect(screen.queryByRole('link', { name: 'Reports' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Notifications' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Use dark theme' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Language')).toHaveValue('en');
+    expect(screen.getByLabelText('Language')).toHaveAttribute('data-value', 'en');
     expect(screen.getByText('page')).toBeInTheDocument();
   });
 
@@ -59,7 +59,7 @@ describe('RootLayout', () => {
     expect(screen.getByRole('link', { name: 'Notifications' })).toBeInTheDocument();
     expect(screen.getByText('Acme')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Use dark theme' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Language')).toHaveValue('en');
+    expect(screen.getByLabelText('Language')).toHaveAttribute('data-value', 'en');
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument();
   });
 

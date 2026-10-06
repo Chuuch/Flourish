@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { env } from '@/config/env';
 import z from 'zod';
-import { apiClient, setAccessToken, setAuthRealm } from './client';
+import { allowRefreshAttempt, apiClient, setAccessToken, setAuthRealm } from './client';
 import { server } from '@/test/server';
 import { HttpResponse, http as mswHttp } from 'msw';
 import { onUnauthorized } from './session';
@@ -36,6 +36,7 @@ const refreshClient = {
 afterEach(() => {
   setAccessToken(null);
   setAuthRealm(null);
+  allowRefreshAttempt();
 });
 
 describe('apiClient refresh', () => {
@@ -149,6 +150,29 @@ describe('apiClient refresh', () => {
     );
 
     await expect(apiClient.get('/ping')).rejects.toBeInstanceOf(ApiError);
+    expect(unauthorized).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not call refresh again after a failed refresh', async () => {
+    setAccessToken('expired');
+    let refreshCalls = 0;
+    const unauthorized = vi.fn();
+    onUnauthorized(unauthorized);
+
+    server.use(
+      mswHttp.get(pingUrl, () =>
+        HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 }),
+      ),
+      mswHttp.post(refreshUrl, () => {
+        refreshCalls += 1;
+        return HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 });
+      }),
+    );
+
+    await expect(apiClient.get('/ping')).rejects.toBeInstanceOf(ApiError);
+    await expect(apiClient.get('/ping')).rejects.toBeInstanceOf(ApiError);
+
+    expect(refreshCalls).toBe(1);
     expect(unauthorized).toHaveBeenCalledTimes(1);
   });
 });

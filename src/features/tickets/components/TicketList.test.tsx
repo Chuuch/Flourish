@@ -6,11 +6,12 @@ import { renderWithProviders } from '@/test/render';
 import { TicketList } from './TicketList';
 import { screen } from '@testing-library/react';
 import { makeTicket } from '@/test/factories/ticket';
+import userEvent from '@testing-library/user-event';
 
 const ticketsUrl = `${env.API_URL}/client-auth/tickets`;
 
 describe('TicketList', () => {
-  it('renders tickets returned by the API', async () => {
+  it('renders tickets as a compact list', async () => {
     const login = makeTicket({
       title: 'Login button broken',
       kind: 'bug',
@@ -25,15 +26,40 @@ describe('TicketList', () => {
           makeTicket({ title: 'Add export', kind: 'feature', status: 'in_progress', body: 'CSV' }),
         ]),
       ),
-      mswHttp.get(`${ticketsUrl}/:ticketId/files`, () => HttpResponse.json([])),
-      mswHttp.get(`${ticketsUrl}/:ticketId/comments`, () => HttpResponse.json([])),
     );
 
     renderWithProviders(<TicketList />);
 
-    expect(await screen.findByText('Login button broken (bug) — open')).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /Login button broken/ })).toBeInTheDocument();
     expect(screen.getByText('Clicking Sign in does nothing on mobile.')).toBeInTheDocument();
-    expect(screen.getByText('Add export (feature) — in_progress')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Add export/ })).toBeInTheDocument();
+    expect(screen.getByText('Open')).toBeInTheDocument();
+    expect(screen.getByText('In progress')).toBeInTheDocument();
+  });
+
+  it('opens a ticket detail', async () => {
+    const user = userEvent.setup();
+    const login = makeTicket({
+      title: 'Login button broken',
+      kind: 'bug',
+      status: 'open',
+      body: 'Clicking Sign in does nothing on mobile.',
+    });
+
+    server.use(
+      mswHttp.get(ticketsUrl, () => HttpResponse.json([login])),
+      mswHttp.get(`${ticketsUrl}/${login.id}/files`, () => HttpResponse.json([])),
+      mswHttp.get(`${ticketsUrl}/${login.id}/comments`, () => HttpResponse.json([])),
+    );
+
+    renderWithProviders(<TicketList />);
+
+    await user.click(await screen.findByRole('button', { name: /Login button broken/ }));
+
+    expect(await screen.findByRole('button', { name: 'Back to tickets' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Login button broken/ })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Attachment' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Comments' })).toBeInTheDocument();
   });
 
   it('renders an empty state', async () => {

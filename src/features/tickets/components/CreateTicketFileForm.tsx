@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { useUploadTicketFile } from '../hooks/useUploadTicketFile';
 import { isAllowedTicketFile, MAX_TICKET_FILE_SIZE_BYTES } from '../schemas/ticket-file.schema';
-import { Alert, Button } from '@/components/ui';
+import { Alert, Button, FileField } from '@/components/ui';
 import type { TicketFileSource } from '../api/ticket-files.api';
 import { useI18n } from '@/features/i18n';
 
@@ -14,6 +14,7 @@ export function CreateTicketFileForm({
 }) {
   const uploadFile = useUploadTicketFile(ticketId, source);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [pickerKey, setPickerKey] = useState(0);
   const [validationError, setValidationError] = useState<string | null>(null);
   const { t } = useI18n();
 
@@ -37,26 +38,21 @@ export function CreateTicketFileForm({
         setValidationError(null);
         uploadFile.mutate(file, {
           onSuccess: () => {
-            if (inputRef.current) {
-              inputRef.current.value = '';
-            }
+            setPickerKey((key) => key + 1);
           },
         });
       }}
       noValidate
     >
-      <div>
-        <label htmlFor={`file-${ticketId}`}>{t('tickets.attachment')}</label>
-        <input
-          id={`file-${ticketId}`}
-          ref={inputRef}
-          type="file"
-          accept=".pdf,.png,.jpeg,.webp,.txt,.zip,application/pdf,image/png,image/jpeg,image/webp,text/plain,application/zip"
-          className="file-input"
-        />
-      </div>
+      <FileField
+        key={pickerKey}
+        id={`file-${ticketId}`}
+        ref={inputRef}
+        label={t('tickets.attachment')}
+        accept=".pdf,.png,.jpeg,.webp,.txt,.zip,application/pdf,image/png,image/jpeg,image/webp,text/plain,application/zip"
+        error={validationError ?? undefined}
+      />
 
-      {validationError ? <p role="alert">{validationError}</p> : null}
       {uploadFile.isError ? <Alert>{uploadFile.error.message}</Alert> : null}
 
       <div className="form-actions">

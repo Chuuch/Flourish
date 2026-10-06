@@ -8,6 +8,7 @@ import { screen } from '@testing-library/react';
 import { makeMember } from '@/test/factories/member';
 import { useAuthStore } from '@/features/auth';
 import userEvent from '@testing-library/user-event';
+import { chooseSelectOption } from '@/test/select';
 import { updateMemberSchema, type Member } from '../schemas/member.schema';
 import { makeOrganization } from '@/test/factories/organization';
 
@@ -97,16 +98,22 @@ describe('MemberList', () => {
 
     renderWithProviders(<MemberList />);
 
-    expect(await screen.findByLabelText('Role for linus@example.com')).toHaveValue('member');
+    expect(await screen.findByLabelText('Role for linus@example.com')).toHaveAttribute(
+      'data-value',
+      'member',
+    );
 
-    await user.selectOptions(screen.getByLabelText('Role for linus@example.com'), 'admin');
+    await chooseSelectOption(user, 'Role for linus@example.com', 'admin');
 
     const row = (await screen.findByText('linus@example.com')).closest('li');
     if (!row) {
       throw new Error('expected member row');
     }
     expect(row.querySelector('[data-role="admin"]')).toHaveTextContent('Admin');
-    expect(screen.getByLabelText('Role for linus@example.com')).toHaveValue('admin');
+    expect(screen.getByLabelText('Role for linus@example.com')).toHaveAttribute(
+      'data-value',
+      'admin',
+    );
   });
 
   it('removes a member', async () => {

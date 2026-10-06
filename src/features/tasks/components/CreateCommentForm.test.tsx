@@ -54,6 +54,7 @@ describe('CreateCommentForm', () => {
     const comments: Comment[] = [];
 
     server.use(
+      mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
       mswHttp.get(commentsUrl, () => HttpResponse.json(comments)),
       mswHttp.post(commentsUrl, async ({ request }) => {
         const input = createCommentSchema.parse(await request.json());
@@ -85,7 +86,7 @@ describe('CreateCommentForm', () => {
     await user.type(screen.getByLabelText('Body'), 'Check the OAuth redirect');
     await user.click(screen.getByRole('button', { name: 'Add comment' }));
 
-    expect(await screen.findByText(userId)).toBeInTheDocument();
+    expect(await screen.findByText('ada@example.com')).toBeInTheDocument();
     expect(screen.getByText('Check the OAuth redirect')).toBeInTheDocument();
     expect(screen.getByLabelText('Body')).toHaveValue('');
   });

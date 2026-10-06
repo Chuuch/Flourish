@@ -23,10 +23,10 @@ function renderAt(path: string) {
 describe('GuestOnly', () => {
   it('shows login for anonymous users', async () => {
     server.use(
-      mswHttp.get(`${env.API_URL}/auth/me`, () =>
-        HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 }),
-      ),
       mswHttp.post(`${env.API_URL}/auth/refresh`, () =>
+        HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 }),
+      ),
+      mswHttp.post(`${env.API_URL}/client-auth/refresh`, () =>
         HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 }),
       ),
     );

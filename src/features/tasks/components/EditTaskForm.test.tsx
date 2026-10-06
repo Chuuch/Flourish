@@ -5,6 +5,7 @@ import { makeMember } from '@/test/factories/member';
 import { makeTask } from '@/test/factories/task';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { chooseSelectOption } from '@/test/select';
 import { HttpResponse, http as mswHttp } from 'msw';
 import { describe, expect, it } from 'vitest';
 import { updateTaskSchema } from '../schemas/task.schema';
@@ -43,7 +44,7 @@ describe('EditTaskForm', () => {
     await user.type(screen.getByLabelText('Title for Fix login'), 'Ship site');
     await user.clear(screen.getByLabelText('Notes for Fix login'));
     await user.type(screen.getByLabelText('Notes for Fix login'), 'New notes');
-    await user.selectOptions(screen.getByLabelText('Assignee for Fix login'), member.user_id);
+    await chooseSelectOption(user, 'Assignee for Fix login', member.user_id);
     await user.click(screen.getByRole('button', { name: 'Save Fix login' }));
 
     expect(await screen.findByLabelText('Title for Fix login')).toHaveValue('Ship site');
