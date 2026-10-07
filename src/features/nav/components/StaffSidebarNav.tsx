@@ -30,7 +30,7 @@ import {
   UsersRound,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 import { useNavCounts } from '../hooks/useNavCounts';
 
 function ClientBranch({
@@ -58,7 +58,7 @@ function ClientBranch({
       <div className="flex items-center gap-0.5">
         <button
           type="button"
-          className="text-muted hover:text-ink hover:bg-canvas-elevated/70 inline-flex size-7 shrink-0 items-center justify-center rounded-[var(--radius-control)]"
+          className="text-muted hover:text-ink hover:bg-canvas-elevated/70 inline-flex size-7 shrink-0 items-center justify-center rounded-(--radius-control)"
           aria-expanded={open}
           aria-label={clientName}
           onClick={() => {
@@ -132,7 +132,7 @@ function ProjectBranch({
       <div className="flex items-center gap-0.5">
         <button
           type="button"
-          className="text-muted hover:text-ink hover:bg-canvas-elevated/70 inline-flex size-7 shrink-0 items-center justify-center rounded-[var(--radius-control)]"
+          className="text-muted hover:text-ink hover:bg-canvas-elevated/70 inline-flex size-7 shrink-0 items-center justify-center rounded-(--radius-control)"
           aria-expanded={open}
           aria-label={projectName}
           onClick={() => {
@@ -167,8 +167,10 @@ function ProjectBranch({
 export function StaffSidebarNav() {
   const { t } = useI18n();
   const { clientId } = useParams();
+  const location = useLocation();
   const { data: counts } = useNavCounts();
   const clients = useClients();
+  const clientsSectionOpen = location.pathname.startsWith(paths.clients);
 
   return (
     <>
@@ -176,32 +178,26 @@ export function StaffSidebarNav() {
         {t('nav.main')}
       </p>
 
-      <SidebarLink to={paths.home} icon={House} end>
+      <SidebarLink to={paths.home} icon={House} end count={counts?.tasks} badge="solid">
         {t('nav.home')}
-      </SidebarLink>
-
-      <SidebarLink to={paths.tasks} icon={ListTodo} count={counts?.tasks} badge="solid">
-        {t('nav.tasks')}
-      </SidebarLink>
-
-      <SidebarLink to={paths.tickets} icon={Ticket} count={counts?.tickets} badge="solid">
-        {t('nav.tickets')}
       </SidebarLink>
 
       <SidebarLink to={paths.clients} icon={Building2}>
         {t('nav.clients')}
       </SidebarLink>
 
-      <div className="mt-0.5 flex flex-col gap-0.5">
-        {(clients.data ?? []).map((client) => (
-          <ClientBranch
-            key={client.id}
-            clientId={client.id}
-            clientName={client.name}
-            forceOpen={clientId === client.id}
-          />
-        ))}
-      </div>
+      {clientsSectionOpen ? (
+        <div className="mt-0.5 flex flex-col gap-0.5">
+          {(clients.data ?? []).map((client) => (
+            <ClientBranch
+              key={client.id}
+              clientId={client.id}
+              clientName={client.name}
+              forceOpen={clientId === client.id}
+            />
+          ))}
+        </div>
+      ) : null}
 
       <SidebarLink
         to={paths.notifications}
