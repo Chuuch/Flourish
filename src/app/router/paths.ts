@@ -11,8 +11,6 @@ export const paths = {
   reports: '/reports',
   clients: '/clients',
   projects: '/projects',
-  tasks: '/tasks',
-  tickets: '/tickets',
   portal: '/portal',
   portalLogin: '/portal/login',
   portalAccount: '/portal/account',

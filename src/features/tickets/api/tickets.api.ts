@@ -17,8 +17,6 @@ export const createPortalTicket = (input: CreateTicketInput) =>
 export const fetchStaffTickets = (clientId: string) =>
   http.get(`/clients/${clientId}/tickets`, ticketsSchema);
 
-export const fetchOrgTickets = () => http.get('/tickets', ticketsSchema);
-
 export const updateTicket = (ticketId: string, input: UpdateTicketInput) =>
   http.patch(`/tickets/${ticketId}`, ticketSchema, input);
 

@@ -34,12 +34,13 @@ function mockNavCounts() {
   );
 }
 
-function renderLayout() {
+function renderLayout(initialPath = '/') {
   return renderWithProviders(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
         <Route element={<RootLayout />}>
           <Route index element={<div>page</div>} />
+          <Route path="clients" element={<div>clients</div>} />
         </Route>
       </Routes>
     </MemoryRouter>,
@@ -69,9 +70,10 @@ describe('RootLayout', () => {
     renderLayout();
 
     expect(await screen.findByRole('link', { name: 'Members' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Clients' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Tasks' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Tickets' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Tasks' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Tickets' })).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Activity' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Reports' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Notifications' })).toBeInTheDocument();
