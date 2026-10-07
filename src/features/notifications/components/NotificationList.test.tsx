@@ -27,22 +27,25 @@ describe('NotificationList', () => {
 
     server.use(
       mswHttp.get(notificationsUrl, () =>
-        HttpResponse.json([
-          {
-            id,
-            organization_id: testOrg.id,
-            recipient_id: crypto.randomUUID(),
-            actor_id: crypto.randomUUID(),
-            actor_email: 'pat@example.com',
-            actor_display_name: 'Pat',
-            kind: 'ticket_opened',
-            entity_type: 'ticket',
-            entity_id: crypto.randomUUID(),
-            summary: 'Login broken',
-            read_at: readAt,
-            created_at: '2026-10-01T12:00:00Z',
-          },
-        ]),
+        HttpResponse.json({
+          items: [
+            {
+              id,
+              organization_id: testOrg.id,
+              recipient_id: crypto.randomUUID(),
+              actor_id: crypto.randomUUID(),
+              actor_email: 'pat@example.com',
+              actor_display_name: 'Pat',
+              kind: 'ticket_opened',
+              entity_type: 'ticket',
+              entity_id: crypto.randomUUID(),
+              summary: 'Login broken',
+              read_at: readAt,
+              created_at: '2026-10-01T12:00:00Z',
+            },
+          ],
+          next_cursor: null,
+        }),
       ),
       mswHttp.patch(`${notificationsUrl}/${id}/read`, () => {
         readAt = '2026-10-01T12:01:00Z';
@@ -65,22 +68,25 @@ describe('NotificationList', () => {
 
     server.use(
       mswHttp.get(notificationsUrl, () =>
-        HttpResponse.json([
-          {
-            id: crypto.randomUUID(),
-            organization_id: testOrg.id,
-            recipient_id: crypto.randomUUID(),
-            actor_id: crypto.randomUUID(),
-            actor_email: 'linus@example.com',
-            actor_display_name: '',
-            kind: 'task_assigned',
-            entity_type: 'task',
-            entity_id: crypto.randomUUID(),
-            summary: 'Draw wireframes',
-            read_at: '2026-10-01T12:01:00Z',
-            created_at: '2026-10-01T12:00:00Z',
-          },
-        ]),
+        HttpResponse.json({
+          items: [
+            {
+              id: crypto.randomUUID(),
+              organization_id: testOrg.id,
+              recipient_id: crypto.randomUUID(),
+              actor_id: crypto.randomUUID(),
+              actor_email: 'linus@example.com',
+              actor_display_name: '',
+              kind: 'task_assigned',
+              entity_type: 'task',
+              entity_id: crypto.randomUUID(),
+              summary: 'Draw wireframes',
+              read_at: '2026-10-01T12:01:00Z',
+              created_at: '2026-10-01T12:00:00Z',
+            },
+          ],
+          next_cursor: null,
+        }),
       ),
     );
 

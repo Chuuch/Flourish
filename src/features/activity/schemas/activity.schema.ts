@@ -23,8 +23,12 @@ export const activityEventSchema = z.object({
   created_at: z.string(),
 });
 
-export const activityEventsSchema = z.array(activityEventSchema);
+export const activityPageSchema = z.object({
+  items: z.array(activityEventSchema),
+  next_cursor: z.string().nullable(),
+});
 
 export type ActivityEvent = z.infer<typeof activityEventSchema>;
 export type ActivityAction = z.infer<typeof activityActionSchema>;
 export type ActivityEntity = z.infer<typeof activityEntitySchema>;
+export type ActivityPage = z.infer<typeof activityPageSchema>;

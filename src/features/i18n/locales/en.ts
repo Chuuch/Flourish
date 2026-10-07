@@ -24,6 +24,7 @@ export const en = {
   'locale.name.it': 'Italiano',
   'locale.name.ru': 'Русский',
   'common.retry': 'Retry',
+  'common.loadMore': 'Load more',
   'common.comments': 'Comments',
   'common.users': 'Users',
   'common.tickets': 'Tickets',

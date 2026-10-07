@@ -6,7 +6,16 @@ import { formatDateTime } from '@/lib/formatDate';
 import { activityLine } from '../lib/activityLabel';
 
 export function ActivityList() {
-  const { data, isPending, isError, error, refetch } = useActivity();
+  const {
+    data,
+    isPending,
+    isError,
+    error,
+    refetch,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useActivity();
   const { locale, t } = useI18n();
 
   if (isPending) {
@@ -28,20 +37,39 @@ export function ActivityList() {
     );
   }
 
-  if (data.length === 0) {
+  const items = data.pages.flatMap((page) => page.items);
+
+  if (items.length === 0) {
     return <p className="text-muted m-0 text-sm">{t('activity.empty')}</p>;
   }
 
   return (
-    <ul className="stack-list">
-      {data.map((event) => (
-        <li key={event.id}>
-          <div className="row-split">
-            <p className="m-0 text-sm leading-relaxed font-medium">{activityLine(event)}</p>
-            <time dateTime={event.created_at}>{formatDateTime(event.created_at, locale)}</time>
-          </div>
-        </li>
-      ))}
-    </ul>
+    <div className="flex flex-col gap-4">
+      <ul className="stack-list">
+        {items.map((event) => (
+          <li key={event.id}>
+            <div className="row-split">
+              <p className="m-0 text-sm leading-relaxed font-medium">{activityLine(event)}</p>
+              <time dateTime={event.created_at}>{formatDateTime(event.created_at, locale)}</time>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      {hasNextPage ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="self-start"
+          disabled={isFetchingNextPage}
+          onClick={() => {
+            void fetchNextPage();
+          }}
+        >
+          {t('common.loadMore')}
+        </Button>
+      ) : null}
+    </div>
   );
 }
