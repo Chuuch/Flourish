@@ -4,13 +4,13 @@ import userEvent from '@testing-library/user-event';
 import { chooseSelectOption } from '@/test/select';
 import { describe, expect, it } from 'vitest';
 import { CreateMemberForm } from './CreateMemberForm';
-import { screen } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { server } from '@/test/server';
 import { HttpResponse, http as mswHttp } from 'msw';
 import { createMemberSchema, type Member } from '../schemas/member.schema';
 import { makeMember } from '@/test/factories/member';
 import { useAuthStore } from '@/features/auth';
-import { MembersPage } from '../pages/MambersPage';
+import { MembersPage } from '../pages/MembersPage';
 import { makeOrganization } from '@/test/factories/organization';
 
 const membersUrl = `${env.API_URL}/members`;
@@ -63,13 +63,18 @@ describe('CreateMemberForm', () => {
     renderWithProviders(<MembersPage />);
     expect(await screen.findByText('No members yet.')).toBeInTheDocument();
 
-    await user.type(screen.getByLabelText('Email'), 'grace@example.com');
-    await chooseSelectOption(user, 'Role', 'admin');
     await user.click(screen.getByRole('button', { name: 'Invite member' }));
+    const dialog = await screen.findByRole('dialog');
+
+    await user.type(within(dialog).getByLabelText('Email'), 'grace@example.com');
+    await chooseSelectOption(user, 'Role', 'admin');
+    await user.click(within(dialog).getByRole('button', { name: 'Invite member' }));
 
     expect(await screen.findByText('grace@example.com')).toBeInTheDocument();
     expect(document.querySelector('[data-role="admin"]')).toHaveTextContent('Admin');
-    expect(screen.getByLabelText('Email')).toHaveValue('');
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
   });
 
   it('shows the server error message', async () => {

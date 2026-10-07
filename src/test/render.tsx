@@ -1,3 +1,4 @@
+import { ModalProvider } from '@/features/modal';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { type RenderOptions, render } from '@testing-library/react';
 import type { ReactElement, ReactNode } from 'react';
@@ -8,7 +9,11 @@ export function renderWithProviders(ui: ReactElement, options?: Omit<RenderOptio
   });
 
   function Wrapper({ children }: { children: ReactNode }) {
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    return (
+      <QueryClientProvider client={queryClient}>
+        <ModalProvider>{children}</ModalProvider>
+      </QueryClientProvider>
+    );
   }
 
   return { ...render(ui, { wrapper: Wrapper, ...options }), queryClient };

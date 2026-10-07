@@ -1,18 +1,24 @@
 import { clientPath, clientProjectsPath, paths, projectPath } from '@/app/router/paths';
+import { PageHeader } from '@/components/ui';
+import { useAuthStore } from '@/features/auth';
+import { useI18n } from '@/features/i18n';
+import { useModal } from '@/features/modal';
 import { Link, useParams } from 'react-router';
 import { CreateTaskForm } from '../components/CreateTaskForm';
 import { TaskList } from '../components/TaskList';
-import { useI18n } from '@/features/i18n';
+import { canCreateTasks } from '../schemas/task.schema';
 
 export function TasksPage() {
   const { clientId, projectId } = useParams();
   const { t } = useI18n();
+  const { openModal, closeModal } = useModal();
+  const role = useAuthStore((state) => state.role);
+  const canCreate = canCreateTasks(role);
 
   if (!clientId || !projectId) {
     return (
       <main>
-        <h1>{t('tasks.title')}</h1>
-        <p>{t('tasks.notFound')}</p>
+        <PageHeader title={t('tasks.title')} description={t('tasks.notFound')} />
       </main>
     );
   }
@@ -28,8 +34,30 @@ export function TasksPage() {
         {' / '}
         <Link to={projectPath(clientId, projectId)}>{t('projects.hubCrumb')}</Link>
       </p>
-      <h1>{t('tasks.title')}</h1>
-      <CreateTaskForm projectId={projectId} />
+      <PageHeader
+        title={t('tasks.title')}
+        {...(canCreate
+          ? {
+              createLabel: t('tasks.add'),
+              onCreate: () => {
+                openModal({
+                  title: t('tasks.add'),
+                  content: (
+                    <CreateTaskForm
+                      projectId={projectId}
+                      onSuccess={() => {
+                        closeModal();
+                      }}
+                      onCancel={() => {
+                        closeModal();
+                      }}
+                    />
+                  ),
+                });
+              },
+            }
+          : {})}
+      />
       <TaskList clientId={clientId} projectId={projectId} />
     </main>
   );

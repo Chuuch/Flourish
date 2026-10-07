@@ -2,28 +2,28 @@ import { PageHeader } from '@/components/ui';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
 import { useModal } from '@/features/modal';
-import { ClientList } from '../components/ClientList';
-import { CreateClientForm } from '../components/CreateClientForm';
-import { canManageClients } from '../schemas/client.schema';
+import { CreateMemberForm } from '../components/CreateMemberForm';
+import { MemberList } from '../components/MemberList';
+import { canManageMembers } from '../schemas/member.schema';
 
-export function ClientsPage() {
+export function MembersPage() {
   const { t } = useI18n();
   const { openModal, closeModal } = useModal();
   const role = useAuthStore((state) => state.role);
-  const canCreate = canManageClients(role);
+  const canCreate = canManageMembers(role);
 
   return (
     <main>
       <PageHeader
-        title={t('clients.title')}
+        title={t('members.title')}
         {...(canCreate
           ? {
-              createLabel: t('clients.add'),
+              createLabel: t('members.invite'),
               onCreate: () => {
                 openModal({
-                  title: t('clients.add'),
+                  title: t('members.inviteHeading'),
                   content: (
-                    <CreateClientForm
+                    <CreateMemberForm
                       onSuccess={() => {
                         closeModal();
                       }}
@@ -37,7 +37,7 @@ export function ClientsPage() {
             }
           : {})}
       />
-      <ClientList />
+      <MemberList />
     </main>
   );
 }

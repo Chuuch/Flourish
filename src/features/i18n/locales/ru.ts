@@ -37,6 +37,7 @@ export const ru: Record<MessageKey, string> = {
   'common.invoices': 'Счета',
   'common.edit': 'Изменить',
   'common.cancel': 'Отмена',
+  'common.close': 'Закрыт',
   'common.delete': 'Удалить',
   'common.save': 'Сохранить',
   'common.upload': 'Загрузить',

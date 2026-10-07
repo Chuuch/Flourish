@@ -37,6 +37,7 @@ export const bg: Record<MessageKey, string> = {
   'common.invoices': 'Фактури',
   'common.edit': 'Редактирай',
   'common.cancel': 'Отказ',
+  'common.close': 'Затвори',
   'common.delete': 'Изтрий',
   'common.save': 'Запази',
   'common.upload': 'Качи',

@@ -1,6 +1,8 @@
 import { paths } from '@/app/router/paths';
+import { PageHeader } from '@/components/ui';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
+import { useModal } from '@/features/modal';
 import { PortalInvoiceList } from '@/features/invoices/components/PortalInvoiceList';
 import { CreateTicketForm, TicketList } from '@/features/tickets';
 import { Link } from 'react-router';
@@ -9,17 +11,35 @@ export function PortalHomePage() {
   const user = useAuthStore((state) => state.user);
   const client = useAuthStore((state) => state.client);
   const { t } = useI18n();
+  const { openModal, closeModal } = useModal();
 
   return (
     <main>
-      <div className="page-header">
-        <h1>{t('portal.title')}</h1>
-        <p>{[user?.email, client?.name].filter(Boolean).join(' · ')}</p>
-      </div>
+      <PageHeader
+        title={t('portal.title')}
+        description={[user?.email, client?.name].filter(Boolean).join(' · ')}
+      />
 
       <section className="flex flex-col gap-4">
-        <h2>{t('common.tickets')}</h2>
-        <CreateTicketForm />
+        <PageHeader
+          title={t('common.tickets')}
+          createLabel={t('tickets.submit')}
+          onCreate={() => {
+            openModal({
+              title: t('tickets.submit'),
+              content: (
+                <CreateTicketForm
+                  onSuccess={() => {
+                    closeModal();
+                  }}
+                  onCancel={() => {
+                    closeModal();
+                  }}
+                />
+              ),
+            });
+          }}
+        />
         <TicketList />
       </section>
 
