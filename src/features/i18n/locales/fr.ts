@@ -26,6 +26,7 @@ export const fr: Record<MessageKey, string> = {
   'locale.name.it': 'Italiano',
   'locale.name.ru': 'Русский',
   'common.retry': 'Réessayer',
+  'common.loadMore': 'Charger plus',
   'common.comments': 'Commentaires',
   'common.users': 'Utilisateurs',
   'common.tickets': 'Tickets',

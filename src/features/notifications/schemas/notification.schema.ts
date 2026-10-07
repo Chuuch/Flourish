@@ -25,6 +25,10 @@ export const notificationSchema = z.object({
   created_at: z.string(),
 });
 
-export const notificationsSchema = z.array(notificationSchema);
+export const notificationPageSchema = z.object({
+  items: z.array(notificationSchema),
+  next_cursor: z.string().nullable(),
+});
 
 export type Notification = z.infer<typeof notificationSchema>;
+export type NotificationPage = z.infer<typeof notificationPageSchema>;

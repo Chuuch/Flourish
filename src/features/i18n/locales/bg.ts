@@ -26,6 +26,7 @@ export const bg: Record<MessageKey, string> = {
   'locale.name.it': 'Italiano',
   'locale.name.ru': 'Русский',
   'common.retry': 'Опитай отново',
+  'common.loadMore': 'Зареди още',
   'common.comments': 'Коментари',
   'common.users': 'Потребители',
   'common.tickets': 'Тикети',

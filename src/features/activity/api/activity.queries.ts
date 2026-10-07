@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/react-query';
+import { infiniteQueryOptions } from '@tanstack/react-query';
 import { fetchActivity } from './activity.api';
 
 export const activityKeys = {
@@ -8,8 +8,13 @@ export const activityKeys = {
 
 export const activityQueries = {
   list: () =>
-    queryOptions({
+    infiniteQueryOptions({
       queryKey: activityKeys.lists(),
-      queryFn: fetchActivity,
+      queryFn: ({ pageParam }) =>
+        fetchActivity({
+          ...(pageParam ? { cursor: pageParam } : {}),
+        }),
+      initialPageParam: undefined as string | undefined,
+      getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
     }),
 };

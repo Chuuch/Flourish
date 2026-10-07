@@ -1,4 +1,12 @@
 import { http } from '@/lib/api/http';
-import { activityEventsSchema } from '../schemas/activity.schema';
+import { activityPageSchema } from '../schemas/activity.schema';
 
-export const fetchActivity = () => http.get('/activity', activityEventsSchema);
+const DEFAULT_LIMIT = 50;
+
+export const fetchActivity = (params?: { cursor?: string; limit?: number }) =>
+  http.get('/activity', activityPageSchema, {
+    params: {
+      limit: params?.limit ?? DEFAULT_LIMIT,
+      ...(params?.cursor ? { cursor: params.cursor } : {}),
+    },
+  });
