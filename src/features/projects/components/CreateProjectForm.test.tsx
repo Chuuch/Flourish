@@ -3,7 +3,7 @@ import { renderWithProviders } from '@/test/render';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { CreateProjectForm } from './CreateProjectForm';
-import { screen } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { server } from '@/test/server';
 import { HttpResponse, http as mswHttp } from 'msw';
 import { createProjectSchema, type Project } from '../schemas/project.schema';
@@ -74,13 +74,18 @@ describe('CreateProjectForm', () => {
 
     expect(await screen.findByText('No projects yet.')).toBeInTheDocument();
 
-    await user.type(screen.getByLabelText('Name'), 'Website');
-    await user.type(screen.getByLabelText('Notes'), 'Launch');
     await user.click(screen.getByRole('button', { name: 'Add project' }));
+    const dialog = await screen.findByRole('dialog');
+
+    await user.type(within(dialog).getByLabelText('Name'), 'Website');
+    await user.type(within(dialog).getByLabelText('Notes'), 'Launch');
+    await user.click(within(dialog).getByRole('button', { name: 'Add project' }));
 
     expect(await screen.findByText('Website')).toBeInTheDocument();
     expect(screen.getByText('Launch')).toBeInTheDocument();
-    expect(screen.getByLabelText('Name')).toHaveValue('');
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
   });
 
   it('shows the server error message', async () => {

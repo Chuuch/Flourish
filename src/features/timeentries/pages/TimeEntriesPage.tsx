@@ -6,21 +6,23 @@ import {
   projectTasksPath,
   taskPath,
 } from '@/app/router/paths';
+import { PageHeader } from '@/components/ui';
+import { useI18n } from '@/features/i18n';
+import { useModal } from '@/features/modal';
 import { Link, useParams } from 'react-router';
 import { CreateTimeEntryForm } from '../components/CreateTimeEntryForm';
 import { TimeEntryList } from '../components/TimeEntryList';
-import { useI18n } from '@/features/i18n';
 
 export function TimeEntriesPage() {
   const { clientId, projectId, taskid, taskId: taskIdParam } = useParams();
   const taskId = taskid ?? taskIdParam;
   const { t } = useI18n();
+  const { openModal, closeModal } = useModal();
 
   if (!clientId || !projectId || !taskId) {
     return (
       <main>
-        <h1>{t('time.title')}</h1>
-        <p>{t('comments.notFound')}</p>
+        <PageHeader title={t('time.title')} description={t('comments.notFound')} />
       </main>
     );
   }
@@ -40,8 +42,26 @@ export function TimeEntriesPage() {
         {' / '}
         <Link to={taskPath(clientId, projectId, taskId)}>{t('tasks.hubCrumb')}</Link>
       </p>
-      <h1>{t('time.heading')}</h1>
-      <CreateTimeEntryForm taskId={taskId} />
+      <PageHeader
+        title={t('time.heading')}
+        createLabel={t('time.add')}
+        onCreate={() => {
+          openModal({
+            title: t('time.add'),
+            content: (
+              <CreateTimeEntryForm
+                taskId={taskId}
+                onSuccess={() => {
+                  closeModal();
+                }}
+                onCancel={() => {
+                  closeModal();
+                }}
+              />
+            ),
+          });
+        }}
+      />
       <TimeEntryList taskId={taskId} />
     </main>
   );

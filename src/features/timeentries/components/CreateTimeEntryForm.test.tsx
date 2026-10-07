@@ -3,7 +3,7 @@ import { renderWithProviders } from '@/test/render';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { CreateTimeEntryForm } from './CreateTimeEntryForm';
-import { screen } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { server } from '@/test/server';
 import { HttpResponse, http as mswHttp } from 'msw';
 import { createTimeEntrySchema, type TimeEntry } from '../schemas/time-entry.schema';
@@ -81,12 +81,17 @@ describe('CreateTimeEntryForm', () => {
 
     expect(await screen.findByText('No time entries yet.')).toBeInTheDocument();
 
-    await user.type(screen.getByLabelText('Minutes'), '90');
-    await user.type(screen.getByLabelText('Notes'), 'OAuth');
     await user.click(screen.getByRole('button', { name: 'Add time' }));
+    const dialog = await screen.findByRole('dialog');
+
+    await user.type(within(dialog).getByLabelText('Minutes'), '90');
+    await user.type(within(dialog).getByLabelText('Notes'), 'OAuth');
+    await user.click(within(dialog).getByRole('button', { name: 'Add time' }));
 
     expect(await screen.findByText('90 min - OAuth')).toBeInTheDocument();
-    expect(screen.getByLabelText('Minutes')).toHaveValue(0);
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
   });
 
   it('shows the server error message', async () => {

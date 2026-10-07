@@ -22,7 +22,12 @@ const emptyClient: CreateClientInput = {
   country: '',
 };
 
-export function CreateClientForm() {
+type CreateClientFormProps = {
+  onSuccess?: () => void;
+  onCancel?: () => void;
+};
+
+export function CreateClientForm({ onSuccess, onCancel }: CreateClientFormProps = {}) {
   const role = useAuthStore((state) => state.role);
   const createClient = useCreateClient();
   const { t } = useI18n();
@@ -42,80 +47,76 @@ export function CreateClientForm() {
   }
 
   return (
-    <div className="panel-card">
-      <form
-        onSubmit={(event) =>
-          void handleSubmit((input) => {
-            createClient.mutate(input, {
-              onSuccess: () => {
-                reset();
-              },
-            });
-          })(event)
-        }
-        noValidate
-      >
-        <FormSection title={t('clients.billingHeading')}>
+    <form
+      onSubmit={(event) =>
+        void handleSubmit((input) => {
+          createClient.mutate(input, {
+            onSuccess: () => {
+              reset();
+              onSuccess?.();
+            },
+          });
+        })(event)
+      }
+      noValidate
+    >
+      <FormSection title={t('clients.billingHeading')}>
+        <TextField
+          label={t('clients.name')}
+          autoComplete="organization"
+          error={errors.name?.message}
+          {...register('name')}
+        />
+        <TextArea label={t('clients.notes')} error={errors.notes?.message} {...register('notes')} />
+        <FieldGrid>
           <TextField
-            label={t('clients.name')}
-            autoComplete="organization"
-            error={errors.name?.message}
-            {...register('name')}
-          />
-          <TextArea
-            label={t('clients.notes')}
-            error={errors.notes?.message}
-            {...register('notes')}
-          />
-          <FieldGrid>
-            <TextField
-              label={t('clients.legalName')}
-              error={errors.legal_name?.message}
-              {...register('legal_name')}
-            />
-            <TextField
-              label={t('clients.vatId')}
-              error={errors.vat_id?.message}
-              {...register('vat_id')}
-            />
-          </FieldGrid>
-          <TextField
-            label={t('clients.addressLine1')}
-            error={errors.address_line1?.message}
-            {...register('address_line1')}
+            label={t('clients.legalName')}
+            error={errors.legal_name?.message}
+            {...register('legal_name')}
           />
           <TextField
-            label={t('clients.addressLine2')}
-            error={errors.address_line2?.message}
-            {...register('address_line2')}
+            label={t('clients.vatId')}
+            error={errors.vat_id?.message}
+            {...register('vat_id')}
           />
-          <FieldGrid>
-            <TextField
-              label={t('clients.city')}
-              error={errors.city?.message}
-              {...register('city')}
-            />
-            <TextField
-              label={t('clients.postalCode')}
-              error={errors.postal_code?.message}
-              {...register('postal_code')}
-            />
-            <TextField
-              label={t('clients.country')}
-              error={errors.country?.message}
-              {...register('country')}
-            />
-          </FieldGrid>
-        </FormSection>
+        </FieldGrid>
+        <TextField
+          label={t('clients.addressLine1')}
+          error={errors.address_line1?.message}
+          {...register('address_line1')}
+        />
+        <TextField
+          label={t('clients.addressLine2')}
+          error={errors.address_line2?.message}
+          {...register('address_line2')}
+        />
+        <FieldGrid>
+          <TextField label={t('clients.city')} error={errors.city?.message} {...register('city')} />
+          <TextField
+            label={t('clients.postalCode')}
+            error={errors.postal_code?.message}
+            {...register('postal_code')}
+          />
+          <TextField
+            label={t('clients.country')}
+            error={errors.country?.message}
+            {...register('country')}
+          />
+        </FieldGrid>
+      </FormSection>
 
-        {createClient.isError ? <Alert>{createClient.error.message}</Alert> : null}
+      {createClient.isError ? <Alert>{createClient.error.message}</Alert> : null}
 
-        <div className="form-actions">
-          <Button type="submit" disabled={createClient.isPending}>
-            {t('clients.add')}
+      <div className="form-actions">
+        {onCancel ? (
+          <Button type="button" variant="ghost" onClick={onCancel}>
+            {t('common.cancel')}
           </Button>
-        </div>
-      </form>
-    </div>
+        ) : null}
+        <Button type="submit" disabled={createClient.isPending}>
+          {t('clients.add')}
+        </Button>
+      </div>
+    </form>
   );
 }

@@ -10,7 +10,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, TextField } from '@/components/ui';
 import { useI18n } from '@/features/i18n';
 
-export function CreateClientUserForm({ clientId }: { clientId: string }) {
+type CreateClientUserFormProps = {
+  clientId: string;
+  onSuccess?: () => void;
+  onCancel?: () => void;
+};
+
+export function CreateClientUserForm({ clientId, onSuccess, onCancel }: CreateClientUserFormProps) {
   const role = useAuthStore((state) => state.role);
   const createClientUser = useCreateClientUser(clientId);
   const { t } = useI18n();
@@ -36,6 +42,7 @@ export function CreateClientUserForm({ clientId }: { clientId: string }) {
           createClientUser.mutate(input, {
             onSuccess: () => {
               reset();
+              onSuccess?.();
             },
           });
         })(event)
@@ -53,6 +60,11 @@ export function CreateClientUserForm({ clientId }: { clientId: string }) {
       {createClientUser.isError ? <Alert>{createClientUser.error.message}</Alert> : null}
 
       <div className="form-actions">
+        {onCancel ? (
+          <Button type="button" variant="ghost" onClick={onCancel}>
+            {t('common.cancel')}
+          </Button>
+        ) : null}
         <Button type="submit" disabled={createClientUser.isPending}>
           {t('clientUsers.invite')}
         </Button>

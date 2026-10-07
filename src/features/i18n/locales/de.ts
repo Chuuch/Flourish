@@ -37,6 +37,7 @@ export const de: Record<MessageKey, string> = {
   'common.invoices': 'Rechnungen',
   'common.edit': 'Bearbeiten',
   'common.cancel': 'Abbrechen',
+  'common.close': 'Schließen',
   'common.delete': 'Löschen',
   'common.save': 'Speichern',
   'common.upload': 'Hochladen',

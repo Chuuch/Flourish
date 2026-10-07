@@ -5,7 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, SelectField, TextArea, TextField } from '@/components/ui';
 import { useI18n } from '@/features/i18n';
 
-export function CreateTicketForm() {
+type CreateTicketFormProps = {
+  onSuccess?: () => void;
+  onCancel?: () => void;
+};
+
+export function CreateTicketForm({ onSuccess, onCancel }: CreateTicketFormProps = {}) {
   const createTicket = useCreateTicket();
   const { t } = useI18n();
 
@@ -26,6 +31,7 @@ export function CreateTicketForm() {
           createTicket.mutate(input, {
             onSuccess: () => {
               reset();
+              onSuccess?.();
             },
           });
         })(event)
@@ -56,6 +62,11 @@ export function CreateTicketForm() {
       {createTicket.isError ? <Alert>{createTicket.error.message}</Alert> : null}
 
       <div className="form-actions">
+        {onCancel ? (
+          <Button type="button" variant="ghost" onClick={onCancel}>
+            {t('common.cancel')}
+          </Button>
+        ) : null}
         <Button type="submit" disabled={createTicket.isPending}>
           {t('tickets.submit')}
         </Button>

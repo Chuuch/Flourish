@@ -10,7 +10,13 @@ import { useCreateProject } from '../hooks/useCreateProject';
 import { Alert, Button, FormSection, TextArea, TextField } from '@/components/ui';
 import { useI18n } from '@/features/i18n';
 
-export function CreateProjectForm({ clientId }: { clientId: string }) {
+type CreateProjectFormProps = {
+  clientId: string;
+  onSuccess?: () => void;
+  onCancel?: () => void;
+};
+
+export function CreateProjectForm({ clientId, onSuccess, onCancel }: CreateProjectFormProps) {
   const role = useAuthStore((state) => state.role);
   const createProject = useCreateProject(clientId);
   const { t } = useI18n();
@@ -30,41 +36,41 @@ export function CreateProjectForm({ clientId }: { clientId: string }) {
   }
 
   return (
-    <div className="panel-card">
-      <form
-        onSubmit={(event) =>
-          void handleSubmit((input) => {
-            createProject.mutate(input, {
-              onSuccess: () => {
-                reset();
-              },
-            });
-          })(event)
-        }
-        noValidate
-      >
-        <FormSection title={t('projects.add')}>
-          <TextField
-            label={t('clients.name')}
-            autoComplete="off"
-            error={errors.name?.message}
-            {...register('name')}
-          />
-          <TextArea
-            label={t('clients.notes')}
-            error={errors.notes?.message}
-            {...register('notes')}
-          />
+    <form
+      onSubmit={(event) =>
+        void handleSubmit((input) => {
+          createProject.mutate(input, {
+            onSuccess: () => {
+              reset();
+              onSuccess?.();
+            },
+          });
+        })(event)
+      }
+      noValidate
+    >
+      <FormSection title={t('projects.add')}>
+        <TextField
+          label={t('clients.name')}
+          autoComplete="off"
+          error={errors.name?.message}
+          {...register('name')}
+        />
+        <TextArea label={t('clients.notes')} error={errors.notes?.message} {...register('notes')} />
 
-          {createProject.isError ? <Alert>{createProject.error.message}</Alert> : null}
+        {createProject.isError ? <Alert>{createProject.error.message}</Alert> : null}
 
-          <div className="form-actions">
-            <Button type="submit" disabled={createProject.isPending}>
-              {t('projects.add')}
+        <div className="form-actions">
+          {onCancel ? (
+            <Button type="button" variant="ghost" onClick={onCancel}>
+              {t('common.cancel')}
             </Button>
-          </div>
-        </FormSection>
-      </form>
-    </div>
+          ) : null}
+          <Button type="submit" disabled={createProject.isPending}>
+            {t('projects.add')}
+          </Button>
+        </div>
+      </FormSection>
+    </form>
   );
 }

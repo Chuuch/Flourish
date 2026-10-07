@@ -1,18 +1,24 @@
 import { clientPath, paths } from '@/app/router/paths';
+import { PageHeader } from '@/components/ui';
+import { useAuthStore } from '@/features/auth';
+import { useI18n } from '@/features/i18n';
+import { useModal } from '@/features/modal';
 import { Link, useParams } from 'react-router';
 import { CreateClientUserForm } from '../components/CreateClientUserForm';
 import { ClientUserList } from '../components/ClientUserList';
-import { useI18n } from '@/features/i18n';
+import { canManageClientUsers } from '../schemas/client-user.schema';
 
 export function ClientUsersPage() {
   const { clientId } = useParams();
   const { t } = useI18n();
+  const { openModal, closeModal } = useModal();
+  const role = useAuthStore((state) => state.role);
+  const canCreate = canManageClientUsers(role);
 
   if (!clientId) {
     return (
       <main>
-        <h1>{t('clientUsers.title')}</h1>
-        <p>{t('clients.notFound')}</p>
+        <PageHeader title={t('clientUsers.title')} description={t('clients.notFound')} />
       </main>
     );
   }
@@ -24,8 +30,30 @@ export function ClientUsersPage() {
         {' / '}
         <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
       </p>
-      <h1>{t('clientUsers.title')}</h1>
-      <CreateClientUserForm clientId={clientId} />
+      <PageHeader
+        title={t('clientUsers.title')}
+        {...(canCreate
+          ? {
+              createLabel: t('clientUsers.invite'),
+              onCreate: () => {
+                openModal({
+                  title: t('clientUsers.invite'),
+                  content: (
+                    <CreateClientUserForm
+                      clientId={clientId}
+                      onSuccess={() => {
+                        closeModal();
+                      }}
+                      onCancel={() => {
+                        closeModal();
+                      }}
+                    />
+                  ),
+                });
+              },
+            }
+          : {})}
+      />
       <ClientUserList clientId={clientId} />
     </main>
   );

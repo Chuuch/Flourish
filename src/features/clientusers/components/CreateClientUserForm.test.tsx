@@ -3,7 +3,7 @@ import { renderWithProviders } from '@/test/render';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { CreateClientUserForm } from './CreateClientUserForm';
-import { screen } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { server } from '@/test/server';
 import { HttpResponse, http as mswHttp } from 'msw';
 import { createClientUserSchema, type ClientUser } from '../schemas/client-user.schema';
@@ -71,11 +71,16 @@ describe('CreateClientUserForm', () => {
 
     expect(await screen.findByText('No client users yet.')).toBeInTheDocument();
 
-    await user.type(screen.getByLabelText('Email'), 'pat@northwind.test');
     await user.click(screen.getByRole('button', { name: 'Invite client user' }));
+    const dialog = await screen.findByRole('dialog');
+
+    await user.type(within(dialog).getByLabelText('Email'), 'pat@northwind.test');
+    await user.click(within(dialog).getByRole('button', { name: 'Invite client user' }));
 
     expect(await screen.findByText('pat@northwind.test')).toBeInTheDocument();
-    expect(screen.getByLabelText('Email')).toHaveValue('');
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
   });
 
   it('shows the server error message', async () => {

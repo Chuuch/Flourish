@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { chooseSelectOption } from '@/test/select';
 import { describe, expect, it } from 'vitest';
 import { CreateTaskForm } from './CreateTaskForm';
-import { screen } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { server } from '@/test/server';
 import { HttpResponse, http as mswHttp } from 'msw';
 import { createTaskSchema, type Task } from '../schemas/task.schema';
@@ -84,10 +84,13 @@ describe('CreateTaskForm', () => {
       await screen.findByText('No tasks yet. Use Add task above to create one.'),
     ).toBeInTheDocument();
 
-    await user.type(screen.getByLabelText('Title'), 'Fix login');
-    await user.type(screen.getByLabelText('Notes'), 'OAuth');
-    await chooseSelectOption(user, 'Status', 'in_progress');
     await user.click(screen.getByRole('button', { name: 'Add task' }));
+    const dialog = await screen.findByRole('dialog');
+
+    await user.type(within(dialog).getByLabelText('Title'), 'Fix login');
+    await user.type(within(dialog).getByLabelText('Notes'), 'OAuth');
+    await chooseSelectOption(user, 'Status', 'in_progress');
+    await user.click(within(dialog).getByRole('button', { name: 'Add task' }));
 
     expect(await screen.findByRole('link', { name: 'Fix login' })).toBeInTheDocument();
     expect(screen.getByText('OAuth')).toBeInTheDocument();
@@ -95,7 +98,9 @@ describe('CreateTaskForm', () => {
       'data-value',
       'in_progress',
     );
-    expect(screen.getByLabelText('Title')).toHaveValue('');
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
   });
 
   it('shows the server error message', async () => {

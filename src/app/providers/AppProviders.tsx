@@ -3,6 +3,7 @@ import { QueryProvider } from './QueryProvider';
 import { SessionGate } from '../layouts/SessionGate';
 import { AppToaster } from '@/features/toasts';
 import { RealtimeBridge } from '@/features/realtime/components/RealtimeBridge';
+import { ModalProvider } from '@/features/modal';
 
 interface AppProviderProps {
   children: ReactNode;
@@ -11,11 +12,13 @@ interface AppProviderProps {
 export function AppProviders({ children }: AppProviderProps) {
   return (
     <QueryProvider>
-      <AppToaster />
-      <SessionGate>
-        <RealtimeBridge />
-        {children}
-      </SessionGate>
+      <ModalProvider>
+        <AppToaster />
+        <SessionGate>
+          <RealtimeBridge />
+          {children}
+        </SessionGate>
+      </ModalProvider>
     </QueryProvider>
   );
 }

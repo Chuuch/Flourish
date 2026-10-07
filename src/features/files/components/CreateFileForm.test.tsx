@@ -3,7 +3,7 @@ import { renderWithProviders } from '@/test/render';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { CreateFileForm } from './CreateFileForm';
-import { screen } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { server } from '@/test/server';
 import { HttpResponse, http as mswHttp } from 'msw';
 import { type ProjectFile } from '../schemas/file.schema';
@@ -84,11 +84,17 @@ describe('CreateFileForm', () => {
 
     expect(await screen.findByText('No files yet.')).toBeInTheDocument();
 
-    const pdf = new File(['hello'], 'spec.pdf', { type: 'application/pdf' });
-    await user.upload(screen.getByLabelText('File'), pdf);
     await user.click(screen.getByRole('button', { name: 'Upload' }));
+    const dialog = await screen.findByRole('dialog');
+
+    const pdf = new File(['hello'], 'spec.pdf', { type: 'application/pdf' });
+    await user.upload(within(dialog).getByLabelText('File'), pdf);
+    await user.click(within(dialog).getByRole('button', { name: 'Upload' }));
 
     expect(await screen.findByRole('link', { name: 'spec.pdf (5 bytes)' })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
   });
 
   it('shows the server error message', async () => {

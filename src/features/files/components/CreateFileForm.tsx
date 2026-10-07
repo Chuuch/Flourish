@@ -5,7 +5,13 @@ import { canManageFiles, isAllowedFile, MAX_FILE_SIZE_BYTES } from '../schemas/f
 import { Alert, Button, FileField } from '@/components/ui';
 import { useI18n } from '@/features/i18n';
 
-export function CreateFileForm({ projectId }: { projectId: string }) {
+type CreateFileFormProps = {
+  projectId: string;
+  onSuccess?: () => void;
+  onCancel?: () => void;
+};
+
+export function CreateFileForm({ projectId, onSuccess, onCancel }: CreateFileFormProps) {
   const role = useAuthStore((state) => state.role);
   const uploadFile = useUploadFIle(projectId);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -38,6 +44,7 @@ export function CreateFileForm({ projectId }: { projectId: string }) {
         uploadFile.mutate(file, {
           onSuccess: () => {
             setPickerKey((key) => key + 1);
+            onSuccess?.();
           },
         });
       }}
@@ -55,6 +62,11 @@ export function CreateFileForm({ projectId }: { projectId: string }) {
       {uploadFile.isError ? <Alert>{uploadFile.error.message}</Alert> : null}
 
       <div className="form-actions">
+        {onCancel ? (
+          <Button type="button" variant="ghost" onClick={onCancel}>
+            {t('common.cancel')}
+          </Button>
+        ) : null}
         <Button type="submit" disabled={uploadFile.isPending}>
           {t('common.upload')}
         </Button>

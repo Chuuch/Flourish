@@ -13,7 +13,13 @@ import { useMembers } from '@/features/members';
 import { AssigneeSelect } from './AssigneeSelect';
 import { useI18n } from '@/features/i18n';
 
-export function CreateTaskForm({ projectId }: { projectId: string }) {
+type CreateTaskFormProps = {
+  projectId: string;
+  onSuccess?: () => void;
+  onCancel?: () => void;
+};
+
+export function CreateTaskForm({ projectId, onSuccess, onCancel }: CreateTaskFormProps) {
   const role = useAuthStore((state) => state.role);
   const createTask = useCreateTask(projectId);
   const members = useMembers();
@@ -47,6 +53,7 @@ export function CreateTaskForm({ projectId }: { projectId: string }) {
             {
               onSuccess: () => {
                 reset();
+                onSuccess?.();
               },
             },
           );
@@ -84,6 +91,11 @@ export function CreateTaskForm({ projectId }: { projectId: string }) {
       {createTask.isError ? <Alert>{createTask.error.message}</Alert> : null}
 
       <div className="form-actions">
+        {onCancel ? (
+          <Button type="button" variant="ghost" onClick={onCancel}>
+            {t('common.cancel')}
+          </Button>
+        ) : null}
         <Button type="submit" disabled={createTask.isPending}>
           {t('tasks.add')}
         </Button>

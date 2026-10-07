@@ -5,7 +5,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, TextArea, TextField } from '@/components/ui';
 import { useI18n } from '@/features/i18n';
 
-export function CreateTimeEntryForm({ taskId }: { taskId: string }) {
+type CreateTimeEntryFormProps = {
+  taskId: string;
+  onSuccess?: () => void;
+  onCancel?: () => void;
+};
+
+export function CreateTimeEntryForm({ taskId, onSuccess, onCancel }: CreateTimeEntryFormProps) {
   const createTimeEntry = useCreateTimeEntry(taskId);
   const { t } = useI18n();
 
@@ -26,6 +32,7 @@ export function CreateTimeEntryForm({ taskId }: { taskId: string }) {
           createTimeEntry.mutate(input, {
             onSuccess: () => {
               reset();
+              onSuccess?.();
             },
           });
         })(event)
@@ -44,6 +51,11 @@ export function CreateTimeEntryForm({ taskId }: { taskId: string }) {
       {createTimeEntry.isError ? <Alert>{createTimeEntry.error.message}</Alert> : null}
 
       <div className="form-actions">
+        {onCancel ? (
+          <Button type="button" variant="ghost" onClick={onCancel}>
+            {t('common.cancel')}
+          </Button>
+        ) : null}
         <Button type="submit" disabled={createTimeEntry.isPending}>
           {t('time.add')}
         </Button>

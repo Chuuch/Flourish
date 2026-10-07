@@ -37,6 +37,7 @@ export const it: Record<MessageKey, string> = {
   'common.invoices': 'Fatture',
   'common.edit': 'Modifica',
   'common.cancel': 'Annulla',
+  'common.close': 'Chiudi',
   'common.delete': 'Elimina',
   'common.save': 'Salva',
   'common.upload': 'Carica',

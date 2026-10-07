@@ -35,6 +35,7 @@ export const en = {
   'common.invoices': 'Invoices',
   'common.edit': 'Edit',
   'common.cancel': 'Cancel',
+  'common.close': 'Close',
   'common.delete': 'Delete',
   'common.save': 'Save',
   'common.upload': 'Upload',
