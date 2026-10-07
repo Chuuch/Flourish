@@ -1,4 +1,5 @@
 import { http } from '@/lib/api/http';
+import { withIdempotencyKey } from '@/lib/api/idempotency';
 import {
   clientSchema,
   clientsSchema,
@@ -11,7 +12,7 @@ export const fetchClients = (q = '') =>
   http.get('/clients', clientsSchema, q ? { params: { q } } : undefined);
 
 export const createClient = (input: CreateClientInput) =>
-  http.post('/clients', clientSchema, input);
+  http.post('/clients', clientSchema, input, withIdempotencyKey());
 
 export const updateClient = (clientId: string, input: UpdateClientInput) =>
   http.patch(`/clients/${clientId}`, clientSchema, input);
