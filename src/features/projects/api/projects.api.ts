@@ -7,8 +7,8 @@ import {
 } from '../schemas/project.schema';
 import z from 'zod';
 
-export const fetchProjects = (clientId: string) =>
-  http.get(`/clients/${clientId}/projects`, projectsSchema);
+export const fetchProjects = (clientId: string, q = '') =>
+  http.get(`/clients/${clientId}/projects`, projectsSchema, q ? { params: { q } } : undefined);
 
 export const createProject = (clientId: string, input: CreateProjectInput) =>
   http.post(`/clients/${clientId}/projects`, projectSchema, input);

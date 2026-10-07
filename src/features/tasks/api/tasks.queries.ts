@@ -5,18 +5,20 @@ import { fetchInbox, fetchTasks } from './tasks.api';
 export const taskKeys = {
   all: ['tasks'] as const,
   lists: (projectId: string) => [...projectKeys.all, 'lists', projectId] as const,
+  list: (projectId: string, q = '') => [...taskKeys.lists(projectId), { q }] as const,
   inbox: () => [...taskKeys.all, 'inbox'] as const,
+  inboxList: (q = '') => [...taskKeys.inbox(), { q }] as const,
 };
 
 export const tasksQueries = {
-  list: (projectId: string) =>
+  list: (projectId: string, q = '') =>
     queryOptions({
-      queryKey: taskKeys.lists(projectId),
-      queryFn: () => fetchTasks(projectId),
+      queryKey: taskKeys.list(projectId, q),
+      queryFn: () => fetchTasks(projectId, q),
     }),
-  inbox: () =>
+  inbox: (q = '') =>
     queryOptions({
-      queryKey: taskKeys.inbox(),
-      queryFn: fetchInbox,
+      queryKey: taskKeys.inboxList(q),
+      queryFn: () => fetchInbox(q),
     }),
 };

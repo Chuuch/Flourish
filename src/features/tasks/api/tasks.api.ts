@@ -7,10 +7,11 @@ import {
 } from '../schemas/task.schema';
 import z from 'zod';
 
-export const fetchTasks = (projectId: string) =>
-  http.get(`/projects/${projectId}/tasks`, tasksSchema);
+export const fetchTasks = (projectId: string, q = '') =>
+  http.get(`/projects/${projectId}/tasks`, tasksSchema, q ? { params: { q } } : undefined);
 
-export const fetchInbox = () => http.get('/inbox/tasks', tasksSchema);
+export const fetchInbox = (q = '') =>
+  http.get('/inbox/tasks', tasksSchema, q ? { params: { q } } : undefined);
 
 export const createTask = (projectId: string, input: CreateTaskInput) =>
   http.post(`/projects/${projectId}/tasks`, taskSchema, input);

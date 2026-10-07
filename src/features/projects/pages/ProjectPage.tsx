@@ -1,8 +1,9 @@
 import { clientPath, paths } from '@/app/router/paths';
-import { PageHeader } from '@/components/ui';
+import { PageHeader, SearchField } from '@/components/ui';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
 import { useModal } from '@/features/modal';
+import { useListSearch } from '@/hooks/useListSearch';
 import { Link, useParams } from 'react-router';
 import { CreateProjectForm } from '../components/CreateProjectForm';
 import { ProjectList } from '../components/ProjectList';
@@ -14,6 +15,7 @@ export function ProjectsPage() {
   const { openModal, closeModal } = useModal();
   const role = useAuthStore((state) => state.role);
   const canCreate = canManageProjects(role);
+  const { value, setValue, query } = useListSearch();
 
   if (!clientId) {
     return (
@@ -54,7 +56,17 @@ export function ProjectsPage() {
             }
           : {})}
       />
-      <ProjectList clientId={clientId} />
+      <div className="mb-4">
+        <SearchField
+          label={t('common.search')}
+          placeholder={t('projects.searchPlaceholder')}
+          value={value}
+          onChange={(event) => {
+            setValue(event.target.value);
+          }}
+        />
+      </div>
+      <ProjectList clientId={clientId} query={query} />
     </main>
   );
 }

@@ -1,7 +1,8 @@
-import { PageHeader } from '@/components/ui';
+import { PageHeader, SearchField } from '@/components/ui';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
 import { useModal } from '@/features/modal';
+import { useListSearch } from '@/hooks/useListSearch';
 import { ClientList } from '../components/ClientList';
 import { CreateClientForm } from '../components/CreateClientForm';
 import { canManageClients } from '../schemas/client.schema';
@@ -11,6 +12,7 @@ export function ClientsPage() {
   const { openModal, closeModal } = useModal();
   const role = useAuthStore((state) => state.role);
   const canCreate = canManageClients(role);
+  const { value, setValue, query } = useListSearch();
 
   return (
     <main>
@@ -37,7 +39,17 @@ export function ClientsPage() {
             }
           : {})}
       />
-      <ClientList />
+      <div className="mb-4">
+        <SearchField
+          label={t('common.search')}
+          placeholder={t('clients.searchPlaceholder')}
+          value={value}
+          onChange={(event) => {
+            setValue(event.target.value);
+          }}
+        />
+      </div>
+      <ClientList query={query} />
     </main>
   );
 }
