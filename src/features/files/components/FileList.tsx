@@ -6,10 +6,10 @@ import { canMutateFile, fileLabel } from '../schemas/file.schema';
 import { useI18n } from '@/features/i18n';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
-export function FileList({ projectId }: { projectId: string }) {
+export function FileList({ projectId, query = '' }: { projectId: string; query?: string }) {
   const role = useAuthStore((state) => state.role);
   const actorUserId = useAuthStore((state) => state.user?.id);
-  const { data, isPending, isError, error, refetch } = useFiles(projectId);
+  const { data, isPending, isError, error, refetch, isFetching } = useFiles(projectId, query);
   const deleteFile = useDeleteFile(projectId);
   const { t } = useI18n();
 
@@ -29,13 +29,15 @@ export function FileList({ projectId }: { projectId: string }) {
   }
 
   if (data.length === 0) {
-    return <p>{t('files.empty')}</p>;
+    return (
+      <p className="text-muted m-0 text-sm">{query ? t('files.noMatches') : t('files.empty')}</p>
+    );
   }
 
   return (
     <>
       {deleteFile.isError ? <Alert>{deleteFile.error.message}</Alert> : null}
-      <ul>
+      <ul className={isFetching ? 'opacity-70' : undefined}>
         {data.map((file) => {
           const label = fileLabel(file);
 

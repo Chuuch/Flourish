@@ -8,8 +8,8 @@ import {
 import { ApiError } from '@/lib/api/errors';
 import z from 'zod';
 
-export const fetchFiles = (projectId: string) =>
-  http.get(`/projects/${projectId}/files`, filesSchema);
+export const fetchFiles = (projectId: string, q = '') =>
+  http.get(`/projects/${projectId}/files`, filesSchema, q ? { params: { q } } : undefined);
 
 export const createFile = (projectId: string, input: CreateFileInput) =>
   http.post(`/projects/${projectId}/files`, fileSchema, input);

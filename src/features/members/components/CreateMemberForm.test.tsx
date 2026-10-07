@@ -12,6 +12,7 @@ import { makeMember } from '@/test/factories/member';
 import { useAuthStore } from '@/features/auth';
 import { MembersPage } from '../pages/MembersPage';
 import { makeOrganization } from '@/test/factories/organization';
+import { MemoryRouter } from 'react-router';
 
 const membersUrl = `${env.API_URL}/members`;
 
@@ -60,7 +61,11 @@ describe('CreateMemberForm', () => {
       }),
     );
 
-    renderWithProviders(<MembersPage />);
+    renderWithProviders(
+      <MemoryRouter>
+        <MembersPage />
+      </MemoryRouter>,
+    );
     expect(await screen.findByText('No members yet.')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Invite member' }));

@@ -1,10 +1,11 @@
 import { paths } from '@/app/router/paths';
-import { PageHeader } from '@/components/ui';
+import { PageHeader, SearchField } from '@/components/ui';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
 import { useModal } from '@/features/modal';
 import { PortalInvoiceList } from '@/features/invoices/components/PortalInvoiceList';
 import { CreateTicketForm, TicketList } from '@/features/tickets';
+import { useListSearch } from '@/hooks/useListSearch';
 import { Link } from 'react-router';
 
 export function PortalHomePage() {
@@ -12,6 +13,7 @@ export function PortalHomePage() {
   const client = useAuthStore((state) => state.client);
   const { t } = useI18n();
   const { openModal, closeModal } = useModal();
+  const { value, setValue, query } = useListSearch();
 
   return (
     <main>
@@ -40,7 +42,15 @@ export function PortalHomePage() {
             });
           }}
         />
-        <TicketList />
+        <SearchField
+          label={t('common.search')}
+          placeholder={t('tickets.searchPlaceholder')}
+          value={value}
+          onChange={(event) => {
+            setValue(event.target.value);
+          }}
+        />
+        <TicketList query={query} />
       </section>
 
       <section className="flex flex-col gap-4">

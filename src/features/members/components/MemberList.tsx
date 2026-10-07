@@ -13,10 +13,10 @@ import { useI18n } from '@/features/i18n';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 import { RoleBadge } from './RoleBadge';
 
-export function MemberList() {
+export function MemberList({ query = '' }: { query?: string }) {
   const role = useAuthStore((state) => state.role);
   const canManage = canManageMembers(role);
-  const { data, isPending, isError, error, refetch } = useMembers();
+  const { data, isPending, isError, error, refetch, isFetching } = useMembers(query);
   const updateMember = useUpdateMember();
   const deleteMember = useDeleteMember();
   const { t } = useI18n();
@@ -37,7 +37,11 @@ export function MemberList() {
   }
 
   if (data.length === 0) {
-    return <p className="text-muted m-0 text-sm">{t('members.empty')}</p>;
+    return (
+      <p className="text-muted m-0 text-sm">
+        {query ? t('members.noMatches') : t('members.empty')}
+      </p>
+    );
   }
 
   return (
@@ -45,7 +49,7 @@ export function MemberList() {
       <h2 className="m-0 text-sm font-semibold tracking-tight">{t('members.teamHeading')}</h2>
       {updateMember.isError ? <Alert>{updateMember.error.message}</Alert> : null}
       {deleteMember.isError ? <Alert>{deleteMember.error.message}</Alert> : null}
-      <ul className="stack-list">
+      <ul className={isFetching ? 'stack-list opacity-70' : 'stack-list'}>
         {data.map((member) => {
           const label = memberLabel(member);
           const showEmail = member.display_name.trim() !== '';
