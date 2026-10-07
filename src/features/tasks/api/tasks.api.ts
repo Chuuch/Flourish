@@ -1,4 +1,5 @@
 import { http } from '@/lib/api/http';
+import { withIdempotencyKey } from '@/lib/api/idempotency';
 import {
   taskSchema,
   tasksSchema,
@@ -14,7 +15,7 @@ export const fetchInbox = (q = '') =>
   http.get('/inbox/tasks', tasksSchema, q ? { params: { q } } : undefined);
 
 export const createTask = (projectId: string, input: CreateTaskInput) =>
-  http.post(`/projects/${projectId}/tasks`, taskSchema, input);
+  http.post(`/projects/${projectId}/tasks`, taskSchema, input, withIdempotencyKey());
 
 export const updateTask = (taskId: string, input: UpdateTaskInput) =>
   http.patch(`/tasks/${taskId}`, taskSchema, input);

@@ -1,4 +1,5 @@
 import { http } from '@/lib/api/http';
+import { withIdempotencyKey } from '@/lib/api/idempotency';
 import { invoiceSchema, invoicesSchema } from '../schemas/invoice.schema';
 import z from 'zod';
 import axios from 'axios';
@@ -18,16 +19,16 @@ export const fetchInvoice = (invoiceId: string) =>
   http.get(`/invoices/${invoiceId}`, invoiceSchema);
 
 export const createInvoice = (clientId: string, from: string, to: string) =>
-  http.post(`/clients/${clientId}/invoices`, invoiceSchema, { from, to });
+  http.post(`/clients/${clientId}/invoices`, invoiceSchema, { from, to }, withIdempotencyKey());
 
 export const updateInvoice = (invoiceId: string, from: string, to: string) =>
   http.patch(`/invoices/${invoiceId}`, invoiceSchema, { from, to });
 
 export const sendInvoice = (invoiceId: string) =>
-  http.post(`/invoices/${invoiceId}/send`, invoiceSchema);
+  http.post(`/invoices/${invoiceId}/send`, invoiceSchema, undefined, withIdempotencyKey());
 
 export const markInvoicePaid = (invoiceId: string) =>
-  http.post(`/invoices/${invoiceId}/paid`, invoiceSchema);
+  http.post(`/invoices/${invoiceId}/paid`, invoiceSchema, undefined, withIdempotencyKey());
 
 export const deleteInvoice = (invoiceId: string) =>
   http.delete(`/invoices/${invoiceId}`, z.unknown());

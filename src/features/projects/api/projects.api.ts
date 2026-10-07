@@ -1,4 +1,5 @@
 import { http } from '@/lib/api/http';
+import { withIdempotencyKey } from '@/lib/api/idempotency';
 import {
   projectSchema,
   projectsSchema,
@@ -11,7 +12,7 @@ export const fetchProjects = (clientId: string, q = '') =>
   http.get(`/clients/${clientId}/projects`, projectsSchema, q ? { params: { q } } : undefined);
 
 export const createProject = (clientId: string, input: CreateProjectInput) =>
-  http.post(`/clients/${clientId}/projects`, projectSchema, input);
+  http.post(`/clients/${clientId}/projects`, projectSchema, input, withIdempotencyKey());
 
 export const updateProject = (projectId: string, input: UpdateProjectInput) =>
   http.patch(`/projects/${projectId}`, projectSchema, input);

@@ -1,4 +1,5 @@
 import { http } from '@/lib/api/http';
+import { withIdempotencyKey } from '@/lib/api/idempotency';
 import {
   fileSchema,
   filesSchema,
@@ -12,7 +13,7 @@ export const fetchFiles = (projectId: string, q = '') =>
   http.get(`/projects/${projectId}/files`, filesSchema, q ? { params: { q } } : undefined);
 
 export const createFile = (projectId: string, input: CreateFileInput) =>
-  http.post(`/projects/${projectId}/files`, fileSchema, input);
+  http.post(`/projects/${projectId}/files`, fileSchema, input, withIdempotencyKey());
 
 export const deleteFile = (fileId: string) => http.delete(`/files/${fileId}`, z.unknown());
 
