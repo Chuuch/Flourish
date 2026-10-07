@@ -1,8 +1,9 @@
 import { clientPath, clientProjectsPath, paths, projectPath } from '@/app/router/paths';
-import { PageHeader } from '@/components/ui';
+import { PageHeader, SearchField } from '@/components/ui';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
 import { useModal } from '@/features/modal';
+import { useListSearch } from '@/hooks/useListSearch';
 import { Link, useParams } from 'react-router';
 import { CreateTaskForm } from '../components/CreateTaskForm';
 import { TaskList } from '../components/TaskList';
@@ -14,6 +15,7 @@ export function TasksPage() {
   const { openModal, closeModal } = useModal();
   const role = useAuthStore((state) => state.role);
   const canCreate = canCreateTasks(role);
+  const { value, setValue, query } = useListSearch();
 
   if (!clientId || !projectId) {
     return (
@@ -58,7 +60,17 @@ export function TasksPage() {
             }
           : {})}
       />
-      <TaskList clientId={clientId} projectId={projectId} />
+      <div className="mb-4">
+        <SearchField
+          label={t('common.search')}
+          placeholder={t('tasks.searchPlaceholder')}
+          value={value}
+          onChange={(event) => {
+            setValue(event.target.value);
+          }}
+        />
+      </div>
+      <TaskList clientId={clientId} projectId={projectId} query={query} />
     </main>
   );
 }

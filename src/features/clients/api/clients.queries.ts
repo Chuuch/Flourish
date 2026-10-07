@@ -4,12 +4,13 @@ import { fetchClients } from './clients.api';
 export const clientKeys = {
   all: ['clients'] as const,
   lists: () => [...clientKeys.all, 'list'] as const,
+  list: (q = '') => [...clientKeys.lists(), { q }] as const,
 };
 
 export const clientsQueries = {
-  list: () =>
+  list: (q = '') =>
     queryOptions({
-      queryKey: clientKeys.lists(),
-      queryFn: fetchClients,
+      queryKey: clientKeys.list(q),
+      queryFn: () => fetchClients(q),
     }),
 };

@@ -5,8 +5,8 @@ import { clientPath, clientTicketsPath, clientUsersPath } from '@/app/router/pat
 import { useI18n } from '@/features/i18n';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
-export function ClientList() {
-  const { data, isPending, isError, error, refetch } = useClients();
+export function ClientList({ query = '' }: { query?: string }) {
+  const { data, isPending, isError, error, refetch, isFetching } = useClients(query);
   const { t } = useI18n();
 
   if (isPending) {
@@ -25,11 +25,15 @@ export function ClientList() {
   }
 
   if (data.length === 0) {
-    return <p className="text-muted m-0 text-sm">{t('clients.empty')}</p>;
+    return (
+      <p className="text-muted m-0 text-sm">
+        {query ? t('clients.noMatches') : t('clients.empty')}
+      </p>
+    );
   }
 
   return (
-    <ul className="stack-list">
+    <ul className={isFetching ? 'stack-list opacity-70' : 'stack-list'}>
       {data.map((client) => (
         <li key={client.id}>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

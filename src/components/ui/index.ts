@@ -9,3 +9,4 @@ export { BrandMark } from './BrandMark';
 export { FormSection } from './FormSection';
 export { FieldGrid } from './FieldGrid';
 export { PageHeader } from './PageHeader';
+export { SearchField } from './SearchField';

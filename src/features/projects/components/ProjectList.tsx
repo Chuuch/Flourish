@@ -5,8 +5,8 @@ import { Link } from 'react-router';
 import { useI18n } from '@/features/i18n';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
-export function ProjectList({ clientId }: { clientId: string }) {
-  const { data, isPending, isError, error, refetch } = useProjects(clientId);
+export function ProjectList({ clientId, query = '' }: { clientId: string; query?: string }) {
+  const { data, isPending, isError, error, refetch, isFetching } = useProjects(clientId, query);
   const { t } = useI18n();
 
   if (isPending) {
@@ -25,11 +25,15 @@ export function ProjectList({ clientId }: { clientId: string }) {
   }
 
   if (data.length === 0) {
-    return <p className="text-muted m-0 text-sm">{t('projects.empty')}</p>;
+    return (
+      <p className="text-muted m-0 text-sm">
+        {query ? t('projects.noMatches') : t('projects.empty')}
+      </p>
+    );
   }
 
   return (
-    <ul className="stack-list">
+    <ul className={isFetching ? 'stack-list opacity-70' : 'stack-list'}>
       {data.map((project) => (
         <li key={project.id}>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

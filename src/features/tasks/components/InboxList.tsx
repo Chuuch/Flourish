@@ -71,8 +71,8 @@ function InboxTaskDetail({ task, onBack }: { task: Task; onBack: () => void }) {
   );
 }
 
-export function InboxList() {
-  const { data, isPending, isError, error, refetch } = useInbox();
+export function InboxList({ query = '' }: { query?: string }) {
+  const { data, isPending, isError, error, refetch, isFetching } = useInbox(query);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const { t } = useI18n();
 
@@ -92,7 +92,9 @@ export function InboxList() {
   }
 
   if (data.length === 0) {
-    return <p className="text-muted m-0 text-sm">{t('inbox.empty')}</p>;
+    return (
+      <p className="text-muted m-0 text-sm">{query ? t('inbox.noMatches') : t('inbox.empty')}</p>
+    );
   }
 
   const selectedTask = selectedTaskId
@@ -111,7 +113,7 @@ export function InboxList() {
   }
 
   return (
-    <ul className="stack-list">
+    <ul className={isFetching ? 'stack-list opacity-70' : 'stack-list'}>
       {data.map((task) => (
         <li key={task.id} className="!p-0">
           <button
