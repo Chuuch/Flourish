@@ -6,8 +6,8 @@ import {
 } from '../schemas/client-user.schema';
 import z from 'zod';
 
-export const fetchClientUsers = (clientId: string) =>
-  http.get(`/clients/${clientId}/users`, clientUsersSchema);
+export const fetchClientUsers = (clientId: string, q = '') =>
+  http.get(`/clients/${clientId}/users`, clientUsersSchema, q ? { params: { q } } : undefined);
 
 export const createClientUser = (clientId: string, input: CreateClientUserInput) =>
   http.post(`/clients/${clientId}/users`, clientUserSchema, input);

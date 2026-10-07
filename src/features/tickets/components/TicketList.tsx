@@ -71,8 +71,8 @@ function PortalTicketDetail({ ticket, onBack }: { ticket: Ticket; onBack: () => 
   );
 }
 
-export function TicketList() {
-  const { data, isPending, isError, error, refetch } = useTickets();
+export function TicketList({ query = '' }: { query?: string }) {
+  const { data, isPending, isError, error, refetch, isFetching } = useTickets(query);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const { t } = useI18n();
 
@@ -92,7 +92,11 @@ export function TicketList() {
   }
 
   if (data.length === 0) {
-    return <p className="text-muted m-0 text-sm">{t('tickets.empty')}</p>;
+    return (
+      <p className="text-muted m-0 text-sm">
+        {query ? t('tickets.noMatches') : t('tickets.empty')}
+      </p>
+    );
   }
 
   const selectedTicket = selectedTicketId
@@ -111,7 +115,7 @@ export function TicketList() {
   }
 
   return (
-    <ul className="stack-list">
+    <ul className={isFetching ? 'stack-list opacity-70' : 'stack-list'}>
       {data.map((ticket) => (
         <li key={ticket.id} className="!p-0">
           <button

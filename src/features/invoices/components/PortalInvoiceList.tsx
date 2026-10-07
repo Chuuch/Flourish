@@ -7,8 +7,8 @@ import { portalInvoicePath } from '@/app/router/paths';
 import { invoiceStatusKey } from '../lib/invoiceStatus';
 import { formatEUR } from '../lib/formatMoney';
 
-export function PortalInvoiceList() {
-  const { data, isPending, isError, error, refetch } = usePortalInvoices();
+export function PortalInvoiceList({ query = '' }: { query?: string }) {
+  const { data, isPending, isError, error, refetch, isFetching } = usePortalInvoices(query);
   const { t } = useI18n();
 
   if (isPending) {
@@ -31,11 +31,15 @@ export function PortalInvoiceList() {
   }
 
   if (data.length === 0) {
-    return <p>{t('invoices.empty')}</p>;
+    return (
+      <p className="text-muted m-0 text-sm">
+        {query ? t('invoices.noMatches') : t('invoices.empty')}
+      </p>
+    );
   }
 
   return (
-    <ul>
+    <ul className={isFetching ? 'opacity-70' : undefined}>
       {data.map((invoice) => (
         <li key={invoice.id}>
           <Link to={portalInvoicePath(invoice.id)}>

@@ -4,18 +4,20 @@ import { fetchPortalTickets, fetchStaffTickets } from './tickets.api';
 export const ticketKeys = {
   all: ['tickets'] as const,
   portalList: () => [...ticketKeys.all, 'portal', 'list'] as const,
+  portal: (q = '') => [...ticketKeys.portalList(), { q }] as const,
   staffList: (clientId: string) => [...ticketKeys.all, 'staff', 'list', clientId] as const,
+  staff: (clientId: string, q = '') => [...ticketKeys.staffList(clientId), { q }] as const,
 };
 
 export const ticketQueries = {
-  portalList: () =>
+  portalList: (q = '') =>
     queryOptions({
-      queryKey: ticketKeys.portalList(),
-      queryFn: fetchPortalTickets,
+      queryKey: ticketKeys.portal(q),
+      queryFn: () => fetchPortalTickets(q),
     }),
-  staffList: (clientId: string) =>
+  staffList: (clientId: string, q = '') =>
     queryOptions({
-      queryKey: ticketKeys.staffList(clientId),
-      queryFn: () => fetchStaffTickets(clientId),
+      queryKey: ticketKeys.staff(clientId, q),
+      queryFn: () => fetchStaffTickets(clientId, q),
     }),
 };

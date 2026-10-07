@@ -137,8 +137,8 @@ function AgencyTicketDetail({
   );
 }
 
-export function AgencyTicketList({ clientId }: { clientId: string }) {
-  const { data, isPending, isError, error, refetch } = useStaffTickets(clientId);
+export function AgencyTicketList({ clientId, query = '' }: { clientId: string; query?: string }) {
+  const { data, isPending, isError, error, refetch, isFetching } = useStaffTickets(clientId, query);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const { t } = useI18n();
 
@@ -158,7 +158,11 @@ export function AgencyTicketList({ clientId }: { clientId: string }) {
   }
 
   if (data.length === 0) {
-    return <p className="text-muted m-0 text-sm">{t('tickets.empty')}</p>;
+    return (
+      <p className="text-muted m-0 text-sm">
+        {query ? t('tickets.noMatches') : t('tickets.empty')}
+      </p>
+    );
   }
 
   const selectedTicket = selectedTicketId
@@ -178,7 +182,7 @@ export function AgencyTicketList({ clientId }: { clientId: string }) {
   }
 
   return (
-    <ul className="stack-list">
+    <ul className={isFetching ? 'stack-list opacity-70' : 'stack-list'}>
       {data.map((ticket) => (
         <li key={ticket.id} className="!p-0">
           <button

@@ -9,13 +9,14 @@ import {
 import { taskSchema } from '@/features/tasks/schemas/task.schema';
 import z from 'zod';
 
-export const fetchPortalTickets = () => http.get('/client-auth/tickets', ticketsSchema);
+export const fetchPortalTickets = (q = '') =>
+  http.get('/client-auth/tickets', ticketsSchema, q ? { params: { q } } : undefined);
 
 export const createPortalTicket = (input: CreateTicketInput) =>
   http.post('/client-auth/tickets', ticketSchema, input);
 
-export const fetchStaffTickets = (clientId: string) =>
-  http.get(`/clients/${clientId}/tickets`, ticketsSchema);
+export const fetchStaffTickets = (clientId: string, q = '') =>
+  http.get(`/clients/${clientId}/tickets`, ticketsSchema, q ? { params: { q } } : undefined);
 
 export const updateTicket = (ticketId: string, input: UpdateTicketInput) =>
   http.patch(`/tickets/${ticketId}`, ticketSchema, input);

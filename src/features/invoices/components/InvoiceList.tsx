@@ -11,8 +11,8 @@ import { invoicePath } from '@/app/router/paths';
 import { invoiceStatusKey } from '../lib/invoiceStatus';
 import { formatEUR } from '../lib/formatMoney';
 
-export function InvoiceList({ clientId }: { clientId: string }) {
-  const { data, isPending, isError, error, refetch } = useInvoices(clientId);
+export function InvoiceList({ clientId, query = '' }: { clientId: string; query?: string }) {
+  const { data, isPending, isError, error, refetch, isFetching } = useInvoices(clientId, query);
   const createInvoice = useCreateInvoice(clientId);
   const role = useAuthStore((state) => state.role);
   const canManage = canManageClients(role);
@@ -75,11 +75,13 @@ export function InvoiceList({ clientId }: { clientId: string }) {
       ) : null}
 
       {data && data.length === 0 ? (
-        <p className="text-muted m-0 text-sm">{t('invoices.empty')}</p>
+        <p className="text-muted m-0 text-sm">
+          {query ? t('invoices.noMatches') : t('invoices.empty')}
+        </p>
       ) : null}
 
       {data && data.length > 0 ? (
-        <ul>
+        <ul className={isFetching ? 'opacity-70' : undefined}>
           {data.map((invoice) => (
             <li key={invoice.id}>
               <Link

@@ -7,7 +7,8 @@ import {
 } from '../schemas/member.schema';
 import z from 'zod';
 
-export const fetchMembers = () => http.get('/members', membersSchema);
+export const fetchMembers = (q = '') =>
+  http.get('/members', membersSchema, q ? { params: { q } } : undefined);
 export const createMember = (input: CreateMemberInput) =>
   http.post('/members', memberSchema, input);
 

@@ -5,13 +5,14 @@ import axios from 'axios';
 import { ApiError, apiErrorResponseSchema } from '@/lib/api/errors';
 import { apiClient } from '@/lib/api/client';
 
-export const fetchPortalInvoices = () => http.get('/client-auth/invoices', invoicesSchema);
+export const fetchPortalInvoices = (q = '') =>
+  http.get('/client-auth/invoices', invoicesSchema, q ? { params: { q } } : undefined);
 
 export const fetchPortalInvoice = (invoiceId: string) =>
   http.get(`/client-auth/invoices/${invoiceId}`, invoiceSchema);
 
-export const fetchInvoices = (clientId: string) =>
-  http.get(`/clients/${clientId}/invoices`, invoicesSchema);
+export const fetchInvoices = (clientId: string, q = '') =>
+  http.get(`/clients/${clientId}/invoices`, invoicesSchema, q ? { params: { q } } : undefined);
 
 export const fetchInvoice = (invoiceId: string) =>
   http.get(`/invoices/${invoiceId}`, invoiceSchema);

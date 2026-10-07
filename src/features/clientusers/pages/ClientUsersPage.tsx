@@ -1,8 +1,9 @@
 import { clientPath, paths } from '@/app/router/paths';
-import { PageHeader } from '@/components/ui';
+import { PageHeader, SearchField } from '@/components/ui';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
 import { useModal } from '@/features/modal';
+import { useListSearch } from '@/hooks/useListSearch';
 import { Link, useParams } from 'react-router';
 import { CreateClientUserForm } from '../components/CreateClientUserForm';
 import { ClientUserList } from '../components/ClientUserList';
@@ -14,6 +15,7 @@ export function ClientUsersPage() {
   const { openModal, closeModal } = useModal();
   const role = useAuthStore((state) => state.role);
   const canCreate = canManageClientUsers(role);
+  const { value, setValue, query } = useListSearch();
 
   if (!clientId) {
     return (
@@ -54,7 +56,17 @@ export function ClientUsersPage() {
             }
           : {})}
       />
-      <ClientUserList clientId={clientId} />
+      <div className="mb-4">
+        <SearchField
+          label={t('common.search')}
+          placeholder={t('clientUsers.searchPlaceholder')}
+          value={value}
+          onChange={(event) => {
+            setValue(event.target.value);
+          }}
+        />
+      </div>
+      <ClientUserList clientId={clientId} query={query} />
     </main>
   );
 }
