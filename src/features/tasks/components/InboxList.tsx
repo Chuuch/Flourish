@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Alert, Button, SelectField } from '@/components/ui';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
+import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
+import { isVersionConflict } from '@/lib/api/versionConflict';
 import { useInbox } from '../hooks/useInbox';
 import { useUpdateTask } from '../hooks/useUpdateTask';
 import { taskStatusSchema, type Task, type TaskStatus } from '../schemas/task.schema';
 import { EditTaskForm } from './EditTaskForm';
-import { isVersionConflict } from '@/lib/api/versionConflict';
+
+type InboxFilter = 'all' | 'mine' | 'unassigned';
 
 function statusLabel(
   status: TaskStatus,
@@ -94,6 +97,7 @@ function InboxTaskDetail({
 }
 
 export function InboxList({ query = '' }: { query?: string }) {
+  const userId = useAuthStore((state) => state.user?.id);
   const {
     data,
     isPending,
@@ -106,7 +110,22 @@ export function InboxList({ query = '' }: { query?: string }) {
     fetchNextPage,
   } = useInbox(query);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [filter, setFilter] = useState<InboxFilter>('all');
   const { t } = useI18n();
+
+  const items = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data]);
+
+  const filteredItems = useMemo(() => {
+    if (filter === 'mine') {
+      return items.filter((task) => task.assignee_id === userId);
+    }
+
+    if (filter === 'unassigned') {
+      return items.filter((task) => task.assignee_id === null);
+    }
+
+    return items;
+  }, [filter, items, userId]);
 
   if (isPending) {
     return <ListSkeleton label={t('inbox.loading')} />;
@@ -123,16 +142,8 @@ export function InboxList({ query = '' }: { query?: string }) {
     );
   }
 
-  const items = data.pages.flatMap((page) => page.items);
-
-  if (items.length === 0) {
-    return (
-      <p className="text-muted m-0 text-sm">{query ? t('inbox.noMatches') : t('inbox.empty')}</p>
-    );
-  }
-
   const selectedTask = selectedTaskId
-    ? (items.find((task) => task.id === selectedTaskId) ?? null)
+    ? (filteredItems.find((task) => task.id === selectedTaskId) ?? null)
     : null;
 
   if (selectedTask) {
@@ -151,46 +162,93 @@ export function InboxList({ query = '' }: { query?: string }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <ul className={isFetching && !isFetchingNextPage ? 'stack-list opacity-70' : 'stack-list'}>
-        {items.map((task) => (
-          <li key={task.id} className="!p-0">
-            <button
+      <fieldset className="inbox-filters">
+        <legend>{t('inbox.filter')}</legend>
+        <label>
+          <input
+            type="radio"
+            name="inbox-filter"
+            checked={filter === 'all'}
+            onChange={() => {
+              setFilter('all');
+            }}
+          />
+          {t('inbox.filterAll')}
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="inbox-filter"
+            checked={filter === 'mine'}
+            onChange={() => {
+              setFilter('mine');
+            }}
+          />
+          {t('inbox.filterMine')}
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="inbox-filter"
+            checked={filter === 'unassigned'}
+            onChange={() => {
+              setFilter('unassigned');
+            }}
+          />
+          {t('inbox.filterUnassigned')}
+        </label>
+      </fieldset>
+
+      {filteredItems.length === 0 ? (
+        <p className="text-muted m-0 text-sm">{query ? t('inbox.noMatches') : t('inbox.empty')}</p>
+      ) : (
+        <>
+          <ul
+            className={isFetching && !isFetchingNextPage ? 'stack-list opacity-70' : 'stack-list'}
+          >
+            {filteredItems.map((task) => (
+              <li key={task.id} className="!p-0">
+                <button
+                  type="button"
+                  className="hover:bg-canvas-elevated/60 flex w-full cursor-pointer items-start justify-between gap-3 px-[0.9rem] py-[0.75rem] text-left transition-colors duration-150 focus-visible:outline-none focus-visible:shadow-[var(--focus-ring)]"
+                  onClick={() => {
+                    setSelectedTaskId(task.id);
+                  }}
+                >
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-semibold text-ink">
+                      {task.title}
+                    </span>
+                    {task.notes ? (
+                      <span className="text-muted mt-0.5 block truncate text-xs leading-relaxed">
+                        {task.notes}
+                      </span>
+                    ) : null}
+                  </span>
+                  <span className="text-muted shrink-0 text-xs font-medium tabular-nums">
+                    {statusLabel(task.status, t)}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          {hasNextPage ? (
+            <Button
               type="button"
-              className="hover:bg-canvas-elevated/60 flex w-full cursor-pointer items-start justify-between gap-3 px-[0.9rem] py-[0.75rem] text-left transition-colors duration-150 focus-visible:outline-none focus-visible:shadow-[var(--focus-ring)]"
+              variant="ghost"
+              size="sm"
+              className="self-start"
+              disabled={isFetchingNextPage}
               onClick={() => {
-                setSelectedTaskId(task.id);
+                void fetchNextPage();
               }}
             >
-              <span className="min-w-0">
-                <span className="block truncate text-sm font-semibold text-ink">{task.title}</span>
-                {task.notes ? (
-                  <span className="text-muted mt-0.5 block truncate text-xs leading-relaxed">
-                    {task.notes}
-                  </span>
-                ) : null}
-              </span>
-              <span className="text-muted shrink-0 text-xs font-medium tabular-nums">
-                {statusLabel(task.status, t)}
-              </span>
-            </button>
-          </li>
-        ))}
-      </ul>
-
-      {hasNextPage ? (
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="self-start"
-          disabled={isFetchingNextPage}
-          onClick={() => {
-            void fetchNextPage();
-          }}
-        >
-          {t('common.loadMore')}
-        </Button>
-      ) : null}
+              {t('common.loadMore')}
+            </Button>
+          ) : null}
+        </>
+      )}
     </div>
   );
 }
