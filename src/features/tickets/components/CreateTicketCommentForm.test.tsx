@@ -59,8 +59,8 @@ describe('CreateTicketForm', () => {
     const tickets: Ticket[] = [];
 
     server.use(
-      mswHttp.get(ticketsUrl, () => HttpResponse.json(tickets)),
-      mswHttp.get(invoicesUrl, () => HttpResponse.json([])),
+      mswHttp.get(ticketsUrl, () => HttpResponse.json({ items: tickets, next_cursor: null })),
+      mswHttp.get(invoicesUrl, () => HttpResponse.json({ items: [], next_cursor: null })),
       mswHttp.post(ticketsUrl, async ({ request }) => {
         const input = createTicketSchema.parse(await request.json());
         const created = makeTicket({

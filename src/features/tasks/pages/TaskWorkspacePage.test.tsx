@@ -28,7 +28,7 @@ function mockWorkspaceApis(task: Task) {
   server.use(
     mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
     mswHttp.get(`${env.API_URL}/projects/${task.project_id}/tasks`, () =>
-      HttpResponse.json([task]),
+      HttpResponse.json({ items: [task], next_cursor: null }),
     ),
     mswHttp.get(`${env.API_URL}/tasks/${task.id}/comments`, () => HttpResponse.json([])),
     mswHttp.get(`${env.API_URL}/tasks/${task.id}/time-entries`, () => HttpResponse.json([])),
@@ -74,7 +74,7 @@ describe('TaskWorkspacePage', () => {
     server.use(
       mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/projects/${task.project_id}/tasks`, () =>
-        HttpResponse.json([task]),
+        HttpResponse.json({ items: [task], next_cursor: null }),
       ),
       mswHttp.get(`${env.API_URL}/tasks/${task.id}/comments`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/tasks/${task.id}/time-entries`, () => HttpResponse.json([])),
@@ -120,7 +120,9 @@ describe('TaskWorkspacePage', () => {
     const taskId = crypto.randomUUID();
 
     server.use(
-      mswHttp.get(`${env.API_URL}/projects/${projectId}/tasks`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/projects/${projectId}/tasks`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
     );
 
     renderWorkspace(clientId, projectId, taskId);

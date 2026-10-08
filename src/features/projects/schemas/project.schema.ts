@@ -11,7 +11,10 @@ export const projectSchema = z.object({
   updated_at: z.string(),
 });
 
-export const projectsSchema = z.array(projectSchema);
+export const projectsPageSchema = z.object({
+  items: z.array(projectSchema),
+  next_cursor: z.string().nullable(),
+});
 
 export const createProjectSchema = z.object({
   name: z

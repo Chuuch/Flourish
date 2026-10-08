@@ -77,8 +77,10 @@ describe('PortalLoginForm', () => {
           role: 'client',
         });
       }),
-      mswHttp.get(ticketsUrl, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/client-auth/invoices`, () => HttpResponse.json([])),
+      mswHttp.get(ticketsUrl, () => HttpResponse.json({ items: [], next_cursor: null })),
+      mswHttp.get(`${env.API_URL}/client-auth/invoices`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
     );
 
     const router = createMemoryRouter(routes, { initialEntries: ['/portal/login'] });

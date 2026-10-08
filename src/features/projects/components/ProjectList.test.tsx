@@ -33,7 +33,10 @@ describe('ProjectList', () => {
     });
     server.use(
       mswHttp.get(projectsUrl, () =>
-        HttpResponse.json([website, makeProject({ name: 'Brand', notes: '' })]),
+        HttpResponse.json({
+          items: [website, makeProject({ name: 'Brand', notes: '' })],
+          next_cursor: null,
+        }),
       ),
     );
 
@@ -60,7 +63,7 @@ describe('ProjectList', () => {
   });
 
   it('renders an empty state', async () => {
-    server.use(mswHttp.get(projectsUrl, () => HttpResponse.json([])));
+    server.use(mswHttp.get(projectsUrl, () => HttpResponse.json({ items: [], next_cursor: null })));
     renderWithProviders(
       <MemoryRouter>
         <ProjectList clientId={clientId} />
@@ -89,7 +92,10 @@ describe('ProjectList', () => {
     signInAs('member');
     server.use(
       mswHttp.get(projectsUrl, () =>
-        HttpResponse.json([makeProject({ client_id: clientId, name: 'Website', notes: 'Launch' })]),
+        HttpResponse.json({
+          items: [makeProject({ client_id: clientId, name: 'Website', notes: 'Launch' })],
+          next_cursor: null,
+        }),
       ),
     );
 

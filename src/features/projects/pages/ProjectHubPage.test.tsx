@@ -28,9 +28,11 @@ function signInAs(role: 'owner' | 'admin' | 'member') {
 function mockHubApis(project: Project, tasks: unknown[] = [], files: unknown[] = []) {
   server.use(
     mswHttp.get(`${env.API_URL}/clients/${project.client_id}/projects`, () =>
-      HttpResponse.json([project]),
+      HttpResponse.json({ items: [project], next_cursor: null }),
     ),
-    mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () => HttpResponse.json(tasks)),
+    mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () =>
+      HttpResponse.json({ items: tasks, next_cursor: null }),
+    ),
     mswHttp.get(`${env.API_URL}/projects/${project.id}/files`, () => HttpResponse.json(files)),
   );
 }
@@ -74,9 +76,11 @@ describe('ProjectHubPage', () => {
 
     server.use(
       mswHttp.get(`${env.API_URL}/clients/${project.client_id}/projects`, () =>
-        HttpResponse.json([project]),
+        HttpResponse.json({ items: [project], next_cursor: null }),
       ),
-      mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
       mswHttp.get(`${env.API_URL}/projects/${project.id}/files`, () => HttpResponse.json([])),
       mswHttp.patch(`${env.API_URL}/projects/${project.id}`, async ({ request }) => {
         const input = updateProjectSchema.parse(await request.json());
@@ -118,7 +122,9 @@ describe('ProjectHubPage', () => {
     const projectId = crypto.randomUUID();
 
     server.use(
-      mswHttp.get(`${env.API_URL}/clients/${clientId}/projects`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/clients/${clientId}/projects`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
     );
 
     renderHub(clientId, projectId);

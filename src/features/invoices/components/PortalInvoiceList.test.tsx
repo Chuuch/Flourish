@@ -47,7 +47,11 @@ const sentInvoice = {
 
 describe('PortalInvoiceList', () => {
   it('renders invoices returned by the API', async () => {
-    server.use(mswHttp.get(invoicesUrl, () => HttpResponse.json([sentInvoice])));
+    server.use(
+      mswHttp.get(invoicesUrl, () =>
+        HttpResponse.json({ items: [sentInvoice], next_cursor: null }),
+      ),
+    );
 
     renderWithProviders(
       <MemoryRouter>
@@ -59,7 +63,7 @@ describe('PortalInvoiceList', () => {
   });
 
   it('renders an empty state', async () => {
-    server.use(mswHttp.get(invoicesUrl, () => HttpResponse.json([])));
+    server.use(mswHttp.get(invoicesUrl, () => HttpResponse.json({ items: [], next_cursor: null })));
 
     renderWithProviders(
       <MemoryRouter>

@@ -41,7 +41,9 @@ export function ConvertTicketForm({
     );
   }
 
-  if (projects.data.length === 0) {
+  const projectItems = projects.data.pages.flatMap((page) => page.items);
+
+  if (projectItems.length === 0) {
     return <p className="text-muted m-0 text-sm">{t('projects.empty')}</p>;
   }
 
@@ -70,7 +72,7 @@ export function ConvertTicketForm({
         error={validationError ?? undefined}
       >
         <option value="">{t('tickets.selectProject')}</option>
-        {projects.data.map((project) => (
+        {projectItems.map((project) => (
           <option key={project.id} value={project.id}>
             {project.name}
           </option>

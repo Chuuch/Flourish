@@ -30,7 +30,9 @@ function mockNavCounts() {
     mswHttp.get(`${env.API_URL}/client-auth/nav/counts`, () =>
       HttpResponse.json({ tasks: 0, tickets: 0, unread_notifications: 4 }),
     ),
-    mswHttp.get(`${env.API_URL}/clients`, () => HttpResponse.json([])),
+    mswHttp.get(`${env.API_URL}/clients`, () =>
+      HttpResponse.json({ items: [], next_cursor: null }),
+    ),
   );
 }
 

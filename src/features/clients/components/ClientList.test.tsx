@@ -29,7 +29,10 @@ describe('ClientList', () => {
 
     server.use(
       mswHttp.get(clientsUrl, () =>
-        HttpResponse.json([northWind, makeClient({ name: 'Contoso', notes: '' })]),
+        HttpResponse.json({
+          items: [northWind, makeClient({ name: 'Contoso', notes: '' })],
+          next_cursor: null,
+        }),
       ),
     );
 
@@ -56,7 +59,7 @@ describe('ClientList', () => {
   });
 
   it('renders and empty state', async () => {
-    server.use(mswHttp.get(clientsUrl, () => HttpResponse.json([])));
+    server.use(mswHttp.get(clientsUrl, () => HttpResponse.json({ items: [], next_cursor: null })));
     renderWithProviders(
       <MemoryRouter>
         <ClientList />
@@ -86,7 +89,10 @@ describe('ClientList', () => {
     signInAs('member');
     server.use(
       mswHttp.get(clientsUrl, () =>
-        HttpResponse.json([makeClient({ name: 'Northwind', notes: 'Retail' })]),
+        HttpResponse.json({
+          items: [makeClient({ name: 'Northwind', notes: 'Retail' })],
+          next_cursor: null,
+        }),
       ),
     );
 

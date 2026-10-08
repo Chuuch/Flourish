@@ -12,12 +12,24 @@ import { invoiceStatusKey } from '../lib/invoiceStatus';
 import { formatEUR } from '../lib/formatMoney';
 
 export function InvoiceList({ clientId, query = '' }: { clientId: string; query?: string }) {
-  const { data, isPending, isError, error, refetch, isFetching } = useInvoices(clientId, query);
+  const {
+    data,
+    isPending,
+    isError,
+    error,
+    refetch,
+    isFetching,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useInvoices(clientId, query);
   const createInvoice = useCreateInvoice(clientId);
   const role = useAuthStore((state) => state.role);
   const canManage = canManageClients(role);
   const defaults = defaultReportDates();
   const { t } = useI18n();
+
+  const items = data?.pages.flatMap((page) => page.items) ?? [];
 
   return (
     <>
@@ -74,29 +86,46 @@ export function InvoiceList({ clientId, query = '' }: { clientId: string; query?
         </Alert>
       ) : null}
 
-      {data && data.length === 0 ? (
+      {!isPending && !isError && items.length === 0 ? (
         <p className="text-muted m-0 text-sm">
           {query ? t('invoices.noMatches') : t('invoices.empty')}
         </p>
       ) : null}
 
-      {data && data.length > 0 ? (
-        <ul className={isFetching ? 'opacity-70' : undefined}>
-          {data.map((invoice) => (
-            <li key={invoice.id}>
-              <Link
-                to={invoicePath(clientId, invoice.id)}
-                className="text-ink font-semibold no-underline hover:underline"
-              >
-                {t('invoices.listLine', {
-                  number: invoice.number,
-                  status: t(invoiceStatusKey[invoice.status]),
-                  amount: formatEUR(invoice.total_cents),
-                })}
-              </Link>
-            </li>
-          ))}
-        </ul>
+      {!isPending && !isError && items.length > 0 ? (
+        <div className="flex flex-col gap-4">
+          <ul className={isFetching && !isFetchingNextPage ? 'opacity-70' : undefined}>
+            {items.map((invoice) => (
+              <li key={invoice.id}>
+                <Link
+                  to={invoicePath(clientId, invoice.id)}
+                  className="text-ink font-semibold no-underline hover:underline"
+                >
+                  {t('invoices.listLine', {
+                    number: invoice.number,
+                    status: t(invoiceStatusKey[invoice.status]),
+                    amount: formatEUR(invoice.total_cents),
+                  })}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          {hasNextPage ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="self-start"
+              disabled={isFetchingNextPage}
+              onClick={() => {
+                void fetchNextPage();
+              }}
+            >
+              {t('common.loadMore')}
+            </Button>
+          ) : null}
+        </div>
       ) : null}
     </>
   );

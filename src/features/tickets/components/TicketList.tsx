@@ -72,7 +72,17 @@ function PortalTicketDetail({ ticket, onBack }: { ticket: Ticket; onBack: () => 
 }
 
 export function TicketList({ query = '' }: { query?: string }) {
-  const { data, isPending, isError, error, refetch, isFetching } = useTickets(query);
+  const {
+    data,
+    isPending,
+    isError,
+    error,
+    refetch,
+    isFetching,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useTickets(query);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const { t } = useI18n();
 
@@ -91,7 +101,9 @@ export function TicketList({ query = '' }: { query?: string }) {
     );
   }
 
-  if (data.length === 0) {
+  const items = data.pages.flatMap((page) => page.items);
+
+  if (items.length === 0) {
     return (
       <p className="text-muted m-0 text-sm">
         {query ? t('tickets.noMatches') : t('tickets.empty')}
@@ -100,7 +112,7 @@ export function TicketList({ query = '' }: { query?: string }) {
   }
 
   const selectedTicket = selectedTicketId
-    ? (data.find((ticket) => ticket.id === selectedTicketId) ?? null)
+    ? (items.find((ticket) => ticket.id === selectedTicketId) ?? null)
     : null;
 
   if (selectedTicket) {
@@ -115,33 +127,50 @@ export function TicketList({ query = '' }: { query?: string }) {
   }
 
   return (
-    <ul className={isFetching ? 'stack-list opacity-70' : 'stack-list'}>
-      {data.map((ticket) => (
-        <li key={ticket.id} className="!p-0">
-          <button
-            type="button"
-            className="hover:bg-canvas-elevated/60 flex w-full cursor-pointer items-start justify-between gap-3 px-[0.9rem] py-[0.75rem] text-left transition-colors duration-150 focus-visible:outline-none focus-visible:shadow-[var(--focus-ring)]"
-            onClick={() => {
-              setSelectedTicketId(ticket.id);
-            }}
-          >
-            <span className="min-w-0">
-              <span className="block truncate text-sm font-semibold text-ink">
-                {ticket.title}
-                <span className="text-muted font-medium"> ({ticket.kind})</span>
-              </span>
-              {ticket.body ? (
-                <span className="text-muted mt-0.5 block truncate text-xs leading-relaxed">
-                  {ticket.body}
+    <div className="flex flex-col gap-4">
+      <ul className={isFetching && !isFetchingNextPage ? 'stack-list opacity-70' : 'stack-list'}>
+        {items.map((ticket) => (
+          <li key={ticket.id} className="!p-0">
+            <button
+              type="button"
+              className="hover:bg-canvas-elevated/60 flex w-full cursor-pointer items-start justify-between gap-3 px-[0.9rem] py-[0.75rem] text-left transition-colors duration-150 focus-visible:outline-none focus-visible:shadow-[var(--focus-ring)]"
+              onClick={() => {
+                setSelectedTicketId(ticket.id);
+              }}
+            >
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-semibold text-ink">
+                  {ticket.title}
+                  <span className="text-muted font-medium"> ({ticket.kind})</span>
                 </span>
-              ) : null}
-            </span>
-            <span className="text-muted shrink-0 text-xs font-medium tabular-nums">
-              {ticketStatusLabel(ticket.status, t)}
-            </span>
-          </button>
-        </li>
-      ))}
-    </ul>
+                {ticket.body ? (
+                  <span className="text-muted mt-0.5 block truncate text-xs leading-relaxed">
+                    {ticket.body}
+                  </span>
+                ) : null}
+              </span>
+              <span className="text-muted shrink-0 text-xs font-medium tabular-nums">
+                {ticketStatusLabel(ticket.status, t)}
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {hasNextPage ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="self-start"
+          disabled={isFetchingNextPage}
+          onClick={() => {
+            void fetchNextPage();
+          }}
+        >
+          {t('common.loadMore')}
+        </Button>
+      ) : null}
+    </div>
   );
 }

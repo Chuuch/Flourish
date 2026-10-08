@@ -51,7 +51,7 @@ describe('CreateProjectForm', () => {
     const projects: Project[] = [];
 
     server.use(
-      mswHttp.get(projectsUrl, () => HttpResponse.json(projects)),
+      mswHttp.get(projectsUrl, () => HttpResponse.json({ items: projects, next_cursor: null })),
       mswHttp.post(projectsUrl, async ({ request }) => {
         const input = createProjectSchema.parse(await request.json());
         const created = makeProject({

@@ -48,10 +48,18 @@ describe('AgencyTicketList', () => {
 
     server.use(
       mswHttp.get(ticketsUrl, () =>
-        HttpResponse.json([
-          login,
-          makeTicket({ title: 'Add export', kind: 'feature', status: 'in_progress', body: 'CSV' }),
-        ]),
+        HttpResponse.json({
+          items: [
+            login,
+            makeTicket({
+              title: 'Add export',
+              kind: 'feature',
+              status: 'in_progress',
+              body: 'CSV',
+            }),
+          ],
+          next_cursor: null,
+        }),
       ),
     );
 
@@ -77,12 +85,12 @@ describe('AgencyTicketList', () => {
     });
 
     server.use(
-      mswHttp.get(ticketsUrl, () => HttpResponse.json([ticket])),
+      mswHttp.get(ticketsUrl, () => HttpResponse.json({ items: [ticket], next_cursor: null })),
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/clients/${clientId}/users`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/files`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/comments`, () => HttpResponse.json([])),
-      mswHttp.get(projectsUrl, () => HttpResponse.json([])),
+      mswHttp.get(projectsUrl, () => HttpResponse.json({ items: [], next_cursor: null })),
       mswHttp.patch(`${env.API_URL}/tickets/${ticket.id}`, async ({ request }) => {
         const input = updateTicketSchema.parse(await request.json());
         expect(input.version).toBe(1);
@@ -124,14 +132,22 @@ describe('AgencyTicketList', () => {
     });
 
     server.use(
-      mswHttp.get(ticketsUrl, () => HttpResponse.json([ticket])),
+      mswHttp.get(ticketsUrl, () => HttpResponse.json({ items: [ticket], next_cursor: null })),
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/clients/${clientId}/users`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/files`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/comments`, () => HttpResponse.json([])),
-      mswHttp.get(projectsUrl, () => HttpResponse.json([])),
+      mswHttp.get(projectsUrl, () => HttpResponse.json({ items: [], next_cursor: null })),
       mswHttp.patch(`${env.API_URL}/tickets/${ticket.id}`, () =>
-        HttpResponse.json({ error: { message: 'version conflict' } }, { status: 409 }),
+        HttpResponse.json(
+          {
+            error: {
+              code: 'ticket_version_mismatch',
+              message: 'ticket was updated by someone else',
+            },
+          },
+          { status: 409 },
+        ),
       ),
     );
 
@@ -145,11 +161,13 @@ describe('AgencyTicketList', () => {
 
     await chooseSelectOption(user, 'Status for Login button broken', 'in_progress');
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('version conflict');
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'This was updated by someone else. Refresh and try again.',
+    );
   });
 
   it('renders an empty state', async () => {
-    server.use(mswHttp.get(ticketsUrl, () => HttpResponse.json([])));
+    server.use(mswHttp.get(ticketsUrl, () => HttpResponse.json({ items: [], next_cursor: null })));
     renderWithProviders(<AgencyTicketList clientId={clientId} />);
     expect(await screen.findByText('No tickets yet.')).toBeInTheDocument();
   });
@@ -177,12 +195,12 @@ describe('AgencyTicketList', () => {
     let tickets: Ticket[] = [ticket];
 
     server.use(
-      mswHttp.get(ticketsUrl, () => HttpResponse.json(tickets)),
+      mswHttp.get(ticketsUrl, () => HttpResponse.json({ items: tickets, next_cursor: null })),
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/clients/${clientId}/users`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/files`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/comments`, () => HttpResponse.json([])),
-      mswHttp.get(projectsUrl, () => HttpResponse.json([])),
+      mswHttp.get(projectsUrl, () => HttpResponse.json({ items: [], next_cursor: null })),
       mswHttp.delete(`${env.API_URL}/tickets/${ticket.id}`, () => {
         tickets = [];
         return new HttpResponse(null, { status: 204 });
@@ -207,12 +225,17 @@ describe('AgencyTicketList', () => {
     });
 
     server.use(
-      mswHttp.get(ticketsUrl, () => HttpResponse.json([ticket])),
+      mswHttp.get(ticketsUrl, () => HttpResponse.json({ items: [ticket], next_cursor: null })),
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/clients/${clientId}/users`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/files`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/comments`, () => HttpResponse.json([])),
-      mswHttp.get(projectsUrl, () => HttpResponse.json([makeProject({ client_id: clientId })])),
+      mswHttp.get(projectsUrl, () =>
+        HttpResponse.json({
+          items: [makeProject({ client_id: clientId })],
+          next_cursor: null,
+        }),
+      ),
     );
 
     renderWithProviders(<AgencyTicketList clientId={clientId} />);

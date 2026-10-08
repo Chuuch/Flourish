@@ -46,8 +46,12 @@ describe('RequirePortalAuth', () => {
       );
 
     server.use(
-      mswHttp.get(`${env.API_URL}/client-auth/tickets`, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/client-auth/invoices`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/client-auth/tickets`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
+      mswHttp.get(`${env.API_URL}/client-auth/invoices`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
     );
 
     renderAt('/portal');
@@ -63,7 +67,9 @@ describe('RequirePortalAuth', () => {
       .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
 
     server.use(
-      mswHttp.get(`${env.API_URL}/inbox/tasks`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/inbox/tasks`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
       mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
     );
 

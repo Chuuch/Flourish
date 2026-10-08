@@ -385,6 +385,7 @@ export const es: Record<MessageKey, string> = {
   'toast.sent': 'Enviado',
   'toast.markedPaid': 'Marcada como pagada',
   'toast.failed': 'Algo salió mal',
+  'toast.versionConflict': 'Alguien más actualizó esto. Actualiza e inténtalo de nuevo.',
   'toast.downloaded': 'Descargado',
   'home.slogan': 'El sistema operativo de tu agencia.',
   'home.heroLead': 'Clientes, proyectos, tareas y tiempo — en un solo lugar.',

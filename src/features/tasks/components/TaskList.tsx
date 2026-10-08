@@ -9,6 +9,7 @@ import { useDeleteTask } from '../hooks/useDeleteTask';
 import { EditTaskForm } from './EditTaskForm';
 import { useI18n } from '@/features/i18n';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
+import { isVersionConflict } from '@/lib/api/versionConflict';
 
 export function TaskList({
   projectId,
@@ -21,7 +22,17 @@ export function TaskList({
 }) {
   const role = useAuthStore((state) => state.role);
   const canManage = canManageTasks(role);
-  const { data, isPending, isError, error, refetch, isFetching } = useTasks(projectId, query);
+  const {
+    data,
+    isPending,
+    isError,
+    error,
+    refetch,
+    isFetching,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useTasks(projectId, query);
   const updateTask = useUpdateTask(projectId);
   const deleteTask = useDeleteTask(projectId);
   const { t } = useI18n();
@@ -41,18 +52,33 @@ export function TaskList({
     );
   }
 
-  if (data.length === 0) {
+  const items = data.pages.flatMap((page) => page.items);
+
+  if (items.length === 0) {
     return (
       <p className="text-muted m-0 text-sm">{query ? t('tasks.noMatches') : t('tasks.empty')}</p>
     );
   }
 
   return (
-    <>
-      {updateTask.isError ? <Alert>{updateTask.error.message}</Alert> : null}
+    <div className="flex flex-col gap-4">
+      {updateTask.isError ? (
+        <Alert>
+          <p>
+            {isVersionConflict(updateTask.error)
+              ? t('toast.versionConflict')
+              : updateTask.error.message}
+          </p>
+          {isVersionConflict(updateTask.error) ? (
+            <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
+              {t('common.retry')}
+            </Button>
+          ) : null}
+        </Alert>
+      ) : null}
       {deleteTask.isError ? <Alert>{deleteTask.error.message}</Alert> : null}
-      <ul className={isFetching ? 'opacity-70' : undefined}>
-        {data.map((task) => (
+      <ul className={isFetching && !isFetchingNextPage ? 'opacity-70' : undefined}>
+        {items.map((task) => (
           <li key={task.id}>
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -122,6 +148,21 @@ export function TaskList({
           </li>
         ))}
       </ul>
-    </>
+
+      {hasNextPage ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="self-start"
+          disabled={isFetchingNextPage}
+          onClick={() => {
+            void fetchNextPage();
+          }}
+        >
+          {t('common.loadMore')}
+        </Button>
+      ) : null}
+    </div>
   );
 }

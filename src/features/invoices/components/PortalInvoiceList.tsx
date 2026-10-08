@@ -8,7 +8,17 @@ import { invoiceStatusKey } from '../lib/invoiceStatus';
 import { formatEUR } from '../lib/formatMoney';
 
 export function PortalInvoiceList({ query = '' }: { query?: string }) {
-  const { data, isPending, isError, error, refetch, isFetching } = usePortalInvoices(query);
+  const {
+    data,
+    isPending,
+    isError,
+    error,
+    refetch,
+    isFetching,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = usePortalInvoices(query);
   const { t } = useI18n();
 
   if (isPending) {
@@ -30,7 +40,9 @@ export function PortalInvoiceList({ query = '' }: { query?: string }) {
     );
   }
 
-  if (data.length === 0) {
+  const items = data.pages.flatMap((page) => page.items);
+
+  if (items.length === 0) {
     return (
       <p className="text-muted m-0 text-sm">
         {query ? t('invoices.noMatches') : t('invoices.empty')}
@@ -39,18 +51,35 @@ export function PortalInvoiceList({ query = '' }: { query?: string }) {
   }
 
   return (
-    <ul className={isFetching ? 'opacity-70' : undefined}>
-      {data.map((invoice) => (
-        <li key={invoice.id}>
-          <Link to={portalInvoicePath(invoice.id)}>
-            {t('invoices.listLine', {
-              number: invoice.number,
-              status: t(invoiceStatusKey[invoice.status]),
-              amount: formatEUR(invoice.total_cents),
-            })}
-          </Link>
-        </li>
-      ))}
-    </ul>
+    <div className="flex flex-col gap-4">
+      <ul className={isFetching && !isFetchingNextPage ? 'opacity-70' : undefined}>
+        {items.map((invoice) => (
+          <li key={invoice.id}>
+            <Link to={portalInvoicePath(invoice.id)}>
+              {t('invoices.listLine', {
+                number: invoice.number,
+                status: t(invoiceStatusKey[invoice.status]),
+                amount: formatEUR(invoice.total_cents),
+              })}
+            </Link>
+          </li>
+        ))}
+      </ul>
+
+      {hasNextPage ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="self-start"
+          disabled={isFetchingNextPage}
+          onClick={() => {
+            void fetchNextPage();
+          }}
+        >
+          {t('common.loadMore')}
+        </Button>
+      ) : null}
+    </div>
   );
 }

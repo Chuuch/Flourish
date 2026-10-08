@@ -6,6 +6,7 @@ import { useInbox } from '../hooks/useInbox';
 import { useUpdateTask } from '../hooks/useUpdateTask';
 import { taskStatusSchema, type Task, type TaskStatus } from '../schemas/task.schema';
 import { EditTaskForm } from './EditTaskForm';
+import { isVersionConflict } from '@/lib/api/versionConflict';
 
 function statusLabel(
   status: TaskStatus,
@@ -21,7 +22,15 @@ function statusLabel(
   }
 }
 
-function InboxTaskDetail({ task, onBack }: { task: Task; onBack: () => void }) {
+function InboxTaskDetail({
+  task,
+  onBack,
+  onRefresh,
+}: {
+  task: Task;
+  onBack: () => void;
+  onRefresh: () => void;
+}) {
   const updateTask = useUpdateTask();
   const { t } = useI18n();
 
@@ -41,7 +50,20 @@ function InboxTaskDetail({ task, onBack }: { task: Task; onBack: () => void }) {
         {task.notes ? <p className="text-muted m-0 text-sm leading-relaxed">{task.notes}</p> : null}
       </div>
 
-      {updateTask.isError ? <Alert>{updateTask.error.message}</Alert> : null}
+      {updateTask.isError ? (
+        <Alert>
+          <p>
+            {isVersionConflict(updateTask.error)
+              ? t('toast.versionConflict')
+              : updateTask.error.message}
+          </p>
+          {isVersionConflict(updateTask.error) ? (
+            <Button type="button" variant="ghost" size="sm" onClick={onRefresh}>
+              {t('common.retry')}
+            </Button>
+          ) : null}
+        </Alert>
+      ) : null}
 
       <SelectField
         label={t('tasks.statusFor', { title: task.title })}
@@ -72,7 +94,17 @@ function InboxTaskDetail({ task, onBack }: { task: Task; onBack: () => void }) {
 }
 
 export function InboxList({ query = '' }: { query?: string }) {
-  const { data, isPending, isError, error, refetch, isFetching } = useInbox(query);
+  const {
+    data,
+    isPending,
+    isError,
+    error,
+    refetch,
+    isFetching,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useInbox(query);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const { t } = useI18n();
 
@@ -91,14 +123,16 @@ export function InboxList({ query = '' }: { query?: string }) {
     );
   }
 
-  if (data.length === 0) {
+  const items = data.pages.flatMap((page) => page.items);
+
+  if (items.length === 0) {
     return (
       <p className="text-muted m-0 text-sm">{query ? t('inbox.noMatches') : t('inbox.empty')}</p>
     );
   }
 
   const selectedTask = selectedTaskId
-    ? (data.find((task) => task.id === selectedTaskId) ?? null)
+    ? (items.find((task) => task.id === selectedTaskId) ?? null)
     : null;
 
   if (selectedTask) {
@@ -108,35 +142,55 @@ export function InboxList({ query = '' }: { query?: string }) {
         onBack={() => {
           setSelectedTaskId(null);
         }}
+        onRefresh={() => {
+          void refetch();
+        }}
       />
     );
   }
 
   return (
-    <ul className={isFetching ? 'stack-list opacity-70' : 'stack-list'}>
-      {data.map((task) => (
-        <li key={task.id} className="!p-0">
-          <button
-            type="button"
-            className="hover:bg-canvas-elevated/60 flex w-full cursor-pointer items-start justify-between gap-3 px-[0.9rem] py-[0.75rem] text-left transition-colors duration-150 focus-visible:outline-none focus-visible:shadow-[var(--focus-ring)]"
-            onClick={() => {
-              setSelectedTaskId(task.id);
-            }}
-          >
-            <span className="min-w-0">
-              <span className="block truncate text-sm font-semibold text-ink">{task.title}</span>
-              {task.notes ? (
-                <span className="text-muted mt-0.5 block truncate text-xs leading-relaxed">
-                  {task.notes}
-                </span>
-              ) : null}
-            </span>
-            <span className="text-muted shrink-0 text-xs font-medium tabular-nums">
-              {statusLabel(task.status, t)}
-            </span>
-          </button>
-        </li>
-      ))}
-    </ul>
+    <div className="flex flex-col gap-4">
+      <ul className={isFetching && !isFetchingNextPage ? 'stack-list opacity-70' : 'stack-list'}>
+        {items.map((task) => (
+          <li key={task.id} className="!p-0">
+            <button
+              type="button"
+              className="hover:bg-canvas-elevated/60 flex w-full cursor-pointer items-start justify-between gap-3 px-[0.9rem] py-[0.75rem] text-left transition-colors duration-150 focus-visible:outline-none focus-visible:shadow-[var(--focus-ring)]"
+              onClick={() => {
+                setSelectedTaskId(task.id);
+              }}
+            >
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-semibold text-ink">{task.title}</span>
+                {task.notes ? (
+                  <span className="text-muted mt-0.5 block truncate text-xs leading-relaxed">
+                    {task.notes}
+                  </span>
+                ) : null}
+              </span>
+              <span className="text-muted shrink-0 text-xs font-medium tabular-nums">
+                {statusLabel(task.status, t)}
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {hasNextPage ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="self-start"
+          disabled={isFetchingNextPage}
+          onClick={() => {
+            void fetchNextPage();
+          }}
+        >
+          {t('common.loadMore')}
+        </Button>
+      ) : null}
+    </div>
   );
 }

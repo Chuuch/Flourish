@@ -56,7 +56,11 @@ export const invoiceSchema = z.object({
   lines: z.array(invoiceLineSchema),
 });
 
-export const invoicesSchema = z.array(invoiceSchema);
+export const invoicesPageSchema = z.object({
+  items: z.array(invoiceSchema),
+  next_cursor: z.string().nullable(),
+});
 
 export type Invoice = z.infer<typeof invoiceSchema>;
+export type InvoicesPage = z.infer<typeof invoicesPageSchema>;
 export type VatRegime = z.infer<typeof vatRegimeSchema>;

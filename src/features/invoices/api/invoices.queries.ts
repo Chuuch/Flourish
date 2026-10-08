@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/react-query';
+import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 import {
   fetchInvoice,
   fetchInvoices,
@@ -18,9 +18,15 @@ export const invoiceKeys = {
 
 export const invoiceQueries = {
   list: (clientId: string, q = '') =>
-    queryOptions({
+    infiniteQueryOptions({
       queryKey: invoiceKeys.listQuery(clientId, q),
-      queryFn: () => fetchInvoices(clientId, q),
+      queryFn: ({ pageParam }) =>
+        fetchInvoices(clientId, {
+          ...(q ? { q } : {}),
+          ...(pageParam ? { cursor: pageParam } : {}),
+        }),
+      initialPageParam: undefined as string | undefined,
+      getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
     }),
   detail: (invoiceId: string) =>
     queryOptions({
@@ -28,9 +34,15 @@ export const invoiceQueries = {
       queryFn: () => fetchInvoice(invoiceId),
     }),
   portalList: (q = '') =>
-    queryOptions({
+    infiniteQueryOptions({
       queryKey: invoiceKeys.portalListQuery(q),
-      queryFn: () => fetchPortalInvoices(q),
+      queryFn: ({ pageParam }) =>
+        fetchPortalInvoices({
+          ...(q ? { q } : {}),
+          ...(pageParam ? { cursor: pageParam } : {}),
+        }),
+      initialPageParam: undefined as string | undefined,
+      getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
     }),
   portalDetail: (invoiceId: string) =>
     queryOptions({

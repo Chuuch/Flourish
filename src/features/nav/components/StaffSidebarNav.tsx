@@ -82,7 +82,7 @@ function ClientBranch({
             {t('common.projects')}
           </SidebarLink>
 
-          {(projects.data ?? []).map((project) => (
+          {(projects.data?.pages.flatMap((page) => page.items) ?? []).map((project) => (
             <ProjectBranch
               key={project.id}
               clientId={clientId}
@@ -188,7 +188,7 @@ export function StaffSidebarNav() {
 
       {clientsSectionOpen ? (
         <div className="mt-0.5 flex flex-col gap-0.5">
-          {(clients.data ?? []).map((client) => (
+          {(clients.data?.pages.flatMap((page) => page.items) ?? []).map((client) => (
             <ClientBranch
               key={client.id}
               clientId={client.id}

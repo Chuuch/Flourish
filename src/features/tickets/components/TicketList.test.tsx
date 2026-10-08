@@ -21,10 +21,18 @@ describe('TicketList', () => {
 
     server.use(
       mswHttp.get(ticketsUrl, () =>
-        HttpResponse.json([
-          login,
-          makeTicket({ title: 'Add export', kind: 'feature', status: 'in_progress', body: 'CSV' }),
-        ]),
+        HttpResponse.json({
+          items: [
+            login,
+            makeTicket({
+              title: 'Add export',
+              kind: 'feature',
+              status: 'in_progress',
+              body: 'CSV',
+            }),
+          ],
+          next_cursor: null,
+        }),
       ),
     );
 
@@ -47,7 +55,7 @@ describe('TicketList', () => {
     });
 
     server.use(
-      mswHttp.get(ticketsUrl, () => HttpResponse.json([login])),
+      mswHttp.get(ticketsUrl, () => HttpResponse.json({ items: [login], next_cursor: null })),
       mswHttp.get(`${ticketsUrl}/${login.id}/files`, () => HttpResponse.json([])),
       mswHttp.get(`${ticketsUrl}/${login.id}/comments`, () => HttpResponse.json([])),
     );
@@ -63,7 +71,7 @@ describe('TicketList', () => {
   });
 
   it('renders an empty state', async () => {
-    server.use(mswHttp.get(ticketsUrl, () => HttpResponse.json([])));
+    server.use(mswHttp.get(ticketsUrl, () => HttpResponse.json({ items: [], next_cursor: null })));
     renderWithProviders(<TicketList />);
 
     expect(await screen.findByText('No tickets yet.')).toBeInTheDocument();
