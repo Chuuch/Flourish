@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/react-query';
+import { infiniteQueryOptions } from '@tanstack/react-query';
 import { fetchPortalTickets, fetchStaffTickets } from './tickets.api';
 
 export const ticketKeys = {
@@ -11,13 +11,25 @@ export const ticketKeys = {
 
 export const ticketQueries = {
   portalList: (q = '') =>
-    queryOptions({
+    infiniteQueryOptions({
       queryKey: ticketKeys.portal(q),
-      queryFn: () => fetchPortalTickets(q),
+      queryFn: ({ pageParam }) =>
+        fetchPortalTickets({
+          ...(q ? { q } : {}),
+          ...(pageParam ? { cursor: pageParam } : {}),
+        }),
+      initialPageParam: undefined as string | undefined,
+      getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
     }),
   staffList: (clientId: string, q = '') =>
-    queryOptions({
+    infiniteQueryOptions({
       queryKey: ticketKeys.staff(clientId, q),
-      queryFn: () => fetchStaffTickets(clientId, q),
+      queryFn: ({ pageParam }) =>
+        fetchStaffTickets(clientId, {
+          ...(q ? { q } : {}),
+          ...(pageParam ? { cursor: pageParam } : {}),
+        }),
+      initialPageParam: undefined as string | undefined,
+      getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
     }),
 };

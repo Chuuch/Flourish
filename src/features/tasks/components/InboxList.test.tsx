@@ -16,10 +16,13 @@ describe('InboxList', () => {
     server.use(
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.get(inboxUrl, () =>
-        HttpResponse.json([
-          makeTask({ title: 'Mine', notes: '', assignee_id: crypto.randomUUID() }),
-          makeTask({ title: 'Open', notes: 'Pick this up' }),
-        ]),
+        HttpResponse.json({
+          items: [
+            makeTask({ title: 'Mine', notes: '', assignee_id: crypto.randomUUID() }),
+            makeTask({ title: 'Open', notes: 'Pick this up' }),
+          ],
+          next_cursor: null,
+        }),
       ),
     );
 
@@ -36,7 +39,10 @@ describe('InboxList', () => {
     server.use(
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.get(inboxUrl, () =>
-        HttpResponse.json([makeTask({ title: 'Open', notes: 'Pick this up', status: 'todo' })]),
+        HttpResponse.json({
+          items: [makeTask({ title: 'Open', notes: 'Pick this up', status: 'todo' })],
+          next_cursor: null,
+        }),
       ),
     );
 
@@ -52,7 +58,7 @@ describe('InboxList', () => {
   it('renders an empty state', async () => {
     server.use(
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
-      mswHttp.get(inboxUrl, () => HttpResponse.json([])),
+      mswHttp.get(inboxUrl, () => HttpResponse.json({ items: [], next_cursor: null })),
     );
 
     renderWithProviders(<InboxList />);

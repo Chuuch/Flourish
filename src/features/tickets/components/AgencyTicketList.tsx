@@ -13,6 +13,7 @@ import { CreateTicketCommentForm } from './CreateTicketCommentForm';
 import { useDeleteTicket } from '../hooks/useDeleteTicket';
 import { useI18n } from '@/features/i18n';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
+import { isVersionConflict } from '@/lib/api/versionConflict';
 
 function ticketStatusLabel(
   status: TicketStatus,
@@ -40,10 +41,12 @@ function AgencyTicketDetail({
   clientId,
   ticket,
   onBack,
+  onRefresh,
 }: {
   clientId: string;
   ticket: Ticket;
   onBack: () => void;
+  onRefresh: () => void;
 }) {
   const role = useAuthStore((state) => state.role);
   const canManage = canManageTasks(role);
@@ -90,7 +93,20 @@ function AgencyTicketDetail({
         </div>
       </div>
 
-      {updateTicket.isError ? <Alert>{updateTicket.error.message}</Alert> : null}
+      {updateTicket.isError ? (
+        <Alert>
+          <p>
+            {isVersionConflict(updateTicket.error)
+              ? t('toast.versionConflict')
+              : updateTicket.error.message}
+          </p>
+          {isVersionConflict(updateTicket.error) ? (
+            <Button type="button" variant="ghost" size="sm" onClick={onRefresh}>
+              {t('common.retry')}
+            </Button>
+          ) : null}
+        </Alert>
+      ) : null}
       {deleteTicket.isError ? <Alert>{deleteTicket.error.message}</Alert> : null}
 
       <SelectField
@@ -138,7 +154,17 @@ function AgencyTicketDetail({
 }
 
 export function AgencyTicketList({ clientId, query = '' }: { clientId: string; query?: string }) {
-  const { data, isPending, isError, error, refetch, isFetching } = useStaffTickets(clientId, query);
+  const {
+    data,
+    isPending,
+    isError,
+    error,
+    refetch,
+    isFetching,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useStaffTickets(clientId, query);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const { t } = useI18n();
 
@@ -157,7 +183,9 @@ export function AgencyTicketList({ clientId, query = '' }: { clientId: string; q
     );
   }
 
-  if (data.length === 0) {
+  const items = data.pages.flatMap((page) => page.items);
+
+  if (items.length === 0) {
     return (
       <p className="text-muted m-0 text-sm">
         {query ? t('tickets.noMatches') : t('tickets.empty')}
@@ -166,7 +194,7 @@ export function AgencyTicketList({ clientId, query = '' }: { clientId: string; q
   }
 
   const selectedTicket = selectedTicketId
-    ? (data.find((ticket) => ticket.id === selectedTicketId) ?? null)
+    ? (items.find((ticket) => ticket.id === selectedTicketId) ?? null)
     : null;
 
   if (selectedTicket) {
@@ -177,38 +205,58 @@ export function AgencyTicketList({ clientId, query = '' }: { clientId: string; q
         onBack={() => {
           setSelectedTicketId(null);
         }}
+        onRefresh={() => {
+          void refetch();
+        }}
       />
     );
   }
 
   return (
-    <ul className={isFetching ? 'stack-list opacity-70' : 'stack-list'}>
-      {data.map((ticket) => (
-        <li key={ticket.id} className="!p-0">
-          <button
-            type="button"
-            className="hover:bg-canvas-elevated/60 flex w-full cursor-pointer items-start justify-between gap-3 px-[0.9rem] py-[0.75rem] text-left transition-colors duration-150 focus-visible:outline-none focus-visible:shadow-[var(--focus-ring)]"
-            onClick={() => {
-              setSelectedTicketId(ticket.id);
-            }}
-          >
-            <span className="min-w-0">
-              <span className="block truncate text-sm font-semibold text-ink">
-                {ticket.title}
-                <span className="text-muted font-medium"> ({ticket.kind})</span>
-              </span>
-              {ticket.body ? (
-                <span className="text-muted mt-0.5 block truncate text-xs leading-relaxed">
-                  {ticket.body}
+    <div className="flex flex-col gap-4">
+      <ul className={isFetching && !isFetchingNextPage ? 'stack-list opacity-70' : 'stack-list'}>
+        {items.map((ticket) => (
+          <li key={ticket.id} className="!p-0">
+            <button
+              type="button"
+              className="hover:bg-canvas-elevated/60 flex w-full cursor-pointer items-start justify-between gap-3 px-[0.9rem] py-[0.75rem] text-left transition-colors duration-150 focus-visible:outline-none focus-visible:shadow-[var(--focus-ring)]"
+              onClick={() => {
+                setSelectedTicketId(ticket.id);
+              }}
+            >
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-semibold text-ink">
+                  {ticket.title}
+                  <span className="text-muted font-medium"> ({ticket.kind})</span>
                 </span>
-              ) : null}
-            </span>
-            <span className="text-muted shrink-0 text-xs font-medium tabular-nums">
-              {ticketStatusLabel(ticket.status, t)}
-            </span>
-          </button>
-        </li>
-      ))}
-    </ul>
+                {ticket.body ? (
+                  <span className="text-muted mt-0.5 block truncate text-xs leading-relaxed">
+                    {ticket.body}
+                  </span>
+                ) : null}
+              </span>
+              <span className="text-muted shrink-0 text-xs font-medium tabular-nums">
+                {ticketStatusLabel(ticket.status, t)}
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {hasNextPage ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="self-start"
+          disabled={isFetchingNextPage}
+          onClick={() => {
+            void fetchNextPage();
+          }}
+        >
+          {t('common.loadMore')}
+        </Button>
+      ) : null}
+    </div>
   );
 }

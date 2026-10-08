@@ -21,6 +21,11 @@ export const taskSchema = z.object({
 
 export const tasksSchema = z.array(taskSchema);
 
+export const tasksPageSchema = z.object({
+  items: z.array(taskSchema),
+  next_cursor: z.string().nullable(),
+});
+
 export const createTaskSchema = z.object({
   title: z
     .string()

@@ -61,7 +61,11 @@ describe('RequireAuth', () => {
         'client',
       );
 
-    server.use(mswHttp.get(`${env.API_URL}/client-auth/tickets`, () => HttpResponse.json([])));
+    server.use(
+      mswHttp.get(`${env.API_URL}/client-auth/tickets`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
+    );
 
     renderAt('/members');
 
@@ -81,7 +85,11 @@ describe('RequireAuth', () => {
       .getState()
       .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
 
-    server.use(mswHttp.get(`${env.API_URL}/clients`, () => HttpResponse.json([])));
+    server.use(
+      mswHttp.get(`${env.API_URL}/clients`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
+    );
 
     renderAt('/clients');
 
@@ -126,9 +134,15 @@ describe('RequireAuth', () => {
     const client = makeClient({ name: 'Northwind', notes: '' });
 
     server.use(
-      mswHttp.get(`${env.API_URL}/clients`, () => HttpResponse.json([client])),
-      mswHttp.get(`${env.API_URL}/clients/${client.id}/projects`, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/clients/${client.id}/tickets`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/clients`, () =>
+        HttpResponse.json({ items: [client], next_cursor: null }),
+      ),
+      mswHttp.get(`${env.API_URL}/clients/${client.id}/projects`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
+      mswHttp.get(`${env.API_URL}/clients/${client.id}/tickets`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
       mswHttp.get(`${env.API_URL}/clients/${client.id}/users`, () => HttpResponse.json([])),
     );
 
@@ -157,9 +171,11 @@ describe('RequireAuth', () => {
 
     server.use(
       mswHttp.get(`${env.API_URL}/clients/${project.client_id}/projects`, () =>
-        HttpResponse.json([project]),
+        HttpResponse.json({ items: [project], next_cursor: null }),
       ),
-      mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
       mswHttp.get(`${env.API_URL}/projects/${project.id}/files`, () => HttpResponse.json([])),
     );
 
@@ -190,7 +206,9 @@ describe('RequireAuth', () => {
 
     server.use(
       mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () => HttpResponse.json([task])),
+      mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () =>
+        HttpResponse.json({ items: [task], next_cursor: null }),
+      ),
       mswHttp.get(`${env.API_URL}/tasks/${task.id}/comments`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/tasks/${task.id}/time-entries`, () => HttpResponse.json([])),
     );

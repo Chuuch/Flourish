@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/react-query';
+import { infiniteQueryOptions } from '@tanstack/react-query';
 import { fetchClients } from './clients.api';
 
 export const clientKeys = {
@@ -9,8 +9,14 @@ export const clientKeys = {
 
 export const clientsQueries = {
   list: (q = '') =>
-    queryOptions({
+    infiniteQueryOptions({
       queryKey: clientKeys.list(q),
-      queryFn: () => fetchClients(q),
+      queryFn: ({ pageParam }) =>
+        fetchClients({
+          ...(q ? { q } : {}),
+          ...(pageParam ? { cursor: pageParam } : {}),
+        }),
+      initialPageParam: undefined as string | undefined,
+      getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
     }),
 };

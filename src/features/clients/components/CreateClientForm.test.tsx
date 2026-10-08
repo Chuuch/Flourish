@@ -50,7 +50,7 @@ describe('CreateClientForm', () => {
     const clients: Client[] = [];
 
     server.use(
-      mswHttp.get(clientsUrl, () => HttpResponse.json(clients)),
+      mswHttp.get(clientsUrl, () => HttpResponse.json({ items: clients, next_cursor: null })),
       mswHttp.post(clientsUrl, async ({ request }) => {
         const input = createClientSchema.parse(await request.json());
         const created = makeClient({ name: input.name, notes: input.notes });

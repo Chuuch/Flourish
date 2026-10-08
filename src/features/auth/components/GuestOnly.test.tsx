@@ -41,7 +41,9 @@ describe('GuestOnly', () => {
       .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
 
     server.use(
-      mswHttp.get(`${env.API_URL}/inbox/tasks`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/inbox/tasks`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
       mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
     );
 

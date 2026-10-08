@@ -1,19 +1,36 @@
 import { http } from '@/lib/api/http';
 import { withIdempotencyKey } from '@/lib/api/idempotency';
-import { invoiceSchema, invoicesSchema } from '../schemas/invoice.schema';
+import { invoiceSchema, invoicesPageSchema } from '../schemas/invoice.schema';
 import z from 'zod';
 import axios from 'axios';
 import { ApiError, apiErrorResponseSchema } from '@/lib/api/errors';
 import { apiClient } from '@/lib/api/client';
 
-export const fetchPortalInvoices = (q = '') =>
-  http.get('/client-auth/invoices', invoicesSchema, q ? { params: { q } } : undefined);
+const DEFAULT_LIMIT = 50;
+
+export const fetchPortalInvoices = (params?: { q?: string; cursor?: string; limit?: number }) =>
+  http.get('/client-auth/invoices', invoicesPageSchema, {
+    params: {
+      limit: params?.limit ?? DEFAULT_LIMIT,
+      ...(params?.q ? { q: params.q } : {}),
+      ...(params?.cursor ? { cursor: params.cursor } : {}),
+    },
+  });
 
 export const fetchPortalInvoice = (invoiceId: string) =>
   http.get(`/client-auth/invoices/${invoiceId}`, invoiceSchema);
 
-export const fetchInvoices = (clientId: string, q = '') =>
-  http.get(`/clients/${clientId}/invoices`, invoicesSchema, q ? { params: { q } } : undefined);
+export const fetchInvoices = (
+  clientId: string,
+  params?: { q?: string; cursor?: string; limit?: number },
+) =>
+  http.get(`/clients/${clientId}/invoices`, invoicesPageSchema, {
+    params: {
+      limit: params?.limit ?? DEFAULT_LIMIT,
+      ...(params?.q ? { q: params.q } : {}),
+      ...(params?.cursor ? { cursor: params.cursor } : {}),
+    },
+  });
 
 export const fetchInvoice = (invoiceId: string) =>
   http.get(`/invoices/${invoiceId}`, invoiceSchema);

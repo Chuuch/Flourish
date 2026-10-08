@@ -42,7 +42,10 @@ describe('TaskList', () => {
     server.use(
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.get(tasksUrl, () =>
-        HttpResponse.json([login, makeTask({ title: 'Ship site', notes: '', status: 'done' })]),
+        HttpResponse.json({
+          items: [login, makeTask({ title: 'Ship site', notes: '', status: 'done' })],
+          next_cursor: null,
+        }),
       ),
     );
 
@@ -76,7 +79,7 @@ describe('TaskList', () => {
     const membersUrl = `${env.API_URL}/members`;
     server.use(
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
-      mswHttp.get(tasksUrl, () => HttpResponse.json([task])),
+      mswHttp.get(tasksUrl, () => HttpResponse.json({ items: [task], next_cursor: null })),
       mswHttp.patch(`${env.API_URL}/tasks/${task.id}`, async ({ request }) => {
         const input = updateTaskSchema.parse(await request.json());
         expect(input.version).toBe(1);
@@ -116,7 +119,7 @@ describe('TaskList', () => {
 
     server.use(
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
-      mswHttp.get(tasksUrl, () => HttpResponse.json([task])),
+      mswHttp.get(tasksUrl, () => HttpResponse.json({ items: [task], next_cursor: null })),
       mswHttp.patch(`${env.API_URL}/tasks/${task.id}`, () =>
         HttpResponse.json(
           { error: { code: 'task_version_mismatch', message: 'task was updated by someone else' } },
@@ -138,11 +141,13 @@ describe('TaskList', () => {
 
     await chooseSelectOption(user, 'Status for Fix login', 'done');
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('task was updated by someone else');
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'This was updated by someone else. Refresh and try again.',
+    );
   });
 
   it('renders an empty state', async () => {
-    server.use(mswHttp.get(tasksUrl, () => HttpResponse.json([])));
+    server.use(mswHttp.get(tasksUrl, () => HttpResponse.json({ items: [], next_cursor: null })));
     renderWithProviders(
       <MemoryRouter>
         <TaskList clientId={clientId} projectId={projectId} />
@@ -174,14 +179,17 @@ describe('TaskList', () => {
     signInAs('member');
     server.use(
       mswHttp.get(tasksUrl, () =>
-        HttpResponse.json([
-          makeTask({
-            project_id: projectId,
-            title: 'Fix login',
-            notes: 'OAuth',
-            status: 'todo',
-          }),
-        ]),
+        HttpResponse.json({
+          items: [
+            makeTask({
+              project_id: projectId,
+              title: 'Fix login',
+              notes: 'OAuth',
+              status: 'todo',
+            }),
+          ],
+          next_cursor: null,
+        }),
       ),
     );
 
@@ -207,7 +215,7 @@ describe('TaskList', () => {
     let tasks: Task[] = [task];
 
     server.use(
-      mswHttp.get(tasksUrl, () => HttpResponse.json(tasks)),
+      mswHttp.get(tasksUrl, () => HttpResponse.json({ items: tasks, next_cursor: null })),
       mswHttp.delete(`${env.API_URL}/tasks/${task.id}`, () => {
         tasks = [];
         return new HttpResponse(null, { status: 204 });
@@ -238,7 +246,7 @@ describe('TaskList', () => {
     });
 
     server.use(
-      mswHttp.get(tasksUrl, () => HttpResponse.json([task])),
+      mswHttp.get(tasksUrl, () => HttpResponse.json({ items: [task], next_cursor: null })),
       mswHttp.delete(`${env.API_URL}/tasks/${task.id}`, () =>
         HttpResponse.json({ error: { code: 'forbidden', message: 'forbidden' } }, { status: 403 }),
       ),
@@ -266,7 +274,7 @@ describe('TaskList', () => {
     });
 
     server.use(
-      mswHttp.get(tasksUrl, () => HttpResponse.json([task])),
+      mswHttp.get(tasksUrl, () => HttpResponse.json({ items: [task], next_cursor: null })),
       mswHttp.delete(`${env.API_URL}/tasks/${task.id}`, () =>
         HttpResponse.json(
           { error: { code: 'task_not_found', message: 'task not found' } },

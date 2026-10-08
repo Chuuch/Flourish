@@ -26,10 +26,18 @@ function signInAs(role: 'owner' | 'admin' | 'member') {
 
 function mockHubApis(client: Client, projects: unknown[] = []) {
   server.use(
-    mswHttp.get(`${env.API_URL}/clients`, () => HttpResponse.json([client])),
-    mswHttp.get(`${env.API_URL}/clients/${client.id}/projects`, () => HttpResponse.json(projects)),
-    mswHttp.get(`${env.API_URL}/clients/${client.id}/tickets`, () => HttpResponse.json([])),
-    mswHttp.get(`${env.API_URL}/clients/${client.id}/invoices`, () => HttpResponse.json([])),
+    mswHttp.get(`${env.API_URL}/clients`, () =>
+      HttpResponse.json({ items: [client], next_cursor: null }),
+    ),
+    mswHttp.get(`${env.API_URL}/clients/${client.id}/projects`, () =>
+      HttpResponse.json({ items: projects, next_cursor: null }),
+    ),
+    mswHttp.get(`${env.API_URL}/clients/${client.id}/tickets`, () =>
+      HttpResponse.json({ items: [], next_cursor: null }),
+    ),
+    mswHttp.get(`${env.API_URL}/clients/${client.id}/invoices`, () =>
+      HttpResponse.json({ items: [], next_cursor: null }),
+    ),
     mswHttp.get(`${env.API_URL}/clients/${client.id}/users`, () => HttpResponse.json([])),
   );
 }
@@ -75,10 +83,18 @@ describe('ClientPage', () => {
     let client: Client = makeClient({ name: 'Northwind', notes: 'Retail' });
 
     server.use(
-      mswHttp.get(`${env.API_URL}/clients`, () => HttpResponse.json([client])),
-      mswHttp.get(`${env.API_URL}/clients/${client.id}/projects`, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/clients/${client.id}/tickets`, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/clients/${client.id}/invoices`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/clients`, () =>
+        HttpResponse.json({ items: [client], next_cursor: null }),
+      ),
+      mswHttp.get(`${env.API_URL}/clients/${client.id}/projects`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
+      mswHttp.get(`${env.API_URL}/clients/${client.id}/tickets`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
+      mswHttp.get(`${env.API_URL}/clients/${client.id}/invoices`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
       mswHttp.get(`${env.API_URL}/clients/${client.id}/users`, () => HttpResponse.json([])),
       mswHttp.patch(`${env.API_URL}/clients/${client.id}`, async ({ request }) => {
         const input = updateClientSchema.parse(await request.json());
@@ -118,7 +134,11 @@ describe('ClientPage', () => {
     signInAs('owner');
     const clientId = '44444444-4444-4444-8444-444444444444';
 
-    server.use(mswHttp.get(`${env.API_URL}/clients`, () => HttpResponse.json([])));
+    server.use(
+      mswHttp.get(`${env.API_URL}/clients`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
+    );
 
     renderHub(clientId);
 

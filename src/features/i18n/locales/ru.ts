@@ -382,6 +382,7 @@ export const ru: Record<MessageKey, string> = {
   'toast.sent': 'Отправлено',
   'toast.markedPaid': 'Отмечен как оплаченный',
   'toast.failed': 'Что-то пошло не так',
+  'toast.versionConflict': 'Это уже изменил кто-то другой. Обновите и попробуйте снова.',
   'toast.downloaded': 'Скачано',
   'home.slogan': 'Операционная система для вашего агентства.',
   'home.heroLead': 'Клиенты, проекты, задачи и время — в одном месте.',

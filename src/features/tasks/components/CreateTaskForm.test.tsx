@@ -57,7 +57,7 @@ describe('CreateTaskForm', () => {
 
     server.use(
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
-      mswHttp.get(tasksUrl, () => HttpResponse.json(tasks)),
+      mswHttp.get(tasksUrl, () => HttpResponse.json({ items: tasks, next_cursor: null })),
       mswHttp.post(tasksUrl, async ({ request }) => {
         const input = createTaskSchema.parse(await request.json());
         const created = makeTask({

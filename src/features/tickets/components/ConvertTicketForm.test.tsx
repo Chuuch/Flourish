@@ -35,7 +35,9 @@ describe('ConvertTicketForm', () => {
     signInAs('member');
     const website = makeProject({ client_id: clientId, name: 'Website' });
 
-    server.use(mswHttp.get(projectsUrl, () => HttpResponse.json([website])));
+    server.use(
+      mswHttp.get(projectsUrl, () => HttpResponse.json({ items: [website], next_cursor: null })),
+    );
 
     renderWithProviders(
       <MemoryRouter>
@@ -55,7 +57,9 @@ describe('ConvertTicketForm', () => {
     signInAs('owner');
     const website = makeProject({ client_id: clientId, name: 'Website' });
 
-    server.use(mswHttp.get(projectsUrl, () => HttpResponse.json([website])));
+    server.use(
+      mswHttp.get(projectsUrl, () => HttpResponse.json({ items: [website], next_cursor: null })),
+    );
 
     renderWithProviders(
       <MemoryRouter>
@@ -80,7 +84,7 @@ describe('ConvertTicketForm', () => {
     const website = makeProject({ client_id: clientId, name: 'Website' });
 
     server.use(
-      mswHttp.get(projectsUrl, () => HttpResponse.json([website])),
+      mswHttp.get(projectsUrl, () => HttpResponse.json({ items: [website], next_cursor: null })),
       mswHttp.post(convertUrl, async ({ request }) => {
         const input = convertTicketSchema.parse(await request.json());
         expect(input.project_id).toBe(website.id);
@@ -121,7 +125,7 @@ describe('ConvertTicketForm', () => {
     const website = makeProject({ client_id: clientId, name: 'Website' });
 
     server.use(
-      mswHttp.get(projectsUrl, () => HttpResponse.json([website])),
+      mswHttp.get(projectsUrl, () => HttpResponse.json({ items: [website], next_cursor: null })),
       mswHttp.post(convertUrl, () =>
         HttpResponse.json({ error: { message: 'ticket already converted' } }, { status: 409 }),
       ),

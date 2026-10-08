@@ -95,7 +95,7 @@ function ProjectHub({
     {
       to: projectTasksPath(clientId, projectId),
       label: t('common.tasks'),
-      count: tasks.data?.length,
+      count: tasks.data?.pages.flatMap((page) => page.items).length,
     },
     {
       to: projectFilesPath(clientId, projectId),

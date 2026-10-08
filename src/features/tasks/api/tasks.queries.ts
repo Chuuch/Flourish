@@ -1,5 +1,5 @@
 import { projectKeys } from '@/features/projects';
-import { queryOptions } from '@tanstack/react-query';
+import { infiniteQueryOptions } from '@tanstack/react-query';
 import { fetchInbox, fetchTasks } from './tasks.api';
 
 export const taskKeys = {
@@ -12,13 +12,25 @@ export const taskKeys = {
 
 export const tasksQueries = {
   list: (projectId: string, q = '') =>
-    queryOptions({
+    infiniteQueryOptions({
       queryKey: taskKeys.list(projectId, q),
-      queryFn: () => fetchTasks(projectId, q),
+      queryFn: ({ pageParam }) =>
+        fetchTasks(projectId, {
+          ...(q ? { q } : {}),
+          ...(pageParam ? { cursor: pageParam } : {}),
+        }),
+      initialPageParam: undefined as string | undefined,
+      getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
     }),
   inbox: (q = '') =>
-    queryOptions({
+    infiniteQueryOptions({
       queryKey: taskKeys.inboxList(q),
-      queryFn: () => fetchInbox(q),
+      queryFn: ({ pageParam }) =>
+        fetchInbox({
+          ...(q ? { q } : {}),
+          ...(pageParam ? { cursor: pageParam } : {}),
+        }),
+      initialPageParam: undefined as string | undefined,
+      getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
     }),
 };

@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { tasksQueries } from '../api/tasks.queries';
 
 export function useTasks(projectId: string, q = '') {
-  return useQuery(tasksQueries.list(projectId, q));
+  return useInfiniteQuery(tasksQueries.list(projectId, q));
 }

@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/react-query';
+import { infiniteQueryOptions } from '@tanstack/react-query';
 import { fetchProjects } from './projects.api';
 
 export const projectKeys = {
@@ -9,8 +9,14 @@ export const projectKeys = {
 
 export const projectsQueries = {
   list: (clientId: string, q = '') =>
-    queryOptions({
+    infiniteQueryOptions({
       queryKey: projectKeys.list(clientId, q),
-      queryFn: () => fetchProjects(clientId, q),
+      queryFn: ({ pageParam }) =>
+        fetchProjects(clientId, {
+          ...(q ? { q } : {}),
+          ...(pageParam ? { cursor: pageParam } : {}),
+        }),
+      initialPageParam: undefined as string | undefined,
+      getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
     }),
 };

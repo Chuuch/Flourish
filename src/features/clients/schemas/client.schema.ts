@@ -24,7 +24,10 @@ export const clientSchema = z.object({
   updated_at: z.string(),
 });
 
-export const clientsSchema = z.array(clientSchema);
+export const clientsPageSchema = z.object({
+  items: z.array(clientSchema),
+  next_cursor: z.string().nullable(),
+});
 
 export const createClientSchema = z.object({
   name: z

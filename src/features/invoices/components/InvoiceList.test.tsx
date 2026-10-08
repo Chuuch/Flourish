@@ -26,39 +26,42 @@ describe('InvoiceList', () => {
 
     server.use(
       mswHttp.get(`${env.API_URL}/clients/${clientId}/invoices`, () =>
-        HttpResponse.json([
-          {
-            id: invoiceId,
-            organization_id: testOrg.id,
-            client_id: clientId,
-            number: 'INV-2026-0001',
-            status: 'draft',
-            currency: 'EUR',
-            rate_cents: 3000,
-            organization_name: 'Acme',
-            client_name: 'Northwind',
-            period_from: '2026-09-28T00:00:00.000Z',
-            period_to: '2026-10-05T00:00:00.000Z',
-            issued_at: '2026-10-01T12:00:00.000Z',
-            due_at: '2026-10-15T12:00:00.000Z',
-            sent_at: null,
-            paid_at: null,
-            total_minutes: 90,
-            total_cents: 4500,
-            created_at: '2026-10-01T12:00:00.000Z',
-            updated_at: '2026-10-01T12:00:00.000Z',
-            lines: [
-              {
-                id: lineId,
-                project_name: 'Portal',
-                task_title: 'Draw',
-                minutes: 90,
-                amount_cents: 4500,
-                position: 1,
-              },
-            ],
-          },
-        ]),
+        HttpResponse.json({
+          items: [
+            {
+              id: invoiceId,
+              organization_id: testOrg.id,
+              client_id: clientId,
+              number: 'INV-2026-0001',
+              status: 'draft',
+              currency: 'EUR',
+              rate_cents: 3000,
+              organization_name: 'Acme',
+              client_name: 'Northwind',
+              period_from: '2026-09-28T00:00:00.000Z',
+              period_to: '2026-10-05T00:00:00.000Z',
+              issued_at: '2026-10-01T12:00:00.000Z',
+              due_at: '2026-10-15T12:00:00.000Z',
+              sent_at: null,
+              paid_at: null,
+              total_minutes: 90,
+              total_cents: 4500,
+              created_at: '2026-10-01T12:00:00.000Z',
+              updated_at: '2026-10-01T12:00:00.000Z',
+              lines: [
+                {
+                  id: lineId,
+                  project_name: 'Portal',
+                  task_title: 'Draw',
+                  minutes: 90,
+                  amount_cents: 4500,
+                  position: 1,
+                },
+              ],
+            },
+          ],
+          next_cursor: null,
+        }),
       ),
     );
 

@@ -85,17 +85,17 @@ function ClientHub({ clientId, canManage }: { clientId: string; canManage: boole
     {
       to: clientProjectsPath(clientId),
       label: t('common.projects'),
-      count: projects.data?.length,
+      count: projects.data?.pages.flatMap((page) => page.items).length,
     },
     {
       to: clientTicketsPath(clientId),
       label: t('common.tickets'),
-      count: tickets.data?.length,
+      count: tickets.data?.pages.flatMap((page) => page.items).length,
     },
     {
       to: clientInvoicesPath(clientId),
       label: t('common.invoices'),
-      count: invoices.data?.length,
+      count: invoices.data?.pages.flatMap((page) => page.items).length,
     },
     {
       to: clientUsersPath(clientId),

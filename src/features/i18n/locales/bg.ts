@@ -382,6 +382,7 @@ export const bg: Record<MessageKey, string> = {
   'toast.sent': 'Изпратено',
   'toast.markedPaid': 'Маркирана като платена',
   'toast.failed': 'Нещо се обърка',
+  'toast.versionConflict': 'Някой друг е променил това. Обновете и опитайте отново.',
   'toast.downloaded': 'Изтеглено',
   'home.slogan': 'Операционната система за твоята агенция.',
   'home.heroLead': 'Клиенти, проекти, задачи и време — на едно място.',

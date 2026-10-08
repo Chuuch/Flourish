@@ -1,5 +1,6 @@
 import js from '@eslint/js';
 import { defineConfig } from 'eslint/config';
+import type { ESLint } from 'eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
@@ -8,7 +9,7 @@ import query from '@tanstack/eslint-plugin-query';
 
 export default defineConfig(
   {
-    ignores: ['dist', 'coverage', 'node_modules'],
+    ignores: ['dist', 'coverage', 'node_modules', 'playwright-report', 'test-results'],
   },
 
   {
@@ -28,7 +29,8 @@ export default defineConfig(
     },
 
     plugins: {
-      'react-hooks': reactHooks,
+      // Plugin ships a `configs.flat` shape ESLint 10's Plugin type rejects.
+      'react-hooks': reactHooks as unknown as ESLint.Plugin,
       'react-refresh': reactRefresh,
     },
 
