@@ -54,9 +54,11 @@ export function LoginForm() {
 
       {login.isError ? <Alert>{login.error.message}</Alert> : null}
 
-      <Button type="submit" disabled={login.isPending}>
-        {t('auth.signIn')}
-      </Button>
+      <div className="form-actions">
+        <Button type="submit" disabled={login.isPending}>
+          {t('auth.signIn')}
+        </Button>
+      </div>
     </form>
   );
 }

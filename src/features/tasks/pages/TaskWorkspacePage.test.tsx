@@ -9,14 +9,14 @@ import { makeTask } from '@/test/factories/task';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { useAuthStore } from '@/features/auth';
 import userEvent from '@testing-library/user-event';
+import { chooseSelectOption } from '@/test/select';
 import { updateTaskSchema, type Task } from '../schemas/task.schema';
+import { makeOrganization } from '@/test/factories/organization';
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore
@@ -28,7 +28,7 @@ function mockWorkspaceApis(task: Task) {
   server.use(
     mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
     mswHttp.get(`${env.API_URL}/projects/${task.project_id}/tasks`, () =>
-      HttpResponse.json([task]),
+      HttpResponse.json({ items: [task], next_cursor: null }),
     ),
     mswHttp.get(`${env.API_URL}/tasks/${task.id}/comments`, () => HttpResponse.json([])),
     mswHttp.get(`${env.API_URL}/tasks/${task.id}/time-entries`, () => HttpResponse.json([])),
@@ -74,7 +74,7 @@ describe('TaskWorkspacePage', () => {
     server.use(
       mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/projects/${task.project_id}/tasks`, () =>
-        HttpResponse.json([task]),
+        HttpResponse.json({ items: [task], next_cursor: null }),
       ),
       mswHttp.get(`${env.API_URL}/tasks/${task.id}/comments`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/tasks/${task.id}/time-entries`, () => HttpResponse.json([])),
@@ -88,11 +88,17 @@ describe('TaskWorkspacePage', () => {
 
     renderWorkspace(clientId, task.project_id, task.id);
 
-    expect(await screen.findByLabelText('Status for Fix login')).toHaveValue('todo');
+    expect(await screen.findByLabelText('Status for Fix login')).toHaveAttribute(
+      'data-value',
+      'todo',
+    );
 
-    await user.selectOptions(screen.getByLabelText('Status for Fix login'), 'done');
+    await chooseSelectOption(user, 'Status for Fix login', 'done');
 
-    expect(await screen.findByLabelText('Status for Fix login')).toHaveValue('done');
+    expect(await screen.findByLabelText('Status for Fix login')).toHaveAttribute(
+      'data-value',
+      'done',
+    );
   });
 
   it('hides manage controls for members', async () => {
@@ -114,7 +120,9 @@ describe('TaskWorkspacePage', () => {
     const taskId = crypto.randomUUID();
 
     server.use(
-      mswHttp.get(`${env.API_URL}/projects/${projectId}/tasks`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/projects/${projectId}/tasks`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
     );
 
     renderWorkspace(clientId, projectId, taskId);

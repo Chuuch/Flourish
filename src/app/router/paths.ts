@@ -7,12 +7,16 @@ export const paths = {
   resetPassword: '/reset-password',
   account: '/account',
   members: '/members',
+  activity: '/activity',
+  reports: '/reports',
   clients: '/clients',
   projects: '/projects',
-  tasks: '/tasks',
   portal: '/portal',
   portalLogin: '/portal/login',
   portalAccount: '/portal/account',
+  notifications: '/notifications',
+  portalNotifications: '/portal/notifications',
+  portalInvoices: '/portal/invoices',
 } as const;
 
 export function clientPath(clientId: string): string {
@@ -29,6 +33,18 @@ export function clientUsersPath(clientId: string): string {
 
 export function clientTicketsPath(clientId: string): string {
   return `${paths.clients}/${clientId}/tickets`;
+}
+
+export function clientInvoicesPath(clientId: string): string {
+  return `${paths.clients}/${clientId}/invoices`;
+}
+
+export function invoicePath(clientId: string, invoiceId: string): string {
+  return `${paths.clients}/${clientId}/invoices/${invoiceId}`;
+}
+
+export function portalInvoicePath(invoiceId: string): string {
+  return `${paths.portalInvoices}/${invoiceId}`;
 }
 
 export function projectPath(clientId: string, projectId: string): string {

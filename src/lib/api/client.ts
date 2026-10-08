@@ -14,9 +14,14 @@ export type AuthRealm = 'agency' | 'portal';
 let access_token: string | null = null;
 let authRealm: AuthRealm | null = null;
 let refreshPromise: Promise<string> | null = null;
+/** After a failed refresh, stop hammering /auth/refresh until login or an explicit reset. */
+let refreshBlocked = false;
 
 export const setAccessToken = (token: string | null): void => {
   access_token = token;
+  if (token) {
+    refreshBlocked = false;
+  }
 };
 
 export const getAccessToken = (): string | null => access_token;
@@ -26,6 +31,13 @@ export const setAuthRealm = (realm: AuthRealm | null): void => {
 };
 
 export const getAuthRealm = (): AuthRealm | null => authRealm;
+
+/** Allow one more refresh attempt (e.g. bootstrap switching agency → portal). */
+export const allowRefreshAttempt = (): void => {
+  refreshBlocked = false;
+};
+
+export const isRefreshBlocked = (): boolean => refreshBlocked;
 
 export const apiClient = axios.create({
   baseURL: env.API_URL,
@@ -67,7 +79,11 @@ function toApiError(error: unknown): ApiError {
   return new ApiError('An unknown error has occurred', 0);
 }
 
-async function refreshAccessToken(): Promise<string> {
+export async function refreshAccessToken(): Promise<string> {
+  if (refreshBlocked) {
+    throw new ApiError('Session expired', 401, 'refresh_blocked');
+  }
+
   if (!refreshPromise) {
     const refreshPath = authRealm === 'portal' ? '/client-auth/refresh' : '/auth/refresh';
     const schema = authRealm === 'portal' ? portalAuthResponseSchema : refreshResponseSchema;
@@ -83,6 +99,10 @@ async function refreshAccessToken(): Promise<string> {
 
         setAccessToken(parsed.data.access_token);
         return parsed.data.access_token;
+      })
+      .catch((error: unknown) => {
+        refreshBlocked = true;
+        throw toApiError(error);
       })
       .finally(() => {
         refreshPromise = null;
@@ -106,7 +126,7 @@ apiClient.interceptors.response.use(
       ? (error.config as RetryConfig | undefined)
       : undefined;
 
-    if (apiError.status === 401 && originalRequest && !originalRequest._retry) {
+    if (apiError.status === 401 && originalRequest && !originalRequest._retry && !refreshBlocked) {
       try {
         const token = await refreshAccessToken();
         originalRequest._retry = true;

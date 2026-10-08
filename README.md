@@ -24,6 +24,8 @@ npm run dev # http://localhost:5173
 | npm run test          | Vitest, single run                                 |
 | npm run test:watch    | Vitest in watch mode                               |
 | npm run test:coverage | Coverage report                                    |
+| npm run test:e2e      | Playwright smokes (needs live API + seed)          |
+| npm run test:e2e:ui   | Playwright UI mode                                 |
 | npm run lint:fix      | ESLint with autofix                                |
 | npm run format        | Prettier, write                                    |
 | npm run build         | Production build to dist/                          |
@@ -75,6 +77,8 @@ src/
 ## Testing
 
 Vitest + Testing Library + MSW. src/test/setup.ts starts an MSW server with onUnhandledRequest: 'error', so any request without a handler fails the test. Use renderWithProviders for components that need TanStack Query, and src/test/factories for fixtures.
+
+Playwright smokes live under `e2e/` (staff login, create client, portal ticket). See [e2e/README.md](e2e/README.md) for API seed credentials and env vars.
 
 ## Docker
 

@@ -59,11 +59,13 @@ export function RegisterForm() {
 
       {registerAccount.isError ? <Alert>{registerAccount.error.message}</Alert> : null}
 
-      <Button type="submit" disabled={registerAccount.isPending}>
-        {t('auth.createAccount')}
-      </Button>
+      <div className="form-actions">
+        <Button type="submit" disabled={registerAccount.isPending}>
+          {t('auth.createAccount')}
+        </Button>
+      </div>
 
-      <p>
+      <p className="text-muted m-0 text-sm">
         {t('auth.alreadyHaveAccount')} <Link to={paths.login}>{t('auth.signIn')}</Link>
       </p>
     </form>

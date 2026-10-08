@@ -9,25 +9,23 @@ import { HttpResponse, http as mswHttp } from 'msw';
 import { useAuthStore } from '@/features/auth';
 import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router';
 import { routes } from '@/app/router/routes';
+import { makeOrganization } from '@/test/factories/organization';
+import { makeClient } from '@/test/factories/client';
 
 const loginUrl = `${env.API_URL}/client-auth/login`;
 const ticketsUrl = `${env.API_URL}/client-auth/tickets`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
-const testClient = {
-  id: crypto.randomUUID(),
+const testClient = makeClient({
   organization_id: testOrg.id,
   name: 'Northwind',
-  notes: '',
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 const testUser = {
   id: crypto.randomUUID(),
@@ -79,7 +77,10 @@ describe('PortalLoginForm', () => {
           role: 'client',
         });
       }),
-      mswHttp.get(ticketsUrl, () => HttpResponse.json([])),
+      mswHttp.get(ticketsUrl, () => HttpResponse.json({ items: [], next_cursor: null })),
+      mswHttp.get(`${env.API_URL}/client-auth/invoices`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
     );
 
     const router = createMemoryRouter(routes, { initialEntries: ['/portal/login'] });
@@ -90,8 +91,8 @@ describe('PortalLoginForm', () => {
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
     expect(await screen.findByRole('heading', { name: 'Portal' })).toBeInTheDocument();
-    expect(screen.getByText('pat@example.com')).toBeInTheDocument();
-    expect(screen.getAllByText('Northwind')).toHaveLength(2);
+    expect(screen.getByText(/pat@example.com/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Northwind/)).toHaveLength(2);
     expect(useAuthStore.getState().role).toBe('client');
     expect(useAuthStore.getState().client?.name).toBe('Northwind');
   });

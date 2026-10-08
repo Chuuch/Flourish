@@ -11,18 +11,17 @@ import { MemoryRouter, Route, Routes } from 'react-router';
 import { CreateCommentForm } from '@/features/comments/components/CreateCommentForm';
 import { createCommentSchema, type Comment } from '@/features/comments/schemas/comment.schema';
 import { CommentsPage } from '@/features/comments';
+import { makeOrganization } from '@/test/factories/organization';
 
-const clientId = '44444444-4444-4444-4444-444444444444';
-const projectId = '55555555-5555-5555-5555-555555555555';
-const taskId = '66666666-6666-6666-6666-666666666666';
+const clientId = '44444444-4444-4444-8444-444444444444';
+const projectId = '55555555-5555-5555-8555-555555555555';
+const taskId = '66666666-6666-4666-8666-666666666666';
 const commentsUrl = `${env.API_URL}/tasks/${taskId}/comments`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member', userId = crypto.randomUUID()) {
   useAuthStore
@@ -55,6 +54,7 @@ describe('CreateCommentForm', () => {
     const comments: Comment[] = [];
 
     server.use(
+      mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
       mswHttp.get(commentsUrl, () => HttpResponse.json(comments)),
       mswHttp.post(commentsUrl, async ({ request }) => {
         const input = createCommentSchema.parse(await request.json());
@@ -86,7 +86,8 @@ describe('CreateCommentForm', () => {
     await user.type(screen.getByLabelText('Body'), 'Check the OAuth redirect');
     await user.click(screen.getByRole('button', { name: 'Add comment' }));
 
-    expect(await screen.findByText(`${userId} - Check the OAuth redirect`)).toBeInTheDocument();
+    expect(await screen.findByText('ada@example.com')).toBeInTheDocument();
+    expect(screen.getByText('Check the OAuth redirect')).toBeInTheDocument();
     expect(screen.getByLabelText('Body')).toHaveValue('');
   });
 

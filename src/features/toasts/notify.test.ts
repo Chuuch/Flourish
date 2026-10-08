@@ -19,6 +19,13 @@ describe('notify', () => {
     expect(toast.error).toHaveBeenCalledWith('forbidden');
   });
 
+  it('shows a version conflict toast', () => {
+    notifyError(new ApiError('task was updated by someone else', 409, 'task_version_mismatch'));
+    expect(toast.error).toHaveBeenCalledWith(
+      'This was updated by someone else. Refresh and try again.',
+    );
+  });
+
   it('shows a fallback error toast', () => {
     notifyError('nope');
     expect(toast.error).toHaveBeenCalledWith('Something went wrong');

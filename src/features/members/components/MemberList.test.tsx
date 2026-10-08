@@ -8,16 +8,16 @@ import { screen } from '@testing-library/react';
 import { makeMember } from '@/test/factories/member';
 import { useAuthStore } from '@/features/auth';
 import userEvent from '@testing-library/user-event';
+import { chooseSelectOption } from '@/test/select';
 import { updateMemberSchema, type Member } from '../schemas/member.schema';
+import { makeOrganization } from '@/test/factories/organization';
 
 const membersUrl = `${env.API_URL}/members`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore
@@ -38,8 +38,10 @@ describe('MemberList', () => {
 
     renderWithProviders(<MemberList />);
 
-    expect(await screen.findByText('ada@example.com - owner')).toBeInTheDocument();
-    expect(screen.getByText('linus@example.com - member')).toBeInTheDocument();
+    expect(await screen.findByText('ada@example.com')).toBeInTheDocument();
+    expect(screen.getByText('linus@example.com')).toBeInTheDocument();
+    expect(document.querySelector('[data-role="owner"]')).toHaveTextContent('Owner');
+    expect(document.querySelector('[data-role="member"]')).toHaveTextContent('Member');
   });
 
   it('renders an empty state', async () => {
@@ -73,7 +75,7 @@ describe('MemberList', () => {
 
     renderWithProviders(<MemberList />);
 
-    expect(await screen.findByText('linus@example.com - member')).toBeInTheDocument();
+    expect(await screen.findByText('linus@example.com')).toBeInTheDocument();
     expect(screen.queryByLabelText('Role for linus@example.com')).not.toBeInTheDocument();
     expect(
       screen.queryByRole('button', { name: 'Remove linus@example.com' }),
@@ -96,12 +98,22 @@ describe('MemberList', () => {
 
     renderWithProviders(<MemberList />);
 
-    expect(await screen.findByLabelText('Role for linus@example.com')).toHaveValue('member');
+    expect(await screen.findByLabelText('Role for linus@example.com')).toHaveAttribute(
+      'data-value',
+      'member',
+    );
 
-    await user.selectOptions(screen.getByLabelText('Role for linus@example.com'), 'admin');
+    await chooseSelectOption(user, 'Role for linus@example.com', 'admin');
 
-    expect(await screen.findByText('linus@example.com - admin')).toBeInTheDocument();
-    expect(screen.getByLabelText('Role for linus@example.com')).toHaveValue('admin');
+    const row = (await screen.findByText('linus@example.com')).closest('li');
+    if (!row) {
+      throw new Error('expected member row');
+    }
+    expect(row.querySelector('[data-role="admin"]')).toHaveTextContent('Admin');
+    expect(screen.getByLabelText('Role for linus@example.com')).toHaveAttribute(
+      'data-value',
+      'admin',
+    );
   });
 
   it('removes a member', async () => {

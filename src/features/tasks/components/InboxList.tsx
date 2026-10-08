@@ -1,37 +1,131 @@
 import { useMemo, useState } from 'react';
-import { Alert } from '@/components/ui';
+import { Alert, Button, SelectField } from '@/components/ui';
+import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 import { useAuthStore } from '@/features/auth';
+import { useI18n } from '@/features/i18n';
+import { isVersionConflict } from '@/lib/api/versionConflict';
 import { useInbox } from '../hooks/useInbox';
 import { useUpdateTask } from '../hooks/useUpdateTask';
-import { taskStatusSchema, type TaskStatus } from '../schemas/task.schema';
+import { taskStatusSchema, type Task, type TaskStatus } from '../schemas/task.schema';
 import { EditTaskForm } from './EditTaskForm';
-import { useI18n } from '@/features/i18n';
-import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 
 type InboxFilter = 'all' | 'mine' | 'unassigned';
 
-export function InboxList() {
-  const userId = useAuthStore((state) => state.user?.id);
-  const { data, isPending, isError, error, refetch } = useInbox();
+function statusLabel(
+  status: TaskStatus,
+  t: (key: 'tasks.todo' | 'tasks.inProgress' | 'tasks.done') => string,
+): string {
+  switch (status) {
+    case 'in_progress':
+      return t('tasks.inProgress');
+    case 'done':
+      return t('tasks.done');
+    default:
+      return t('tasks.todo');
+  }
+}
+
+function InboxTaskDetail({
+  task,
+  onBack,
+  onRefresh,
+}: {
+  task: Task;
+  onBack: () => void;
+  onRefresh: () => void;
+}) {
   const updateTask = useUpdateTask();
   const { t } = useI18n();
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="page-header">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="self-start px-0"
+          onClick={onBack}
+        >
+          {t('inbox.back')}
+        </Button>
+        <h2 className="m-0 text-base font-semibold tracking-tight">{task.title}</h2>
+        {task.notes ? <p className="text-muted m-0 text-sm leading-relaxed">{task.notes}</p> : null}
+      </div>
+
+      {updateTask.isError ? (
+        <Alert>
+          <p>
+            {isVersionConflict(updateTask.error)
+              ? t('toast.versionConflict')
+              : updateTask.error.message}
+          </p>
+          {isVersionConflict(updateTask.error) ? (
+            <Button type="button" variant="ghost" size="sm" onClick={onRefresh}>
+              {t('common.retry')}
+            </Button>
+          ) : null}
+        </Alert>
+      ) : null}
+
+      <SelectField
+        label={t('tasks.statusFor', { title: task.title })}
+        value={task.status}
+        disabled={updateTask.isPending}
+        onChange={(event) => {
+          const parsed = taskStatusSchema.safeParse(event.currentTarget.value);
+
+          if (!parsed.success) {
+            return;
+          }
+
+          const status: TaskStatus = parsed.data;
+          updateTask.mutate({
+            taskId: task.id,
+            input: { status, version: task.version },
+          });
+        }}
+      >
+        <option value="todo">{t('tasks.todo')}</option>
+        <option value="in_progress">{t('tasks.inProgress')}</option>
+        <option value="done">{t('tasks.done')}</option>
+      </SelectField>
+
+      <EditTaskForm task={task} />
+    </div>
+  );
+}
+
+export function InboxList({ query = '' }: { query?: string }) {
+  const userId = useAuthStore((state) => state.user?.id);
+  const {
+    data,
+    isPending,
+    isError,
+    error,
+    refetch,
+    isFetching,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useInbox(query);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [filter, setFilter] = useState<InboxFilter>('all');
+  const { t } = useI18n();
 
-  const tasks = useMemo(() => {
-    if (!data) {
-      return [];
-    }
+  const items = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data]);
 
+  const filteredItems = useMemo(() => {
     if (filter === 'mine') {
-      return data.filter((task) => task.assignee_id === userId);
+      return items.filter((task) => task.assignee_id === userId);
     }
 
     if (filter === 'unassigned') {
-      return data.filter((task) => task.assignee_id === null);
+      return items.filter((task) => task.assignee_id === null);
     }
 
-    return data;
-  }, [data, filter, userId]);
+    return items;
+  }, [filter, items, userId]);
 
   if (isPending) {
     return <ListSkeleton label={t('inbox.loading')} />;
@@ -40,16 +134,34 @@ export function InboxList() {
   if (isError) {
     return (
       <Alert>
-        <p>{t('inbox.loadError', { message: error instanceof Error ? error.message : '' })}</p>
-        <button type="button" onClick={() => void refetch()}>
+        <p>{t('inbox.loadError', { message: error.message })}</p>
+        <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
           {t('common.retry')}
-        </button>
+        </Button>
       </Alert>
     );
   }
 
+  const selectedTask = selectedTaskId
+    ? (filteredItems.find((task) => task.id === selectedTaskId) ?? null)
+    : null;
+
+  if (selectedTask) {
+    return (
+      <InboxTaskDetail
+        task={selectedTask}
+        onBack={() => {
+          setSelectedTaskId(null);
+        }}
+        onRefresh={() => {
+          void refetch();
+        }}
+      />
+    );
+  }
+
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <fieldset className="inbox-filters">
         <legend>{t('inbox.filter')}</legend>
         <label>
@@ -87,44 +199,56 @@ export function InboxList() {
         </label>
       </fieldset>
 
-      {updateTask.isError ? <Alert>{updateTask.error.message}</Alert> : null}
-
-      {tasks.length === 0 ? (
-        <p>{t('inbox.empty')}</p>
+      {filteredItems.length === 0 ? (
+        <p className="text-muted m-0 text-sm">{query ? t('inbox.noMatches') : t('inbox.empty')}</p>
       ) : (
-        <ul>
-          {tasks.map((task) => (
-            <li key={task.id}>
-              <p>{task.notes ? `${task.title} - ${task.notes}` : task.title}</p>
-              <label>
-                {t('tasks.statusFor', { title: task.title })}
-                <select
-                  value={task.status}
-                  disabled={updateTask.isPending}
-                  onChange={(event) => {
-                    const parsed = taskStatusSchema.safeParse(event.currentTarget.value);
-
-                    if (!parsed.success) {
-                      return;
-                    }
-
-                    const status: TaskStatus = parsed.data;
-                    updateTask.mutate({
-                      taskId: task.id,
-                      input: { status, version: task.version },
-                    });
+        <>
+          <ul
+            className={isFetching && !isFetchingNextPage ? 'stack-list opacity-70' : 'stack-list'}
+          >
+            {filteredItems.map((task) => (
+              <li key={task.id} className="!p-0">
+                <button
+                  type="button"
+                  className="hover:bg-canvas-elevated/60 flex w-full cursor-pointer items-start justify-between gap-3 px-[0.9rem] py-[0.75rem] text-left transition-colors duration-150 focus-visible:outline-none focus-visible:shadow-[var(--focus-ring)]"
+                  onClick={() => {
+                    setSelectedTaskId(task.id);
                   }}
                 >
-                  <option value="todo">{t('tasks.todo')}</option>
-                  <option value="in_progress">{t('tasks.inProgress')}</option>
-                  <option value="done">{t('tasks.done')}</option>
-                </select>
-              </label>
-              <EditTaskForm task={task} />
-            </li>
-          ))}
-        </ul>
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-semibold text-ink">
+                      {task.title}
+                    </span>
+                    {task.notes ? (
+                      <span className="text-muted mt-0.5 block truncate text-xs leading-relaxed">
+                        {task.notes}
+                      </span>
+                    ) : null}
+                  </span>
+                  <span className="text-muted shrink-0 text-xs font-medium tabular-nums">
+                    {statusLabel(task.status, t)}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          {hasNextPage ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="self-start"
+              disabled={isFetchingNextPage}
+              onClick={() => {
+                void fetchNextPage();
+              }}
+            >
+              {t('common.loadMore')}
+            </Button>
+          ) : null}
+        </>
       )}
-    </>
+    </div>
   );
 }

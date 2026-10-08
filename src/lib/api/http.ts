@@ -12,12 +12,17 @@ export async function request<T>(schema: z.ZodType<T>, config: AxiosRequestConfi
 
   if (!parsed.success) {
     const issues = z.treeifyError(parsed.error);
+    const firstIssue = parsed.error.issues[0];
+    const detail =
+      firstIssue === undefined
+        ? ''
+        : `: ${firstIssue.path.join('.') || 'root'} ${firstIssue.message}`;
     logger.error('API response failed schema validation', undefined, {
       url: config.url,
       issues,
     });
     throw new ApiError(
-      'Response validation failed',
+      `Response validation failed${detail}`,
       response.status,
       'INVALID_RESPONSE',
       z.treeifyError(parsed.error),

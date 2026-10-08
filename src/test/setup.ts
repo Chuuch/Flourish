@@ -4,6 +4,7 @@ import { server } from './server';
 import { useAuthStore } from '@/features/auth';
 import { applyTheme, THEME_STORAGE_KEY, useThemeStore } from '@/features/theme';
 import { applyLocale, LOCALE_STORAGE_KEY, useI18nStore } from '@/features/i18n';
+import { allowRefreshAttempt } from '@/lib/api/client';
 
 vi.mock('sonner', () => ({
   toast: {
@@ -23,6 +24,7 @@ afterEach(() => {
 
 afterEach(() => {
   useAuthStore.getState().clearSession();
+  allowRefreshAttempt();
 });
 
 afterEach(() => {

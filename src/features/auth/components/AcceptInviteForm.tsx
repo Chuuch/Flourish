@@ -59,9 +59,11 @@ export function AcceptInviteForm() {
 
       {acceptInvite.isError ? <Alert>{acceptInvite.error.message}</Alert> : null}
 
-      <Button type="submit" disabled={acceptInvite.isPending}>
-        {t('auth.setPasswordAction')}
-      </Button>
+      <div className="form-actions">
+        <Button type="submit" disabled={acceptInvite.isPending}>
+          {t('auth.setPasswordAction')}
+        </Button>
+      </div>
     </form>
   );
 }

@@ -6,6 +6,13 @@ export const sessionClientSchema = z.object({
   organization_id: z.string(),
   name: z.string().min(1),
   notes: z.string(),
+  legal_name: z.string().default(''),
+  vat_id: z.string().default(''),
+  address_line1: z.string().default(''),
+  address_line2: z.string().default(''),
+  city: z.string().default(''),
+  postal_code: z.string().default(''),
+  country: z.string().default(''),
   created_at: z.string(),
   updated_at: z.string(),
 });

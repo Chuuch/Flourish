@@ -5,20 +5,21 @@ import { HttpResponse, http as mswHttp } from 'msw';
 import { renderWithProviders } from '@/test/render';
 import { screen } from '@testing-library/react';
 import { makeComment } from '@/test/factories/comment';
+import { makeMember } from '@/test/factories/member';
 import { useAuthStore } from '@/features/auth';
 import userEvent from '@testing-library/user-event';
 import { CommentList } from '@/features/comments/components/CommentList';
 import { updateCommentSchema, type Comment } from '@/features/comments/schemas/comment.schema';
+import { makeOrganization } from '@/test/factories/organization';
 
-const taskId = '66666666-6666-6666-6666-666666666666';
+const taskId = '66666666-6666-4666-8666-666666666666';
 const commentsUrl = `${env.API_URL}/tasks/${taskId}/comments`;
+const membersUrl = `${env.API_URL}/members`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member', userId = crypto.randomUUID()) {
   useAuthStore
@@ -37,16 +38,32 @@ describe('CommentList', () => {
       body: 'Check the OAuth redirect',
     });
 
-    server.use(mswHttp.get(commentsUrl, () => HttpResponse.json([comment])));
+    server.use(
+      mswHttp.get(membersUrl, () =>
+        HttpResponse.json([
+          makeMember({
+            user_id: authorId,
+            email: 'ada@example.com',
+            display_name: 'Ada Lovelace',
+          }),
+        ]),
+      ),
+      mswHttp.get(commentsUrl, () => HttpResponse.json([comment])),
+    );
 
     renderWithProviders(<CommentList taskId={taskId} />);
 
-    expect(await screen.findByText(`${authorId} - Check the OAuth redirect`)).toBeInTheDocument();
+    expect(await screen.findByText('Ada Lovelace')).toBeInTheDocument();
+    expect(screen.queryByText(authorId)).not.toBeInTheDocument();
+    expect(screen.getByText('Check the OAuth redirect')).toBeInTheDocument();
   });
 
   it('renders an empty state', async () => {
     signInAs('member');
-    server.use(mswHttp.get(commentsUrl, () => HttpResponse.json([])));
+    server.use(
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
+      mswHttp.get(commentsUrl, () => HttpResponse.json([])),
+    );
     renderWithProviders(<CommentList taskId={taskId} />);
 
     expect(await screen.findByText('No comments yet.')).toBeInTheDocument();
@@ -55,6 +72,7 @@ describe('CommentList', () => {
   it('renders the API error response', async () => {
     signInAs('member');
     server.use(
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.get(commentsUrl, () =>
         HttpResponse.json({ error: { message: 'Database unavailable' } }, { status: 503 }),
       ),
@@ -77,6 +95,9 @@ describe('CommentList', () => {
     let current: Comment = comment;
 
     server.use(
+      mswHttp.get(membersUrl, () =>
+        HttpResponse.json([makeMember({ user_id: authorId, email: 'ada@example.com' })]),
+      ),
       mswHttp.get(commentsUrl, () => HttpResponse.json([current])),
       mswHttp.patch(`${env.API_URL}/comments/${comment.id}`, async ({ request }) => {
         const input = updateCommentSchema.parse(await request.json());
@@ -92,12 +113,14 @@ describe('CommentList', () => {
     await user.type(screen.getByLabelText('Edit body'), 'Fixed draft');
     await user.click(screen.getByRole('button', { name: 'Save' }));
 
-    expect(await screen.findByText(`${authorId} - Fixed draft`)).toBeInTheDocument();
+    expect(await screen.findByText('ada@example.com')).toBeInTheDocument();
+    expect(screen.getByText('Fixed draft')).toBeInTheDocument();
   });
 
   it('hides edit and delete for another member', async () => {
     signInAs('member');
     server.use(
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.get(commentsUrl, () =>
         HttpResponse.json([makeComment({ task_id: taskId, body: 'Check the OAuth redirect' })]),
       ),
@@ -117,6 +140,7 @@ describe('CommentList', () => {
     let comments: Comment[] = [comment];
 
     server.use(
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.get(commentsUrl, () => HttpResponse.json(comments)),
       mswHttp.delete(`${env.API_URL}/comments/${comment.id}`, () => {
         comments = [];

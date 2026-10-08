@@ -3,7 +3,7 @@ import { renderWithProviders } from '@/test/render';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { CreateProjectForm } from './CreateProjectForm';
-import { screen } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { server } from '@/test/server';
 import { HttpResponse, http as mswHttp } from 'msw';
 import { createProjectSchema, type Project } from '../schemas/project.schema';
@@ -11,16 +11,15 @@ import { makeProject } from '@/test/factories/project';
 import { useAuthStore } from '@/features/auth';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { ProjectsPage } from '../pages/ProjectPage';
+import { makeOrganization } from '@/test/factories/organization';
 
-const clientId = '44444444-4444-4444-4444-444444444444';
+const clientId = '44444444-4444-4444-8444-444444444444';
 const projectsUrl = `${env.API_URL}/clients/${clientId}/projects`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore
@@ -52,7 +51,7 @@ describe('CreateProjectForm', () => {
     const projects: Project[] = [];
 
     server.use(
-      mswHttp.get(projectsUrl, () => HttpResponse.json(projects)),
+      mswHttp.get(projectsUrl, () => HttpResponse.json({ items: projects, next_cursor: null })),
       mswHttp.post(projectsUrl, async ({ request }) => {
         const input = createProjectSchema.parse(await request.json());
         const created = makeProject({
@@ -75,12 +74,18 @@ describe('CreateProjectForm', () => {
 
     expect(await screen.findByText('No projects yet.')).toBeInTheDocument();
 
-    await user.type(screen.getByLabelText('Name'), 'Website');
-    await user.type(screen.getByLabelText('Notes'), 'Launch');
     await user.click(screen.getByRole('button', { name: 'Add project' }));
+    const dialog = await screen.findByRole('dialog');
 
-    expect(await screen.findByText('Website - Launch')).toBeInTheDocument();
-    expect(screen.getByLabelText('Name')).toHaveValue('');
+    await user.type(within(dialog).getByLabelText('Name'), 'Website');
+    await user.type(within(dialog).getByLabelText('Notes'), 'Launch');
+    await user.click(within(dialog).getByRole('button', { name: 'Add project' }));
+
+    expect(await screen.findByText('Website')).toBeInTheDocument();
+    expect(screen.getByText('Launch')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
   });
 
   it('shows the server error message', async () => {

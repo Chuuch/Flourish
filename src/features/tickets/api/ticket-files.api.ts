@@ -1,4 +1,5 @@
 import { http } from '@/lib/api/http';
+import { withIdempotencyKey } from '@/lib/api/idempotency';
 import {
   ticketFileSchema,
   ticketFilesSchema,
@@ -31,7 +32,7 @@ export const createTicketFile = (
   ticketId: string,
   input: CreateTicketFileInput,
   source: TicketFileSource = 'portal',
-) => http.post(filesPath(ticketId, source), ticketFileSchema, input);
+) => http.post(filesPath(ticketId, source), ticketFileSchema, input, withIdempotencyKey());
 
 export const deleteTicketFile = (fileId: string, source: TicketFileSource = 'portal') =>
   http.delete(deletePath(fileId, source), z.unknown());
@@ -40,7 +41,12 @@ export const fetchPortalTicketFiles = (ticketId: string) =>
   http.get(`/client-auth/tickets/${ticketId}/files`, ticketFilesSchema);
 
 export const createPortalTicketFile = (ticketId: string, input: CreateTicketFileInput) =>
-  http.post(`/client-auth/tickets/${ticketId}/files`, ticketFileSchema, input);
+  http.post(
+    `/client-auth/tickets/${ticketId}/files`,
+    ticketFileSchema,
+    input,
+    withIdempotencyKey(),
+  );
 
 export async function putTicketObject(uploadUrl: string, file: File): Promise<void> {
   const response = await fetch(uploadUrl, {

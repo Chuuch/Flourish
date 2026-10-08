@@ -1,4 +1,4 @@
-import { Alert, Button } from '@/components/ui';
+import { Alert, Button, SelectField } from '@/components/ui';
 import { useMembers } from '../hooks/useMembers';
 import { useAuthStore } from '@/features/auth';
 import {
@@ -11,11 +11,12 @@ import { useUpdateMember } from '../hooks/useUpdateMember';
 import { useDeleteMember } from '../hooks/useDeleteMember';
 import { useI18n } from '@/features/i18n';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
+import { RoleBadge } from './RoleBadge';
 
-export function MemberList() {
+export function MemberList({ query = '' }: { query?: string }) {
   const role = useAuthStore((state) => state.role);
   const canManage = canManageMembers(role);
-  const { data, isPending, isError, error, refetch } = useMembers();
+  const { data, isPending, isError, error, refetch, isFetching } = useMembers(query);
   const updateMember = useUpdateMember();
   const deleteMember = useDeleteMember();
   const { t } = useI18n();
@@ -28,64 +29,93 @@ export function MemberList() {
     return (
       <Alert>
         <p>{t('members.loadError', { message: error.message })}</p>
-        <button type="button" onClick={() => void refetch()}>
+        <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
           {t('common.retry')}
-        </button>
+        </Button>
       </Alert>
     );
   }
 
   if (data.length === 0) {
-    return <p>{t('members.empty')}</p>;
+    return (
+      <p className="text-muted m-0 text-sm">
+        {query ? t('members.noMatches') : t('members.empty')}
+      </p>
+    );
   }
 
   return (
-    <>
+    <section className="flex flex-col gap-3">
+      <h2 className="m-0 text-sm font-semibold tracking-tight">{t('members.teamHeading')}</h2>
       {updateMember.isError ? <Alert>{updateMember.error.message}</Alert> : null}
       {deleteMember.isError ? <Alert>{deleteMember.error.message}</Alert> : null}
-      <ul>
-        {data.map((member) => (
-          <li key={member.user_id}>
-            <p>{t('members.summary', { email: memberLabel(member), role: member.role })}</p>
-            {canManage && member.role !== 'owner' ? (
-              <label>
-                {t('members.roleFor', { email: memberLabel(member) })}
-                <select
-                  value={member.role}
-                  disabled={updateMember.isPending}
-                  onChange={(event) => {
-                    const parsed = assignableRoleSchema.safeParse(event.currentTarget.value);
+      <ul className={isFetching ? 'stack-list opacity-70' : 'stack-list'}>
+        {data.map((member) => {
+          const label = memberLabel(member);
+          const showEmail = member.display_name.trim() !== '';
 
-                    if (!parsed.success) {
-                      return;
-                    }
+          return (
+            <li key={member.user_id}>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 items-start gap-3">
+                  <div className="min-w-0">
+                    <p className="m-0 truncate text-sm font-semibold">{label}</p>
+                    {showEmail ? (
+                      <p className="text-muted m-0 truncate text-xs">{member.email}</p>
+                    ) : null}
+                  </div>
+                  <RoleBadge role={member.role} />
+                </div>
 
-                    const nextRole: MemberRole = parsed.data;
-                    updateMember.mutate({
-                      userId: member.user_id,
-                      input: { role: nextRole },
-                    });
-                  }}
-                >
-                  <option value="member">{t('role.member')}</option>
-                  <option value="admin">{t('role.admin')}</option>
-                </select>
-              </label>
-            ) : null}
-            {canManage ? (
-              <Button
-                type="button"
-                disabled={deleteMember.isPending}
-                onClick={() => {
-                  deleteMember.mutate(member.user_id);
-                }}
-              >
-                {t('members.remove', { email: memberLabel(member) })}
-              </Button>
-            ) : null}
-          </li>
-        ))}
+                {canManage ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    {member.role !== 'owner' ? (
+                      <div className="w-36">
+                        <SelectField
+                          label={t('members.roleFor', { email: label })}
+                          hideLabel
+                          value={member.role}
+                          disabled={updateMember.isPending}
+                          onChange={(event) => {
+                            const parsed = assignableRoleSchema.safeParse(
+                              event.currentTarget.value,
+                            );
+
+                            if (!parsed.success) {
+                              return;
+                            }
+
+                            const nextRole: MemberRole = parsed.data;
+                            updateMember.mutate({
+                              userId: member.user_id,
+                              input: { role: nextRole },
+                            });
+                          }}
+                        >
+                          <option value="member">{t('role.member')}</option>
+                          <option value="admin">{t('role.admin')}</option>
+                        </SelectField>
+                      </div>
+                    ) : null}
+                    <Button
+                      type="button"
+                      variant="danger"
+                      size="sm"
+                      disabled={deleteMember.isPending}
+                      aria-label={t('members.remove', { email: label })}
+                      onClick={() => {
+                        deleteMember.mutate(member.user_id);
+                      }}
+                    >
+                      {t('common.delete')}
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
+            </li>
+          );
+        })}
       </ul>
-    </>
+    </section>
   );
 }

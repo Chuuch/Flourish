@@ -1,12 +1,12 @@
-import type { RouteObject } from 'react-router';
-import { Outlet } from 'react-router';
-import { paths } from './paths';
-import { RootLayout } from '../layouts/RootLayout';
-import { RouteErrorBoundary } from '@/components/feedback/RouteErrorBoundary';
-import { HomePage } from '@/features/home/pages/HomePage';
 import { NotFound } from '@/components/feedback/NotFound';
 import { PageLoader } from '@/components/feedback/PageLoader';
+import { RouteErrorBoundary } from '@/components/feedback/RouteErrorBoundary';
 import { RequireAuth } from '@/features/auth/components/RequireAuth';
+import { HomePage } from '@/features/home/pages/HomePage';
+import type { RouteObject } from 'react-router';
+import { Outlet } from 'react-router';
+import { RootLayout } from '../layouts/RootLayout';
+import { paths } from './paths';
 
 export const routes: RouteObject[] = [
   {
@@ -178,6 +178,63 @@ export const routes: RouteObject[] = [
               };
             },
           },
+          {
+            path: 'notifications',
+            HydrateFallback: PageLoader,
+            lazy: async () => {
+              const { NotificationsPage } =
+                await import('@/features/notifications/pages/NotificationsPage');
+              const { RequirePortalAuth } =
+                await import('@/features/portal/components/RequirePortalAuth');
+              return {
+                Component: function PortalNotificationsRoute() {
+                  return (
+                    <RequirePortalAuth>
+                      <NotificationsPage />
+                    </RequirePortalAuth>
+                  );
+                },
+              };
+            },
+          },
+          {
+            path: 'invoices',
+            HydrateFallback: PageLoader,
+            lazy: async () => {
+              const { PortalInvoicesPage } =
+                await import('@/features/invoices/pages/PortalInvoicesPage');
+              const { RequirePortalAuth } =
+                await import('@/features/portal/components/RequirePortalAuth');
+              return {
+                Component: function PortalInvoicesRoute() {
+                  return (
+                    <RequirePortalAuth>
+                      <PortalInvoicesPage />
+                    </RequirePortalAuth>
+                  );
+                },
+              };
+            },
+          },
+          {
+            path: 'invoices/:invoiceId',
+            HydrateFallback: PageLoader,
+            lazy: async () => {
+              const { PortalInvoicePage } =
+                await import('@/features/invoices/pages/PortalInvoicePage');
+              const { RequirePortalAuth } =
+                await import('@/features/portal/components/RequirePortalAuth');
+              return {
+                Component: function PortalInvoiceRoute() {
+                  return (
+                    <RequirePortalAuth>
+                      <PortalInvoicePage />
+                    </RequirePortalAuth>
+                  );
+                },
+              };
+            },
+          },
         ],
       },
       {
@@ -192,6 +249,61 @@ export const routes: RouteObject[] = [
               return (
                 <RequireStaffAuth>
                   <MembersPage />
+                </RequireStaffAuth>
+              );
+            },
+          };
+        },
+      },
+      {
+        path: 'activity',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { ActivityPage } = await import('@/features/activity/pages/ActivityPage');
+          const { RequireAuth: RequireStaffAuth } =
+            await import('@/features/auth/components/RequireAuth');
+          return {
+            Component: function ActivityRoute() {
+              return (
+                <RequireStaffAuth>
+                  <ActivityPage />
+                </RequireStaffAuth>
+              );
+            },
+          };
+        },
+      },
+      {
+        path: 'reports',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { ReportsPage } = await import('@/features/reports/pages/ReportsPage');
+          const { RequireAuth: RequireStaffAuth } =
+            await import('@/features/auth/components/RequireAuth');
+          return {
+            Component: function ReportsRoute() {
+              return (
+                <RequireStaffAuth>
+                  <ReportsPage />
+                </RequireStaffAuth>
+              );
+            },
+          };
+        },
+      },
+      {
+        path: 'notifications',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { NotificationsPage } =
+            await import('@/features/notifications/pages/NotificationsPage');
+          const { RequireAuth: RequireStaffAuth } =
+            await import('@/features/auth/components/RequireAuth');
+          return {
+            Component: function NotificationsRoute() {
+              return (
+                <RequireStaffAuth>
+                  <NotificationsPage />
                 </RequireStaffAuth>
               );
             },
@@ -243,6 +355,29 @@ export const routes: RouteObject[] = [
                     await import('@/features/tickets/pages/AgencyTicketsPage');
                   return { Component: AgencyTicketsPage };
                 },
+              },
+              {
+                path: 'invoices',
+                element: <Outlet />,
+                children: [
+                  {
+                    index: true,
+                    HydrateFallback: PageLoader,
+                    lazy: async () => {
+                      const { InvoicesPage } =
+                        await import('@/features/invoices/pages/InvoicesPage');
+                      return { Component: InvoicesPage };
+                    },
+                  },
+                  {
+                    path: ':invoiceId',
+                    HydrateFallback: PageLoader,
+                    lazy: async () => {
+                      const { InvoicePage } = await import('@/features/invoices/pages/InvoicePage');
+                      return { Component: InvoicePage };
+                    },
+                  },
+                ],
               },
               {
                 path: 'projects',

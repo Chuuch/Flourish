@@ -3,7 +3,7 @@ import { renderWithProviders } from '@/test/render';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { CreateClientForm } from './CreateClientForm';
-import { screen } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { server } from '@/test/server';
 import { HttpResponse, http as mswHttp } from 'msw';
 import { createClientSchema, type Client } from '../schemas/client.schema';
@@ -11,15 +11,14 @@ import { makeClient } from '@/test/factories/client';
 import { ClientsPage } from '../pages/ClientsPage';
 import { useAuthStore } from '@/features/auth';
 import { MemoryRouter } from 'react-router';
+import { makeOrganization } from '@/test/factories/organization';
 
 const clientsUrl = `${env.API_URL}/clients`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore
@@ -45,13 +44,13 @@ describe('CreateClientForm', () => {
     expect(await screen.findByText('Name must be at least 4 characters')).toBeInTheDocument();
   });
 
-  it('creates a client and refreshes the list', async () => {
+  it('creates a client from the page modal and refreshes the list', async () => {
     const user = userEvent.setup();
     signInAs('owner');
     const clients: Client[] = [];
 
     server.use(
-      mswHttp.get(clientsUrl, () => HttpResponse.json(clients)),
+      mswHttp.get(clientsUrl, () => HttpResponse.json({ items: clients, next_cursor: null })),
       mswHttp.post(clientsUrl, async ({ request }) => {
         const input = createClientSchema.parse(await request.json());
         const created = makeClient({ name: input.name, notes: input.notes });
@@ -67,12 +66,18 @@ describe('CreateClientForm', () => {
     );
     expect(await screen.findByText('No clients yet.')).toBeInTheDocument();
 
-    await user.type(screen.getByLabelText('Name'), 'Northwind');
-    await user.type(screen.getByLabelText('Notes'), 'Retail');
     await user.click(screen.getByRole('button', { name: 'Add client' }));
+    const dialog = await screen.findByRole('dialog');
 
-    expect(await screen.findByText('Northwind - Retail')).toBeInTheDocument();
-    expect(screen.getByLabelText('Name')).toHaveValue('');
+    await user.type(within(dialog).getByLabelText('Name'), 'Northwind');
+    await user.type(within(dialog).getByLabelText('Notes'), 'Retail');
+    await user.click(within(dialog).getByRole('button', { name: 'Add client' }));
+
+    expect(await screen.findByText('Northwind')).toBeInTheDocument();
+    expect(screen.getByText('Retail')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
   });
 
   it('shows the server error message', async () => {

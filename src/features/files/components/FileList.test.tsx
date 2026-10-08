@@ -9,17 +9,16 @@ import { makeFile } from '@/test/factories/file';
 import { useAuthStore } from '@/features/auth';
 import userEvent from '@testing-library/user-event';
 import type { ProjectFile } from '../schemas/file.schema';
+import { makeOrganization } from '@/test/factories/organization';
 
-const projectId = '55555555-5555-5555-5555-555555555555';
+const projectId = '55555555-5555-5555-8555-555555555555';
 const filesUrl = `${env.API_URL}/projects/${projectId}/files`;
-const actorUserId = '11111111-1111-1111-1111-111111111111';
+const actorUserId = '11111111-1111-4111-8111-111111111111';
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member', userId = actorUserId) {
   useAuthStore

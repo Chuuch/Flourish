@@ -1,9 +1,10 @@
 import { env } from '@/config/env';
 import { renderWithProviders } from '@/test/render';
 import userEvent from '@testing-library/user-event';
+import { chooseSelectOption } from '@/test/select';
 import { describe, expect, it } from 'vitest';
 import { CreateTaskForm } from './CreateTaskForm';
-import { screen } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { server } from '@/test/server';
 import { HttpResponse, http as mswHttp } from 'msw';
 import { createTaskSchema, type Task } from '../schemas/task.schema';
@@ -11,18 +12,17 @@ import { makeTask } from '@/test/factories/task';
 import { useAuthStore } from '@/features/auth';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { TasksPage } from '../pages/TasksPage';
+import { makeOrganization } from '@/test/factories/organization';
 
-const clientId = '44444444-4444-4444-4444-444444444444';
-const projectId = '55555555-5555-5555-5555-555555555555';
+const clientId = '44444444-4444-4444-8444-444444444444';
+const projectId = '55555555-5555-5555-8555-555555555555';
 const tasksUrl = `${env.API_URL}/projects/${projectId}/tasks`;
 const membersUrl = `${env.API_URL}/members`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore
@@ -57,7 +57,7 @@ describe('CreateTaskForm', () => {
 
     server.use(
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
-      mswHttp.get(tasksUrl, () => HttpResponse.json(tasks)),
+      mswHttp.get(tasksUrl, () => HttpResponse.json({ items: tasks, next_cursor: null })),
       mswHttp.post(tasksUrl, async ({ request }) => {
         const input = createTaskSchema.parse(await request.json());
         const created = makeTask({
@@ -80,16 +80,27 @@ describe('CreateTaskForm', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByText('No tasks yet.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('No tasks yet. Use Add task above to create one.'),
+    ).toBeInTheDocument();
 
-    await user.type(screen.getByLabelText('Title'), 'Fix login');
-    await user.type(screen.getByLabelText('Notes'), 'OAuth');
-    await user.selectOptions(screen.getByLabelText('Status'), 'in_progress');
     await user.click(screen.getByRole('button', { name: 'Add task' }));
+    const dialog = await screen.findByRole('dialog');
 
-    expect(await screen.findByRole('link', { name: 'Fix login - OAuth' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Status for Fix login')).toHaveValue('in_progress');
-    expect(screen.getByLabelText('Title')).toHaveValue('');
+    await user.type(within(dialog).getByLabelText('Title'), 'Fix login');
+    await user.type(within(dialog).getByLabelText('Notes'), 'OAuth');
+    await chooseSelectOption(user, 'Status', 'in_progress');
+    await user.click(within(dialog).getByRole('button', { name: 'Add task' }));
+
+    expect(await screen.findByRole('link', { name: 'Fix login' })).toBeInTheDocument();
+    expect(screen.getByText('OAuth')).toBeInTheDocument();
+    expect(screen.getByLabelText('Status for Fix login')).toHaveAttribute(
+      'data-value',
+      'in_progress',
+    );
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
   });
 
   it('shows the server error message', async () => {

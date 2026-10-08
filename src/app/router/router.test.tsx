@@ -2,7 +2,7 @@ import { env } from '@/config/env';
 import { renderWithProviders } from '@/test/render';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { screen } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { server } from '@/test/server';
 import { HttpResponse, http as mswHttp } from 'msw';
 import { makeFile } from '@/test/factories/file';
@@ -10,18 +10,17 @@ import { useAuthStore } from '@/features/auth';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { FilesPage, type ProjectFile } from '@/features/files';
 import { CreateFileForm } from '@/features/files/components/CreateFileForm';
+import { makeOrganization } from '@/test/factories/organization';
 
-const clientId = '44444444-4444-4444-4444-444444444444';
-const projectId = '55555555-5555-5555-5555-555555555555';
+const clientId = '44444444-4444-4444-8444-444444444444';
+const projectId = '55555555-5555-5555-8555-555555555555';
 const filesUrl = `${env.API_URL}/projects/${projectId}/files`;
 const uploadUrl = `${env.API_URL}/storage-put`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore
@@ -84,11 +83,17 @@ describe('CreateFileForm', () => {
 
     expect(await screen.findByText('No files yet.')).toBeInTheDocument();
 
-    const pdf = new File(['hello'], 'spec.pdf', { type: 'application/pdf' });
-    await user.upload(screen.getByLabelText('File'), pdf);
     await user.click(screen.getByRole('button', { name: 'Upload' }));
+    const dialog = await screen.findByRole('dialog');
+
+    const pdf = new File(['hello'], 'spec.pdf', { type: 'application/pdf' });
+    await user.upload(within(dialog).getByLabelText('File'), pdf);
+    await user.click(within(dialog).getByRole('button', { name: 'Upload' }));
 
     expect(await screen.findByRole('link', { name: 'spec.pdf (5 bytes)' })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
   });
 
   it('shows the server error message', async () => {

@@ -8,15 +8,14 @@ import { screen } from '@testing-library/react';
 import { makeClient } from '@/test/factories/client';
 import { MemoryRouter } from 'react-router';
 import { useAuthStore } from '@/features/auth';
+import { makeOrganization } from '@/test/factories/organization';
 
 const clientsUrl = `${env.API_URL}/clients`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore
@@ -30,7 +29,10 @@ describe('ClientList', () => {
 
     server.use(
       mswHttp.get(clientsUrl, () =>
-        HttpResponse.json([northWind, makeClient({ name: 'Contoso', notes: '' })]),
+        HttpResponse.json({
+          items: [northWind, makeClient({ name: 'Contoso', notes: '' })],
+          next_cursor: null,
+        }),
       ),
     );
 
@@ -40,10 +42,11 @@ describe('ClientList', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByRole('link', { name: 'Northwind - Retail' })).toHaveAttribute(
+    expect(await screen.findByRole('link', { name: 'Northwind' })).toHaveAttribute(
       'href',
       `/clients/${northWind.id}`,
     );
+    expect(screen.getByText('Retail')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Contoso' })).toBeInTheDocument();
     expect(screen.getAllByRole('link', { name: 'Users' })[0]).toHaveAttribute(
       'href',
@@ -56,7 +59,7 @@ describe('ClientList', () => {
   });
 
   it('renders and empty state', async () => {
-    server.use(mswHttp.get(clientsUrl, () => HttpResponse.json([])));
+    server.use(mswHttp.get(clientsUrl, () => HttpResponse.json({ items: [], next_cursor: null })));
     renderWithProviders(
       <MemoryRouter>
         <ClientList />
@@ -86,7 +89,10 @@ describe('ClientList', () => {
     signInAs('member');
     server.use(
       mswHttp.get(clientsUrl, () =>
-        HttpResponse.json([makeClient({ name: 'Northwind', notes: 'Retail' })]),
+        HttpResponse.json({
+          items: [makeClient({ name: 'Northwind', notes: 'Retail' })],
+          next_cursor: null,
+        }),
       ),
     );
 
@@ -96,8 +102,8 @@ describe('ClientList', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByRole('link', { name: 'Northwind - Retail' })).toBeInTheDocument();
-    expect(screen.queryByLabelText('Name for Northwind')).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Remove Northwind' })).not.toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'Northwind' })).toBeInTheDocument();
+    expect(screen.queryByLabelText('Name')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
   });
 });

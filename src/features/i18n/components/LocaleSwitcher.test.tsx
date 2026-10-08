@@ -11,9 +11,10 @@ describe('LocaleSwitcher', () => {
 
     renderWithProviders(<LocaleSwitcher />);
 
-    await user.selectOptions(screen.getByLabelText('Language'), 'bg');
+    await user.click(screen.getByLabelText('Language'));
+    await user.click(screen.getByRole('option', { name: 'Български' }));
 
-    expect(screen.getByLabelText('Език')).toHaveValue('bg');
+    expect(screen.getByLabelText('Език')).toHaveTextContent('Български');
     expect(document.documentElement.lang).toBe('bg');
     expect(window.localStorage.getItem(LOCALE_STORAGE_KEY)).toBe('bg');
   });

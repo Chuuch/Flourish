@@ -18,7 +18,10 @@ export const ticketSchema = z.object({
   updated_at: z.string(),
 });
 
-export const ticketsSchema = z.array(ticketSchema);
+export const ticketsPageSchema = z.object({
+  items: z.array(ticketSchema),
+  next_cursor: z.string().nullable(),
+});
 
 export const createTicketSchema = z.object({
   kind: ticketKindSchema,

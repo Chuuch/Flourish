@@ -11,9 +11,12 @@ export function BrandMark({ size = 'sm' }: BrandMarkProps) {
   const large = size === 'lg';
 
   return (
-    <p className={cn('flex items-center justify-center gap-2', large && 'gap-3')}>
-      <Leaf className={cn('text-accent', large ? 'size-10' : 'size-5')} aria-hidden="true" />
-      <span className={cn('font-semibold tracking-tight', large ? 'text-3xl' : 'text-base')}>
+    <p className={cn('flex items-center gap-2', large && 'gap-2.5')}>
+      <Leaf
+        className={cn('text-accent shrink-0', large ? 'size-5' : 'size-4')}
+        aria-hidden="true"
+      />
+      <span className={cn('font-semibold tracking-tight', large ? 'text-xl' : 'text-base')}>
         {t('home.brand')}
       </span>
     </p>

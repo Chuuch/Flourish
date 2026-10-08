@@ -6,7 +6,7 @@ import {
   projectPath,
   projectTasksPath,
 } from '@/app/router/paths';
-import { Alert, Button } from '@/components/ui';
+import { Alert, Button, SelectField } from '@/components/ui';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
@@ -67,9 +67,9 @@ function TaskWorkspace({
       <main>
         <Alert>
           <p>{t('tasks.loadError', { message })}</p>
-          <button type="button" onClick={() => void refetch()}>
+          <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
             {t('common.retry')}
-          </button>
+          </Button>
         </Alert>
       </main>
     );
@@ -111,30 +111,28 @@ function TaskWorkspace({
       <p className="text-muted">{task.notes ? task.notes : t('tasks.notesEmpty')}</p>
       {updateTask.isError ? <Alert>{updateTask.error.message}</Alert> : null}
       {deleteTask.isError ? <Alert>{deleteTask.error.message}</Alert> : null}
-      <label>
-        {t('tasks.statusFor', { title: task.title })}
-        <select
-          value={task.status}
-          disabled={updateTask.isPending}
-          onChange={(event) => {
-            const parsed = taskStatusSchema.safeParse(event.currentTarget.value);
+      <SelectField
+        label={t('tasks.statusFor', { title: task.title })}
+        value={task.status}
+        disabled={updateTask.isPending}
+        onChange={(event) => {
+          const parsed = taskStatusSchema.safeParse(event.currentTarget.value);
 
-            if (!parsed.success) {
-              return;
-            }
+          if (!parsed.success) {
+            return;
+          }
 
-            const status: TaskStatus = parsed.data;
-            updateTask.mutate({
-              taskId: task.id,
-              input: { status, version: task.version },
-            });
-          }}
-        >
-          <option value="todo">{t('tasks.todo')}</option>
-          <option value="in_progress">{t('tasks.inProgress')}</option>
-          <option value="done">{t('tasks.done')}</option>
-        </select>
-      </label>
+          const status: TaskStatus = parsed.data;
+          updateTask.mutate({
+            taskId: task.id,
+            input: { status, version: task.version },
+          });
+        }}
+      >
+        <option value="todo">{t('tasks.todo')}</option>
+        <option value="in_progress">{t('tasks.inProgress')}</option>
+        <option value="done">{t('tasks.done')}</option>
+      </SelectField>
       {task.completed_at ? (
         <span>{t('tasks.completed', { completedAt: task.completed_at })}</span>
       ) : null}

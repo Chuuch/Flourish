@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { useCreateComment } from '../hooks/useCreateComment';
 import { createCommentSchema, type CreateCommentInput } from '../schemas/comment.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, Button } from '@/components/ui';
+import { Alert, Button, TextArea } from '@/components/ui';
 import { useI18n } from '@/features/i18n';
 
 export function CreateCommentForm({ taskId }: { taskId: string }) {
@@ -32,13 +32,11 @@ export function CreateCommentForm({ taskId }: { taskId: string }) {
       }
       noValidate
     >
-      <div>
-        <label htmlFor="body">{t('comments.body')}</label>
-        <textarea id="body" className="block rounded border px-2 py-1" {...register('body')} />
-        {errors.body ? <p role="alert">{errors.body.message}</p> : null}
+      <TextArea label={t('comments.body')} error={errors.body?.message} {...register('body')} />
 
-        {createComment.isError ? <Alert>{createComment.error.message}</Alert> : null}
+      {createComment.isError ? <Alert>{createComment.error.message}</Alert> : null}
 
+      <div className="form-actions">
         <Button type="submit" disabled={createComment.isPending}>
           {t('comments.add')}
         </Button>

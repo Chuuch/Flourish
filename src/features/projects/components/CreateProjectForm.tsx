@@ -7,10 +7,16 @@ import {
 } from '../schemas/project.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateProject } from '../hooks/useCreateProject';
-import { Alert, Button, TextField } from '@/components/ui';
+import { Alert, Button, FormSection, TextArea, TextField } from '@/components/ui';
 import { useI18n } from '@/features/i18n';
 
-export function CreateProjectForm({ clientId }: { clientId: string }) {
+type CreateProjectFormProps = {
+  clientId: string;
+  onSuccess?: () => void;
+  onCancel?: () => void;
+};
+
+export function CreateProjectForm({ clientId, onSuccess, onCancel }: CreateProjectFormProps) {
   const role = useAuthStore((state) => state.role);
   const createProject = useCreateProject(clientId);
   const { t } = useI18n();
@@ -36,30 +42,35 @@ export function CreateProjectForm({ clientId }: { clientId: string }) {
           createProject.mutate(input, {
             onSuccess: () => {
               reset();
+              onSuccess?.();
             },
           });
         })(event)
       }
       noValidate
     >
-      <TextField
-        label={t('clients.name')}
-        autoComplete="off"
-        error={errors.name?.message}
-        {...register('name')}
-      />
-
-      <div>
-        <label htmlFor="notes">{t('clients.notes')}</label>
-        <textarea id="notes" className="block rounded border px-2 py-1" {...register('notes')} />
-        {errors.notes ? <p role="alert">{errors.notes.message}</p> : null}
+      <FormSection title={t('projects.add')}>
+        <TextField
+          label={t('clients.name')}
+          autoComplete="off"
+          error={errors.name?.message}
+          {...register('name')}
+        />
+        <TextArea label={t('clients.notes')} error={errors.notes?.message} {...register('notes')} />
 
         {createProject.isError ? <Alert>{createProject.error.message}</Alert> : null}
 
-        <Button type="submit" disabled={createProject.isPending}>
-          {t('projects.add')}
-        </Button>
-      </div>
+        <div className="form-actions">
+          {onCancel ? (
+            <Button type="button" variant="ghost" onClick={onCancel}>
+              {t('common.cancel')}
+            </Button>
+          ) : null}
+          <Button type="submit" disabled={createProject.isPending}>
+            {t('projects.add')}
+          </Button>
+        </div>
+      </FormSection>
     </form>
   );
 }

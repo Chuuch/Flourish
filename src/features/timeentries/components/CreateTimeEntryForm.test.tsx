@@ -3,7 +3,7 @@ import { renderWithProviders } from '@/test/render';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { CreateTimeEntryForm } from './CreateTimeEntryForm';
-import { screen } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { server } from '@/test/server';
 import { HttpResponse, http as mswHttp } from 'msw';
 import { createTimeEntrySchema, type TimeEntry } from '../schemas/time-entry.schema';
@@ -11,18 +11,17 @@ import { makeTimeEntry } from '@/test/factories/time-entry';
 import { useAuthStore } from '@/features/auth';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { TimeEntriesPage } from '../pages/TimeEntriesPage';
+import { makeOrganization } from '@/test/factories/organization';
 
-const clientId = '44444444-4444-4444-4444-444444444444';
-const projectId = '55555555-5555-5555-5555-555555555555';
-const taskId = '66666666-6666-6666-6666-666666666666';
+const clientId = '44444444-4444-4444-8444-444444444444';
+const projectId = '55555555-5555-5555-8555-555555555555';
+const taskId = '66666666-6666-4666-8666-666666666666';
 const timeEntriesUrl = `${env.API_URL}/tasks/${taskId}/time-entries`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore
@@ -82,12 +81,17 @@ describe('CreateTimeEntryForm', () => {
 
     expect(await screen.findByText('No time entries yet.')).toBeInTheDocument();
 
-    await user.type(screen.getByLabelText('Minutes'), '90');
-    await user.type(screen.getByLabelText('Notes'), 'OAuth');
     await user.click(screen.getByRole('button', { name: 'Add time' }));
+    const dialog = await screen.findByRole('dialog');
+
+    await user.type(within(dialog).getByLabelText('Minutes'), '90');
+    await user.type(within(dialog).getByLabelText('Notes'), 'OAuth');
+    await user.click(within(dialog).getByRole('button', { name: 'Add time' }));
 
     expect(await screen.findByText('90 min - OAuth')).toBeInTheDocument();
-    expect(screen.getByLabelText('Minutes')).toHaveValue(0);
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
   });
 
   it('shows the server error message', async () => {

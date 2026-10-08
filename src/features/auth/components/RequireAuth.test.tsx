@@ -10,24 +10,21 @@ import { useAuthStore } from '../store/auth.store';
 import { makeClient } from '@/test/factories/client';
 import { makeProject } from '@/test/factories/project';
 import { makeTask } from '@/test/factories/task';
+import { makeOrganization } from '@/test/factories/organization';
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
-const testClient = {
-  id: crypto.randomUUID(),
+const testClient = makeClient({
   organization_id: testOrg.id,
   name: 'Northwind',
-  notes: '',
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
-const clientId = '44444444-4444-4444-4444-444444444444';
+const clientId = '44444444-4444-4444-8444-444444444444';
 
 function renderAt(path: string) {
   const router = createMemoryRouter(routes, { initialEntries: [path] });
@@ -64,7 +61,11 @@ describe('RequireAuth', () => {
         'client',
       );
 
-    server.use(mswHttp.get(`${env.API_URL}/client-auth/tickets`, () => HttpResponse.json([])));
+    server.use(
+      mswHttp.get(`${env.API_URL}/client-auth/tickets`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
+    );
 
     renderAt('/members');
 
@@ -84,7 +85,11 @@ describe('RequireAuth', () => {
       .getState()
       .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
 
-    server.use(mswHttp.get(`${env.API_URL}/clients`, () => HttpResponse.json([])));
+    server.use(
+      mswHttp.get(`${env.API_URL}/clients`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
+    );
 
     renderAt('/clients');
 
@@ -129,9 +134,15 @@ describe('RequireAuth', () => {
     const client = makeClient({ name: 'Northwind', notes: '' });
 
     server.use(
-      mswHttp.get(`${env.API_URL}/clients`, () => HttpResponse.json([client])),
-      mswHttp.get(`${env.API_URL}/clients/${client.id}/projects`, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/clients/${client.id}/tickets`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/clients`, () =>
+        HttpResponse.json({ items: [client], next_cursor: null }),
+      ),
+      mswHttp.get(`${env.API_URL}/clients/${client.id}/projects`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
+      mswHttp.get(`${env.API_URL}/clients/${client.id}/tickets`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
       mswHttp.get(`${env.API_URL}/clients/${client.id}/users`, () => HttpResponse.json([])),
     );
 
@@ -160,9 +171,11 @@ describe('RequireAuth', () => {
 
     server.use(
       mswHttp.get(`${env.API_URL}/clients/${project.client_id}/projects`, () =>
-        HttpResponse.json([project]),
+        HttpResponse.json({ items: [project], next_cursor: null }),
       ),
-      mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
       mswHttp.get(`${env.API_URL}/projects/${project.id}/files`, () => HttpResponse.json([])),
     );
 
@@ -193,7 +206,9 @@ describe('RequireAuth', () => {
 
     server.use(
       mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
-      mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () => HttpResponse.json([task])),
+      mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () =>
+        HttpResponse.json({ items: [task], next_cursor: null }),
+      ),
       mswHttp.get(`${env.API_URL}/tasks/${task.id}/comments`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/tasks/${task.id}/time-entries`, () => HttpResponse.json([])),
     );

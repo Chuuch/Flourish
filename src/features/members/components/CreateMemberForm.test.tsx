@@ -1,24 +1,25 @@
 import { env } from '@/config/env';
 import { renderWithProviders } from '@/test/render';
 import userEvent from '@testing-library/user-event';
+import { chooseSelectOption } from '@/test/select';
 import { describe, expect, it } from 'vitest';
 import { CreateMemberForm } from './CreateMemberForm';
-import { screen } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { server } from '@/test/server';
 import { HttpResponse, http as mswHttp } from 'msw';
 import { createMemberSchema, type Member } from '../schemas/member.schema';
 import { makeMember } from '@/test/factories/member';
 import { useAuthStore } from '@/features/auth';
 import { MembersPage } from '../pages/MembersPage';
+import { makeOrganization } from '@/test/factories/organization';
+import { MemoryRouter } from 'react-router';
 
 const membersUrl = `${env.API_URL}/members`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore
@@ -60,15 +61,25 @@ describe('CreateMemberForm', () => {
       }),
     );
 
-    renderWithProviders(<MembersPage />);
+    renderWithProviders(
+      <MemoryRouter>
+        <MembersPage />
+      </MemoryRouter>,
+    );
     expect(await screen.findByText('No members yet.')).toBeInTheDocument();
 
-    await user.type(screen.getByLabelText('Email'), 'grace@example.com');
-    await user.selectOptions(screen.getByLabelText('Role'), 'admin');
     await user.click(screen.getByRole('button', { name: 'Invite member' }));
+    const dialog = await screen.findByRole('dialog');
 
-    expect(await screen.findByText('grace@example.com - admin')).toBeInTheDocument();
-    expect(screen.getByLabelText('Email')).toHaveValue('');
+    await user.type(within(dialog).getByLabelText('Email'), 'grace@example.com');
+    await chooseSelectOption(user, 'Role', 'admin');
+    await user.click(within(dialog).getByRole('button', { name: 'Invite member' }));
+
+    expect(await screen.findByText('grace@example.com')).toBeInTheDocument();
+    expect(document.querySelector('[data-role="admin"]')).toHaveTextContent('Admin');
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
   });
 
   it('shows the server error message', async () => {

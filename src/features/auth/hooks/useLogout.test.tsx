@@ -8,22 +8,20 @@ import { env } from '@/config/env';
 import { renderWithProviders } from '@/test/render';
 import { server } from '@/test/server';
 import { useAuthStore } from '../store/auth.store';
+import { makeOrganization } from '@/test/factories/organization';
+import { makeClient } from '@/test/factories/client';
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
-const testClient = {
-  id: crypto.randomUUID(),
+const testClient = makeClient({
   organization_id: testOrg.id,
   name: 'Northwind',
-  notes: '',
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 describe('useLogout', () => {
   it('clears the session after a successful logout', async () => {
@@ -33,13 +31,15 @@ describe('useLogout', () => {
       .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
 
     server.use(
-      mswHttp.get(`${env.API_URL}/inbox/tasks`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/inbox/tasks`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
       mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
       mswHttp.post(`${env.API_URL}/auth/logout`, () => new HttpResponse(null, { status: 204 })),
-      mswHttp.get(`${env.API_URL}/auth/me`, () =>
-        HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 }),
-      ),
       mswHttp.post(`${env.API_URL}/auth/refresh`, () =>
+        HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 }),
+      ),
+      mswHttp.post(`${env.API_URL}/client-auth/refresh`, () =>
         HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 }),
       ),
     );
@@ -74,8 +74,8 @@ describe('useLogout', () => {
         `${env.API_URL}/client-auth/logout`,
         () => new HttpResponse(null, { status: 204 }),
       ),
-      mswHttp.get(`${env.API_URL}/client-auth/me`, () =>
-        HttpResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 }),
+      mswHttp.post(`${env.API_URL}/auth/refresh`, () =>
+        HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 }),
       ),
       mswHttp.post(`${env.API_URL}/client-auth/refresh`, () =>
         HttpResponse.json({ error: { message: 'Expired' } }, { status: 401 }),

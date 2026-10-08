@@ -5,13 +5,11 @@ import {
   paths,
   projectFilesPath,
   projectTasksPath,
-  taskPath,
 } from '@/app/router/paths';
-import { Alert } from '@/components/ui';
+import { Alert, Button } from '@/components/ui';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
-import { fileLabel } from '@/features/files/schemas/file.schema';
 import { useFiles } from '@/features/files/hooks/useFiles';
 import { useTasks } from '@/features/tasks/hooks/useTasks';
 import { ProjectManageForm } from '../components/ProjectManageForm';
@@ -26,8 +24,10 @@ export function ProjectHubPage() {
   if (!clientId || !projectId) {
     return (
       <main>
-        <h1>{t('projects.title')}</h1>
-        <p>{t('projects.notFound')}</p>
+        <div className="page-header">
+          <h1>{t('projects.title')}</h1>
+          <p>{t('projects.notFound')}</p>
+        </div>
       </main>
     );
   }
@@ -47,6 +47,8 @@ function ProjectHub({
   canManage: boolean;
 }) {
   const { project, isPending, isError, error, refetch } = useProject(clientId, projectId);
+  const tasks = useTasks(projectId);
+  const files = useFiles(projectId);
   const { t } = useI18n();
 
   if (isPending) {
@@ -64,9 +66,9 @@ function ProjectHub({
       <main>
         <Alert>
           <p>{t('projects.loadError', { message })}</p>
-          <button type="button" onClick={() => void refetch()}>
+          <Button type="button" variant="ghost" size="sm" onClick={() => void refetch()}>
             {t('common.retry')}
-          </button>
+          </Button>
         </Alert>
       </main>
     );
@@ -75,101 +77,64 @@ function ProjectHub({
   if (!project) {
     return (
       <main>
-        <p>
+        <p className="breadcrumb">
           <Link to={paths.clients}>{t('common.clients')}</Link>
-          {' / '}
+          <span aria-hidden="true">/</span>
           <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
-          {' / '}
+          <span aria-hidden="true">/</span>
           <Link to={clientProjectsPath(clientId)}>{t('common.projects')}</Link>
         </p>
-        <h1>{t('projects.notFound')}</h1>
+        <div className="page-header">
+          <h1>{t('projects.notFound')}</h1>
+        </div>
       </main>
     );
   }
 
+  const nav = [
+    {
+      to: projectTasksPath(clientId, projectId),
+      label: t('common.tasks'),
+      count: tasks.data?.pages.flatMap((page) => page.items).length,
+    },
+    {
+      to: projectFilesPath(clientId, projectId),
+      label: t('common.files'),
+      count: files.data?.length,
+    },
+  ] as const;
+
   return (
     <main className="client-hub">
-      <p>
+      <p className="breadcrumb">
         <Link to={paths.clients}>{t('common.clients')}</Link>
-        {' / '}
+        <span aria-hidden="true">/</span>
         <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
-        {' / '}
+        <span aria-hidden="true">/</span>
         <Link to={clientProjectsPath(clientId)}>{t('common.projects')}</Link>
       </p>
-      <h1>{project.name}</h1>
-      <p className="text-muted">{project.notes ? project.notes : t('projects.notesEmpty')}</p>
-      {canManage ? <ProjectManageForm clientId={clientId} project={project} /> : null}
-
-      <div className="hub-grid hub-grid-2">
-        <HubTasks clientId={clientId} projectId={projectId} />
-        <HubFiles clientId={clientId} projectId={projectId} />
+      <div className="page-header">
+        <h1>{project.name}</h1>
+        <p>{project.notes ? project.notes : t('projects.notesEmpty')}</p>
       </div>
+
+      <nav className="hub-nav" aria-label={project.name}>
+        {nav.map((item) => (
+          <Link key={item.to} to={item.to} className="hub-nav-link">
+            <span>{item.label}</span>
+            {typeof item.count === 'number' ? (
+              <span className="hub-nav-count">{item.count}</span>
+            ) : null}
+          </Link>
+        ))}
+      </nav>
+
+      {canManage ? (
+        <details className="settings-disclosure">
+          <summary>{t('projects.settingsHeading')}</summary>
+          <ProjectManageForm clientId={clientId} project={project} />
+        </details>
+      ) : null}
     </main>
-  );
-}
-
-function HubTasks({ clientId, projectId }: { clientId: string; projectId: string }) {
-  const { data, isPending, isError, error, refetch } = useTasks(projectId);
-  const { t } = useI18n();
-
-  return (
-    <section>
-      <h2>{t('common.tasks')}</h2>
-      {isPending ? <ListSkeleton label={t('tasks.loading')} rows={3} /> : null}
-      {isError ? (
-        <Alert>
-          <p>{t('tasks.loadError', { message: error instanceof Error ? error.message : '' })}</p>
-          <button type="button" onClick={() => void refetch()}>
-            {t('common.retry')}
-          </button>
-        </Alert>
-      ) : null}
-      {data ? <p>{t('projects.taskCount', { count: data.length })}</p> : null}
-      {data && data.length === 0 ? <p>{t('tasks.empty')}</p> : null}
-      {data && data.length > 0 ? (
-        <ul>
-          {data.map((task) => (
-            <li key={task.id}>
-              <Link to={taskPath(clientId, projectId, task.id)}>{task.title}</Link>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-      <p>
-        <Link to={projectTasksPath(clientId, projectId)}>{t('projects.viewTasks')}</Link>
-      </p>
-    </section>
-  );
-}
-
-function HubFiles({ clientId, projectId }: { clientId: string; projectId: string }) {
-  const { data, isPending, isError, error, refetch } = useFiles(projectId);
-  const { t } = useI18n();
-
-  return (
-    <section>
-      <h2>{t('common.files')}</h2>
-      {isPending ? <ListSkeleton label={t('files.loading')} rows={3} /> : null}
-      {isError ? (
-        <Alert>
-          <p>{t('files.loadError', { message: error instanceof Error ? error.message : '' })}</p>
-          <button type="button" onClick={() => void refetch()}>
-            {t('common.retry')}
-          </button>
-        </Alert>
-      ) : null}
-      {data ? <p>{t('projects.fileCount', { count: data.length })}</p> : null}
-      {data && data.length === 0 ? <p>{t('files.empty')}</p> : null}
-      {data && data.length > 0 ? (
-        <ul>
-          {data.map((file) => (
-            <li key={file.id}>{fileLabel(file)}</li>
-          ))}
-        </ul>
-      ) : null}
-      <p>
-        <Link to={projectFilesPath(clientId, projectId)}>{t('projects.viewFiles')}</Link>
-      </p>
-    </section>
   );
 }

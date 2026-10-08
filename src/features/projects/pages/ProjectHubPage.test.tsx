@@ -12,13 +12,12 @@ import { MemoryRouter, Route, Routes } from 'react-router';
 import { useAuthStore } from '@/features/auth';
 import userEvent from '@testing-library/user-event';
 import { updateProjectSchema, type Project } from '../schemas/project.schema';
+import { makeOrganization } from '@/test/factories/organization';
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore
@@ -29,9 +28,11 @@ function signInAs(role: 'owner' | 'admin' | 'member') {
 function mockHubApis(project: Project, tasks: unknown[] = [], files: unknown[] = []) {
   server.use(
     mswHttp.get(`${env.API_URL}/clients/${project.client_id}/projects`, () =>
-      HttpResponse.json([project]),
+      HttpResponse.json({ items: [project], next_cursor: null }),
     ),
-    mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () => HttpResponse.json(tasks)),
+    mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () =>
+      HttpResponse.json({ items: tasks, next_cursor: null }),
+    ),
     mswHttp.get(`${env.API_URL}/projects/${project.id}/files`, () => HttpResponse.json(files)),
   );
 }
@@ -58,16 +59,11 @@ describe('ProjectHubPage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Website' })).toBeInTheDocument();
     expect(screen.getByText('Launch')).toBeInTheDocument();
-    expect(await screen.findByRole('link', { name: 'Fix login' })).toHaveAttribute(
-      'href',
-      `/clients/${project.client_id}/projects/${project.id}/tasks/${task.id}`,
-    );
-    expect(await screen.findByText('spec.pdf (2048 bytes)')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'View tasks' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /Tasks/ })).toHaveAttribute(
       'href',
       `/clients/${project.client_id}/projects/${project.id}/tasks`,
     );
-    expect(screen.getByRole('link', { name: 'View files' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /Files/ })).toHaveAttribute(
       'href',
       `/clients/${project.client_id}/projects/${project.id}/files`,
     );
@@ -80,9 +76,11 @@ describe('ProjectHubPage', () => {
 
     server.use(
       mswHttp.get(`${env.API_URL}/clients/${project.client_id}/projects`, () =>
-        HttpResponse.json([project]),
+        HttpResponse.json({ items: [project], next_cursor: null }),
       ),
-      mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
       mswHttp.get(`${env.API_URL}/projects/${project.id}/files`, () => HttpResponse.json([])),
       mswHttp.patch(`${env.API_URL}/projects/${project.id}`, async ({ request }) => {
         const input = updateProjectSchema.parse(await request.json());
@@ -93,13 +91,14 @@ describe('ProjectHubPage', () => {
 
     renderHub(project.client_id, project.id);
 
-    expect(await screen.findByLabelText('Name for Website')).toHaveValue('Website');
+    await user.click(await screen.findByText('Edit project'));
+    expect(await screen.findByLabelText('Name')).toHaveValue('Website');
 
-    await user.clear(screen.getByLabelText('Name for Website'));
-    await user.type(screen.getByLabelText('Name for Website'), 'Mobile');
-    await user.clear(screen.getByLabelText('Notes for Website'));
-    await user.type(screen.getByLabelText('Notes for Website'), 'App');
-    await user.click(screen.getByRole('button', { name: 'Save Website' }));
+    await user.clear(screen.getByLabelText('Name'));
+    await user.type(screen.getByLabelText('Name'), 'Mobile');
+    await user.clear(screen.getByLabelText('Notes'));
+    await user.type(screen.getByLabelText('Notes'), 'App');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(await screen.findByRole('heading', { name: 'Mobile' })).toBeInTheDocument();
     expect(screen.getByText('App')).toBeInTheDocument();
@@ -113,8 +112,8 @@ describe('ProjectHubPage', () => {
     renderHub(project.client_id, project.id);
 
     expect(await screen.findByRole('heading', { name: 'Website' })).toBeInTheDocument();
-    expect(screen.queryByLabelText('Name for Website')).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Remove Website' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Edit project')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
   });
 
   it('shows not found when the project is missing', async () => {
@@ -123,7 +122,9 @@ describe('ProjectHubPage', () => {
     const projectId = crypto.randomUUID();
 
     server.use(
-      mswHttp.get(`${env.API_URL}/clients/${clientId}/projects`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/clients/${clientId}/projects`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
     );
 
     renderHub(clientId, projectId);

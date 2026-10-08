@@ -1,6 +1,7 @@
 import { env } from '@/config/env';
 import { renderWithProviders } from '@/test/render';
 import userEvent from '@testing-library/user-event';
+import { chooseSelectOption } from '@/test/select';
 import { describe, expect, it } from 'vitest';
 import { ConvertTicketForm } from './ConvertTicketForm';
 import { screen } from '@testing-library/react';
@@ -11,18 +12,17 @@ import { MemoryRouter } from 'react-router';
 import { makeProject } from '@/test/factories/project';
 import { makeTask } from '@/test/factories/task';
 import { convertTicketSchema } from '../schemas/ticket.schema';
+import { makeOrganization } from '@/test/factories/organization';
 
-const clientId = '44444444-4444-4444-4444-444444444444';
-const ticketId = '99999999-9999-9999-9999-999999999999';
+const clientId = '44444444-4444-4444-8444-444444444444';
+const ticketId = '99999999-9999-4999-8999-999999999999';
 const projectsUrl = `${env.API_URL}/clients/${clientId}/projects`;
 const convertUrl = `${env.API_URL}/tickets/${ticketId}/convert`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore
@@ -35,7 +35,9 @@ describe('ConvertTicketForm', () => {
     signInAs('member');
     const website = makeProject({ client_id: clientId, name: 'Website' });
 
-    server.use(mswHttp.get(projectsUrl, () => HttpResponse.json([website])));
+    server.use(
+      mswHttp.get(projectsUrl, () => HttpResponse.json({ items: [website], next_cursor: null })),
+    );
 
     renderWithProviders(
       <MemoryRouter>
@@ -55,7 +57,9 @@ describe('ConvertTicketForm', () => {
     signInAs('owner');
     const website = makeProject({ client_id: clientId, name: 'Website' });
 
-    server.use(mswHttp.get(projectsUrl, () => HttpResponse.json([website])));
+    server.use(
+      mswHttp.get(projectsUrl, () => HttpResponse.json({ items: [website], next_cursor: null })),
+    );
 
     renderWithProviders(
       <MemoryRouter>
@@ -80,7 +84,7 @@ describe('ConvertTicketForm', () => {
     const website = makeProject({ client_id: clientId, name: 'Website' });
 
     server.use(
-      mswHttp.get(projectsUrl, () => HttpResponse.json([website])),
+      mswHttp.get(projectsUrl, () => HttpResponse.json({ items: [website], next_cursor: null })),
       mswHttp.post(convertUrl, async ({ request }) => {
         const input = convertTicketSchema.parse(await request.json());
         expect(input.project_id).toBe(website.id);
@@ -107,10 +111,7 @@ describe('ConvertTicketForm', () => {
       </MemoryRouter>,
     );
 
-    await user.selectOptions(
-      await screen.findByLabelText('Convert Login button broken on'),
-      website.id,
-    );
+    await chooseSelectOption(user, 'Convert Login button broken on', website.id);
     await user.click(screen.getByRole('button', { name: 'Convert to task' }));
 
     expect(
@@ -124,7 +125,7 @@ describe('ConvertTicketForm', () => {
     const website = makeProject({ client_id: clientId, name: 'Website' });
 
     server.use(
-      mswHttp.get(projectsUrl, () => HttpResponse.json([website])),
+      mswHttp.get(projectsUrl, () => HttpResponse.json({ items: [website], next_cursor: null })),
       mswHttp.post(convertUrl, () =>
         HttpResponse.json({ error: { message: 'ticket already converted' } }, { status: 409 }),
       ),
@@ -140,10 +141,7 @@ describe('ConvertTicketForm', () => {
       </MemoryRouter>,
     );
 
-    await user.selectOptions(
-      await screen.findByLabelText('Convert Login button broken on'),
-      website.id,
-    );
+    await chooseSelectOption(user, 'Convert Login button broken on', website.id);
     await user.click(screen.getByRole('button', { name: 'Convert to task' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('ticket already converted');

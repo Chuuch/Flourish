@@ -53,9 +53,11 @@ export function ForgotPasswordForm() {
 
       {forgotPassword.isError ? <Alert>{forgotPassword.error.message}</Alert> : null}
 
-      <Button type="submit" disabled={forgotPassword.isPending}>
-        {t('auth.sendResetLink')}
-      </Button>
+      <div className="form-actions">
+        <Button type="submit" disabled={forgotPassword.isPending}>
+          {t('auth.sendResetLink')}
+        </Button>
+      </div>
     </form>
   );
 }

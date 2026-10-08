@@ -8,20 +8,20 @@ import { screen } from '@testing-library/react';
 import { makeTask } from '@/test/factories/task';
 import { MemoryRouter } from 'react-router';
 import userEvent from '@testing-library/user-event';
+import { chooseSelectOption } from '@/test/select';
 import type { Task } from '../schemas/task.schema';
 import { updateTaskSchema } from '../schemas/task.schema';
 import { useAuthStore } from '@/features/auth';
+import { makeOrganization } from '@/test/factories/organization';
 
-const clientId = '44444444-4444-4444-4444-444444444444';
-const projectId = '55555555-5555-5555-5555-555555555555';
+const clientId = '44444444-4444-4444-8444-444444444444';
+const projectId = '55555555-5555-5555-8555-555555555555';
 const tasksUrl = `${env.API_URL}/projects/${projectId}/tasks`;
 
-const testOrg = {
-  id: crypto.randomUUID(),
-  name: 'Acme',
+const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
   updated_at: '2026-09-11T11:12:20Z',
-};
+});
 
 function signInAs(role: 'owner' | 'admin' | 'member') {
   useAuthStore
@@ -42,7 +42,10 @@ describe('TaskList', () => {
     server.use(
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.get(tasksUrl, () =>
-        HttpResponse.json([login, makeTask({ title: 'Ship site', notes: '', status: 'done' })]),
+        HttpResponse.json({
+          items: [login, makeTask({ title: 'Ship site', notes: '', status: 'done' })],
+          next_cursor: null,
+        }),
       ),
     );
 
@@ -52,10 +55,11 @@ describe('TaskList', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByRole('link', { name: 'Fix login - OAuth' })).toHaveAttribute(
+    expect(await screen.findByRole('link', { name: 'Fix login' })).toHaveAttribute(
       'href',
       `/clients/${clientId}/projects/${projectId}/tasks/${login.id}`,
     );
+    expect(screen.getByText('OAuth')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Ship site' })).toBeInTheDocument();
     expect(screen.getAllByRole('link', { name: 'Comments' })[0]).toHaveAttribute(
       'href',
@@ -75,7 +79,7 @@ describe('TaskList', () => {
     const membersUrl = `${env.API_URL}/members`;
     server.use(
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
-      mswHttp.get(tasksUrl, () => HttpResponse.json([task])),
+      mswHttp.get(tasksUrl, () => HttpResponse.json({ items: [task], next_cursor: null })),
       mswHttp.patch(`${env.API_URL}/tasks/${task.id}`, async ({ request }) => {
         const input = updateTaskSchema.parse(await request.json());
         expect(input.version).toBe(1);
@@ -90,11 +94,17 @@ describe('TaskList', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByLabelText('Status for Fix login')).toHaveValue('todo');
+    expect(await screen.findByLabelText('Status for Fix login')).toHaveAttribute(
+      'data-value',
+      'todo',
+    );
 
-    await user.selectOptions(screen.getByLabelText('Status for Fix login'), 'done');
+    await chooseSelectOption(user, 'Status for Fix login', 'done');
 
-    expect(await screen.findByLabelText('Status for Fix login')).toHaveValue('done');
+    expect(await screen.findByLabelText('Status for Fix login')).toHaveAttribute(
+      'data-value',
+      'done',
+    );
   });
 
   it('renders a version conflict on update', async () => {
@@ -109,7 +119,7 @@ describe('TaskList', () => {
 
     server.use(
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
-      mswHttp.get(tasksUrl, () => HttpResponse.json([task])),
+      mswHttp.get(tasksUrl, () => HttpResponse.json({ items: [task], next_cursor: null })),
       mswHttp.patch(`${env.API_URL}/tasks/${task.id}`, () =>
         HttpResponse.json(
           { error: { code: 'task_version_mismatch', message: 'task was updated by someone else' } },
@@ -124,22 +134,29 @@ describe('TaskList', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByLabelText('Status for Fix login')).toHaveValue('todo');
+    expect(await screen.findByLabelText('Status for Fix login')).toHaveAttribute(
+      'data-value',
+      'todo',
+    );
 
-    await user.selectOptions(screen.getByLabelText('Status for Fix login'), 'done');
+    await chooseSelectOption(user, 'Status for Fix login', 'done');
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('task was updated by someone else');
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'This was updated by someone else. Refresh and try again.',
+    );
   });
 
   it('renders an empty state', async () => {
-    server.use(mswHttp.get(tasksUrl, () => HttpResponse.json([])));
+    server.use(mswHttp.get(tasksUrl, () => HttpResponse.json({ items: [], next_cursor: null })));
     renderWithProviders(
       <MemoryRouter>
         <TaskList clientId={clientId} projectId={projectId} />
       </MemoryRouter>,
     );
 
-    expect(await screen.findByText('No tasks yet.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('No tasks yet. Use Add task above to create one.'),
+    ).toBeInTheDocument();
   });
 
   it('renders the API error response', async () => {
@@ -162,14 +179,17 @@ describe('TaskList', () => {
     signInAs('member');
     server.use(
       mswHttp.get(tasksUrl, () =>
-        HttpResponse.json([
-          makeTask({
-            project_id: projectId,
-            title: 'Fix login',
-            notes: 'OAuth',
-            status: 'todo',
-          }),
-        ]),
+        HttpResponse.json({
+          items: [
+            makeTask({
+              project_id: projectId,
+              title: 'Fix login',
+              notes: 'OAuth',
+              status: 'todo',
+            }),
+          ],
+          next_cursor: null,
+        }),
       ),
     );
 
@@ -195,7 +215,7 @@ describe('TaskList', () => {
     let tasks: Task[] = [task];
 
     server.use(
-      mswHttp.get(tasksUrl, () => HttpResponse.json(tasks)),
+      mswHttp.get(tasksUrl, () => HttpResponse.json({ items: tasks, next_cursor: null })),
       mswHttp.delete(`${env.API_URL}/tasks/${task.id}`, () => {
         tasks = [];
         return new HttpResponse(null, { status: 204 });
@@ -210,7 +230,9 @@ describe('TaskList', () => {
 
     await user.click(await screen.findByRole('button', { name: 'Remove Fix login' }));
 
-    expect(await screen.findByText('No tasks yet.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('No tasks yet. Use Add task above to create one.'),
+    ).toBeInTheDocument();
   });
 
   it('shows a forbidden error from the API', async () => {
@@ -224,7 +246,7 @@ describe('TaskList', () => {
     });
 
     server.use(
-      mswHttp.get(tasksUrl, () => HttpResponse.json([task])),
+      mswHttp.get(tasksUrl, () => HttpResponse.json({ items: [task], next_cursor: null })),
       mswHttp.delete(`${env.API_URL}/tasks/${task.id}`, () =>
         HttpResponse.json({ error: { code: 'forbidden', message: 'forbidden' } }, { status: 403 }),
       ),
@@ -252,7 +274,7 @@ describe('TaskList', () => {
     });
 
     server.use(
-      mswHttp.get(tasksUrl, () => HttpResponse.json([task])),
+      mswHttp.get(tasksUrl, () => HttpResponse.json({ items: [task], next_cursor: null })),
       mswHttp.delete(`${env.API_URL}/tasks/${task.id}`, () =>
         HttpResponse.json(
           { error: { code: 'task_not_found', message: 'task not found' } },

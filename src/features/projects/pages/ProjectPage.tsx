@@ -1,32 +1,72 @@
 import { clientPath, paths } from '@/app/router/paths';
+import { PageHeader, SearchField } from '@/components/ui';
+import { useAuthStore } from '@/features/auth';
+import { useI18n } from '@/features/i18n';
+import { useModal } from '@/features/modal';
+import { useListSearch } from '@/hooks/useListSearch';
 import { Link, useParams } from 'react-router';
 import { CreateProjectForm } from '../components/CreateProjectForm';
 import { ProjectList } from '../components/ProjectList';
-import { useI18n } from '@/features/i18n';
+import { canManageProjects } from '../schemas/project.schema';
 
 export function ProjectsPage() {
   const { clientId } = useParams();
   const { t } = useI18n();
+  const { openModal, closeModal } = useModal();
+  const role = useAuthStore((state) => state.role);
+  const canCreate = canManageProjects(role);
+  const { value, setValue, query } = useListSearch();
 
   if (!clientId) {
     return (
       <main>
-        <h1>{t('projects.title')}</h1>
-        <p>{t('clients.notFoundPeriod')}</p>
+        <PageHeader title={t('projects.title')} description={t('clients.notFoundPeriod')} />
       </main>
     );
   }
 
   return (
     <main>
-      <p>
+      <p className="breadcrumb">
         <Link to={paths.clients}>{t('common.clients')}</Link>
-        {' / '}
+        <span aria-hidden="true">/</span>
         <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
       </p>
-      <h1>{t('common.projects')}</h1>
-      <CreateProjectForm clientId={clientId} />
-      <ProjectList clientId={clientId} />
+      <PageHeader
+        title={t('common.projects')}
+        {...(canCreate
+          ? {
+              createLabel: t('projects.add'),
+              onCreate: () => {
+                openModal({
+                  title: t('projects.add'),
+                  content: (
+                    <CreateProjectForm
+                      clientId={clientId}
+                      onSuccess={() => {
+                        closeModal();
+                      }}
+                      onCancel={() => {
+                        closeModal();
+                      }}
+                    />
+                  ),
+                });
+              },
+            }
+          : {})}
+      />
+      <div className="mb-4">
+        <SearchField
+          label={t('common.search')}
+          placeholder={t('projects.searchPlaceholder')}
+          value={value}
+          onChange={(event) => {
+            setValue(event.target.value);
+          }}
+        />
+      </div>
+      <ProjectList clientId={clientId} query={query} />
     </main>
   );
 }
