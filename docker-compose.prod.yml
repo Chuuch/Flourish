@@ -1,0 +1,31 @@
+# Production overlay for Flourish (Caddy + static web).
+# Usage (on the VPS, from the Flourish repo):
+#   docker network create flourish-edge  # once, if missing
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod up -d
+#
+# Expects Gorest API on the same flourish-edge network as container gorest-api.
+
+services:
+  caddy:
+    restart: unless-stopped
+    environment:
+      CADDY_EMAIL: ${CADDY_EMAIL}
+      FLOURISH_SITE: ${FLOURISH_SITE}
+    networks:
+      - edge
+
+  web:
+    image: ${FLOURISH_IMAGE:-flourish-web:local}
+    restart: unless-stopped
+    environment:
+      APP_API_URL: ${APP_API_URL}
+      APP_ENV: production
+      # Optional runtime Sentry (if 40-app-config.sh injects it):
+      # APP_SENTRY_DSN is not required if baked at build via VITE_SENTRY_DSN.
+    networks:
+      - edge
+
+networks:
+  edge:
+    name: flourish-edge
+    external: true
