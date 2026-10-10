@@ -11,6 +11,7 @@ export const paths = {
   reports: '/reports',
   clients: '/clients',
   projects: '/projects',
+  estimates: '/estimates',
   portal: '/portal',
   portalLogin: '/portal/login',
   portalAccount: '/portal/account',
@@ -57,6 +58,14 @@ export function projectTasksPath(clientId: string, projectId: string): string {
 
 export function projectFilesPath(clientId: string, projectId: string): string {
   return `${paths.clients}/${clientId}/projects/${projectId}/files`;
+}
+
+export function estimatePath(estimateId: string): string {
+  return `${paths.estimates}/${estimateId}`;
+}
+
+export function estimateNewPath(): string {
+  return `${paths.estimates}/new`;
 }
 
 export function taskPath(clientId: string, projectId: string, taskId: string): string {

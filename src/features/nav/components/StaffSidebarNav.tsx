@@ -16,6 +16,7 @@ import { useProjects } from '@/features/projects/hooks/useProjects';
 import {
   Bell,
   Building2,
+  Calculator,
   ChartColumn,
   ChevronDown,
   ChevronRight,
@@ -214,6 +215,10 @@ export function StaffSidebarNav() {
 
       <SidebarLink to={paths.reports} icon={ChartColumn}>
         {t('nav.reports')}
+      </SidebarLink>
+
+      <SidebarLink to={paths.estimates} icon={Calculator}>
+        {t('nav.estimates')}
       </SidebarLink>
 
       <SidebarLink to={paths.members} icon={UsersRound}>

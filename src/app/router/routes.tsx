@@ -311,6 +311,54 @@ export const routes: RouteObject[] = [
         },
       },
       {
+        path: 'estimates',
+        element: (
+          <RequireAuth>
+            <Outlet />
+          </RequireAuth>
+        ),
+        children: [
+          {
+            index: true,
+            HydrateFallback: PageLoader,
+            lazy: async () => {
+              const { EstimatesPage } = await import('@/features/estimates/pages/EstimatesPage');
+              return {
+                Component: function EstimatesRoute() {
+                  return <EstimatesPage />;
+                },
+              };
+            },
+          },
+          {
+            path: 'new',
+            HydrateFallback: PageLoader,
+            lazy: async () => {
+              const { EstimateWorkspacePage } =
+                await import('@/features/estimates/pages/EstimateWorkspacePage');
+              return {
+                Component: function EstimateWorkspaceRoute() {
+                  return <EstimateWorkspacePage />;
+                },
+              };
+            },
+          },
+          {
+            path: ':estimateId',
+            HydrateFallback: PageLoader,
+            lazy: async () => {
+              const { EstimateDetailPage } =
+                await import('@/features/estimates/pages/EstimateDetailPage');
+              return {
+                Component: function EstimateDetailRoute() {
+                  return <EstimateDetailPage />;
+                },
+              };
+            },
+          },
+        ],
+      },
+      {
         path: 'clients',
         element: (
           <RequireAuth>

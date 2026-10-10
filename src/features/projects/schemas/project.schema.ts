@@ -7,6 +7,9 @@ export const projectSchema = z.object({
   client_id: z.string(),
   name: z.string().min(1),
   notes: z.string(),
+  estimate_run_id: z.uuid().nullable().optional(),
+  estimated_hours: z.number().nullable().optional(),
+  target_end_date: z.string().nullable().optional(),
   created_at: z.string(),
   updated_at: z.string(),
 });
