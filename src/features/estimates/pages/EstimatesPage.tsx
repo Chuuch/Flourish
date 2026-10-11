@@ -1,4 +1,4 @@
-import { estimateNewPath } from '@/app/router/paths';
+import { estimateNewPath, estimatesIntakesPath } from '@/app/router/paths';
 import { Button } from '@/components/ui';
 import { useI18n } from '@/features/i18n';
 import { Link } from 'react-router';
@@ -15,6 +15,11 @@ export function EstimatesPage() {
       <div className="form-actions mb-4">
         <Link to={estimateNewPath()}>
           <Button type="button">{t('estimates.new')}</Button>
+        </Link>
+        <Link to={estimatesIntakesPath()}>
+          <Button type="button" variant="ghost">
+            {t('intake.inboxTitle')}
+          </Button>
         </Link>
       </div>
       <EstimateList />

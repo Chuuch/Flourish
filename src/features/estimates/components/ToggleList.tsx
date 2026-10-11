@@ -1,33 +1,35 @@
+import { Checkbox } from '@/components/ui';
+import { cn } from '@/lib/cn';
+
 type Option = { value: string; label: string };
 
 type ToggleListProps = {
   options: Option[];
   values: string[];
   onChange: (next: string[]) => void;
+  className?: string | undefined;
 };
 
-export function ToggleList({ options, values, onChange }: ToggleListProps) {
+export function ToggleList({ options, values, onChange, className }: ToggleListProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className={cn('col-span-full flex flex-wrap items-center gap-x-4 gap-y-2', className)}>
       {options.map((option) => {
         const checked = values.includes(option.value);
         return (
-          <label key={option.value} className="text-ink flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={checked}
-              onChange={(event) => {
-                onChange(
-                  event.target.checked
-                    ? values.includes(option.value)
-                      ? values
-                      : [...values, option.value]
-                    : values.filter((value) => value !== option.value),
-                );
-              }}
-            />
-            {option.label}
-          </label>
+          <Checkbox
+            key={option.value}
+            label={option.label}
+            checked={checked}
+            onChange={(event) => {
+              onChange(
+                event.target.checked
+                  ? values.includes(option.value)
+                    ? values
+                    : [...values, option.value]
+                  : values.filter((value) => value !== option.value),
+              );
+            }}
+          />
         );
       })}
     </div>
@@ -38,31 +40,31 @@ type BoolToggleProps = {
   label: string;
   checked: boolean;
   onChange: (next: boolean) => void;
+  className?: string | undefined;
 };
 
-export function BoolToggle({ label, checked, onChange }: BoolToggleProps) {
+export function BoolToggle({ label, checked, onChange, className }: BoolToggleProps) {
   return (
-    <label className="text-ink flex items-center gap-2 text-sm">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(event) => {
-          onChange(event.target.checked);
-        }}
-      />
-      {label}
-    </label>
+    <Checkbox
+      className={className}
+      label={label}
+      checked={checked}
+      onChange={(event) => {
+        onChange(event.target.checked);
+      }}
+    />
   );
 }
 
 type BoolToggleListProps = {
   items: { key: string; label: string; checked: boolean }[];
   onChange: (key: string, next: boolean) => void;
+  className?: string | undefined;
 };
 
-export function BoolToggleList({ items, onChange }: BoolToggleListProps) {
+export function BoolToggleList({ items, onChange, className }: BoolToggleListProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className={cn('col-span-full flex flex-wrap items-center gap-x-4 gap-y-2', className)}>
       {items.map((item) => (
         <BoolToggle
           key={item.key}

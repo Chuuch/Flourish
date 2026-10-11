@@ -102,6 +102,18 @@ export const routes: RouteObject[] = [
         },
       },
       {
+        path: 'intake/:token',
+        HydrateFallback: PageLoader,
+        lazy: async () => {
+          const { PublicIntakePage } = await import('@/features/estimates/pages/PublicIntakePage');
+          return {
+            Component: function PublicIntakeRoute() {
+              return <PublicIntakePage />;
+            },
+          };
+        },
+      },
+      {
         path: 'account',
         HydrateFallback: PageLoader,
         lazy: async () => {
@@ -339,6 +351,18 @@ export const routes: RouteObject[] = [
               return {
                 Component: function EstimateWorkspaceRoute() {
                   return <EstimateWorkspacePage />;
+                },
+              };
+            },
+          },
+          {
+            path: 'intakes',
+            HydrateFallback: PageLoader,
+            lazy: async () => {
+              const { IntakesPage } = await import('@/features/estimates/pages/IntakesPage');
+              return {
+                Component: function IntakesRoute() {
+                  return <IntakesPage />;
                 },
               };
             },

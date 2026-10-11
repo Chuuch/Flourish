@@ -1,4 +1,5 @@
 import type { EstimateCategory, EstimateInput } from '../schemas/estimate.schema';
+import type { Intake } from '../schemas/intake.schema';
 
 const websiteDefaults = {
   website_type: 'corporate' as const,
@@ -139,4 +140,24 @@ export function sanitizeEstimateInput(input: EstimateInput): EstimateInput {
   }
 
   return next;
+}
+
+export function estimateInputFromIntake(intake: Intake): EstimateInput {
+  const base = defaultEstimateInput(intake.category);
+  const scope = intake.scope;
+
+  return sanitizeEstimateInput({
+    ...base,
+    mode: intake.category === 'marketing' ? intake.mode : 'project',
+    project_name: intake.project_name ?? scope?.project_name ?? '',
+    respondent_name: intake.respondent_name ?? scope?.respondent_name ?? '',
+    company_name: intake.company_name ?? scope?.company_name ?? '',
+    customer_notes: scope?.customer_notes ?? '',
+    website: scope?.website ?? base.website,
+    design: scope?.design ?? base.design,
+    branding: scope?.branding ?? base.branding,
+    custom_web: scope?.custom_web ?? base.custom_web,
+    custom_mobile: scope?.custom_mobile ?? base.custom_mobile,
+    marketing: scope?.marketing ?? base.marketing,
+  });
 }

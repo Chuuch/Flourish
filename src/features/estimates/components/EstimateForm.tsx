@@ -215,7 +215,7 @@ export function EstimateForm({
         <Button type="button" variant="ghost" disabled={isPreviewing} onClick={onPreview}>
           {t('estimates.preview')}
         </Button>
-        <Button type="button" disabled={isSaving} onClick={onSave}>
+        <Button type="button" variant="primary" disabled={isSaving} onClick={onSave}>
           {t('estimates.save')}
         </Button>
       </div>

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Alert, Button, SelectField } from '@/components/ui';
+import { Alert, Button, Radio, SelectField } from '@/components/ui';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
@@ -164,39 +164,33 @@ export function InboxList({ query = '' }: { query?: string }) {
     <div className="flex flex-col gap-4">
       <fieldset className="inbox-filters">
         <legend>{t('inbox.filter')}</legend>
-        <label>
-          <input
-            type="radio"
-            name="inbox-filter"
-            checked={filter === 'all'}
-            onChange={() => {
-              setFilter('all');
-            }}
-          />
-          {t('inbox.filterAll')}
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="inbox-filter"
-            checked={filter === 'mine'}
-            onChange={() => {
-              setFilter('mine');
-            }}
-          />
-          {t('inbox.filterMine')}
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="inbox-filter"
-            checked={filter === 'unassigned'}
-            onChange={() => {
-              setFilter('unassigned');
-            }}
-          />
-          {t('inbox.filterUnassigned')}
-        </label>
+        <Radio
+          name="inbox-filter"
+          value="all"
+          label={t('inbox.filterAll')}
+          checked={filter === 'all'}
+          onChange={() => {
+            setFilter('all');
+          }}
+        />
+        <Radio
+          name="inbox-filter"
+          value="mine"
+          label={t('inbox.filterMine')}
+          checked={filter === 'mine'}
+          onChange={() => {
+            setFilter('mine');
+          }}
+        />
+        <Radio
+          name="inbox-filter"
+          value="unassigned"
+          label={t('inbox.filterUnassigned')}
+          checked={filter === 'unassigned'}
+          onChange={() => {
+            setFilter('unassigned');
+          }}
+        />
       </fieldset>
 
       {filteredItems.length === 0 ? (
@@ -207,10 +201,10 @@ export function InboxList({ query = '' }: { query?: string }) {
             className={isFetching && !isFetchingNextPage ? 'stack-list opacity-70' : 'stack-list'}
           >
             {filteredItems.map((task) => (
-              <li key={task.id} className="!p-0">
+              <li key={task.id} className="p-0!">
                 <button
                   type="button"
-                  className="hover:bg-canvas-elevated/60 flex w-full cursor-pointer items-start justify-between gap-3 px-[0.9rem] py-[0.75rem] text-left transition-colors duration-150 focus-visible:outline-none focus-visible:shadow-[var(--focus-ring)]"
+                  className="hover:bg-canvas-elevated/60 flex w-full cursor-pointer items-start justify-between gap-3 px-[0.9rem] py-3 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
                   onClick={() => {
                     setSelectedTaskId(task.id);
                   }}

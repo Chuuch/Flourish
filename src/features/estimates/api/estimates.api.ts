@@ -10,6 +10,15 @@ import {
 } from '../schemas/estimate.schema';
 import { withIdempotencyKey } from '@/lib/api/idempotency';
 import { projectSchema } from '@/features/projects/schemas/project.schema';
+import {
+  createIntakeResponseSchema,
+  intakeSchema,
+  intakesPageSchema,
+  publicIntakeSchema,
+  type CreateIntakeBody,
+  type SubmitIntakeBody,
+} from '../schemas/intake.schema';
+import z from 'zod';
 
 const DEFAULT_LIMIT = 50;
 
@@ -38,3 +47,24 @@ export const createProjectFromEstimate = (
   body: CreateProjectFromEstimateInput,
 ) =>
   http.post(`/estimates/${estimateId}/create-project`, projectSchema, body, withIdempotencyKey());
+
+export const createIntake = (body: CreateIntakeBody) =>
+  http.post('/estimate-intakes', createIntakeResponseSchema, body, withIdempotencyKey());
+
+export const fetchIntakes = (params?: { status?: string; cursor?: string; limit?: number }) =>
+  http.get('/estimate-intakes', intakesPageSchema, {
+    params: {
+      limit: params?.limit ?? DEFAULT_LIMIT,
+      ...(params?.status ? { status: params.status } : {}),
+      ...(params?.cursor ? { cursor: params.cursor } : {}),
+    },
+  });
+
+export const fetchIntake = (intakeId: string) =>
+  http.get(`/estimate-intakes/${intakeId}`, intakeSchema);
+
+export const fetchPublicIntake = (token: string) =>
+  http.get(`/public/estimate-intakes/${encodeURIComponent(token)}`, publicIntakeSchema);
+
+export const submitPublicIntake = (token: string, body: SubmitIntakeBody) =>
+  http.post(`/public/estimate-intakes/${encodeURIComponent(token)}/submit`, z.unknown(), body);

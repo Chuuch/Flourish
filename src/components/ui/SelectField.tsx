@@ -41,7 +41,7 @@ interface ListboxPosition {
 }
 
 const LISTBOX_GAP = 4;
-const LISTBOX_MAX_HEIGHT = 224;
+const LISTBOX_MAX_HEIGHT = 240;
 const VIEWPORT_PADDING = 8;
 
 function collectOptions(children: ReactNode): SelectOption[] {
@@ -73,7 +73,7 @@ function measureListboxPosition(trigger: HTMLElement): ListboxPosition {
   const spaceAbove = rect.top - VIEWPORT_PADDING;
   const openAbove = spaceBelow < Math.min(LISTBOX_MAX_HEIGHT, 160) && spaceAbove > spaceBelow;
   const available = openAbove ? spaceAbove : spaceBelow;
-  const maxHeight = Math.max(96, Math.min(LISTBOX_MAX_HEIGHT, available - LISTBOX_GAP));
+  const maxHeight = Math.max(120, Math.min(LISTBOX_MAX_HEIGHT, available - LISTBOX_GAP));
 
   if (openAbove) {
     return {
@@ -141,8 +141,11 @@ export function SelectField({
       return;
     }
 
-    function updatePosition() {
+    function updatePosition(event?: Event) {
       if (!triggerRef.current) {
+        return;
+      }
+      if (event && listboxRef.current?.contains(event.target as Node)) {
         return;
       }
       setPosition(measureListboxPosition(triggerRef.current));
@@ -234,6 +237,7 @@ export function SelectField({
         left: position.left,
         width: position.width,
         maxHeight: position.maxHeight,
+        overflowY: 'auto',
       }
     : undefined;
 
@@ -256,10 +260,10 @@ export function SelectField({
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
           className={cn(
-            'border-line bg-control text-ink hover:border-ink/20 cursor-pointer flex w-full items-center justify-between gap-2 border px-3 text-left outline-none transition-[border-color,box-shadow,background-color] duration-150 focus-visible:border-accent focus-visible:shadow-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-55',
-            'rounded-[var(--radius-control)]',
+            'border-line bg-control text-ink hover:border-ink/20 cursor-pointer flex w-full items-center justify-between gap-2 border px-3 text-left outline-none transition-[border-color,box-shadow,background-color] duration-150 focus-visible:border-accent focus-visible:shadow-(--focus-ring) disabled:cursor-not-allowed disabled:opacity-55',
+            'rounded-(--radius-control)',
             hideLabel ? 'py-1.5 text-xs' : 'py-2 text-sm',
-            open && 'border-accent shadow-[var(--focus-ring)]',
+            open && 'border-accent shadow-(--focus-ring)',
             error &&
               'border-danger/50 focus-visible:border-danger focus-visible:shadow-[0_0_0_3px_color-mix(in_srgb,var(--danger)_18%,transparent)]',
             className,
@@ -314,9 +318,12 @@ export function SelectField({
             aria-labelledby={fieldId}
             style={listboxStyle}
             className={cn(
-              'border-line bg-surface fixed z-50 overflow-auto rounded-[var(--radius-panel)] border p-1 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.45)]',
+              'border-line bg-surface fixed z-50 overflow-x-hidden overflow-y-auto overscroll-contain rounded-(--radius-panel) border p-1 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.45)]',
               !position && 'invisible',
             )}
+            onWheel={(event) => {
+              event.stopPropagation();
+            }}
           >
             {options.map((option) => {
               const selected = option.value === selectedValue;
@@ -329,9 +336,10 @@ export function SelectField({
                     data-value={option.value}
                     disabled={option.disabled || disabled}
                     className={cn(
-                      'hover:bg-canvas-elevated cursor-pointer flex w-full items-center rounded-[var(--radius-badge)] px-2.5 py-2 text-left text-sm transition-colors duration-100 disabled:cursor-not-allowed disabled:opacity-45',
-                      selected && 'bg-canvas-elevated font-medium text-ink',
-                      !selected && 'text-ink',
+                      'cursor-pointer flex w-full items-center rounded-(--radius-badge) px-2.5 py-2 text-left text-sm transition-colors duration-100 disabled:cursor-not-allowed disabled:opacity-45',
+                      selected
+                        ? 'bg-(--accent-soft) font-medium text-accent'
+                        : 'text-ink hover:bg-canvas-elevated',
                       hideLabel && 'py-1.5 text-xs',
                     )}
                     onMouseDown={(event) => {

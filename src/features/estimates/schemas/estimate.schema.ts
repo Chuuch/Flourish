@@ -62,7 +62,7 @@ export const customWebInputSchema = z.object({
   hosting_devops: z.enum(['none', 'basic', 'cicd']),
 });
 
-export const customMobileInput = z.object({
+export const customMobileInputSchema = z.object({
   platforms: z.array(z.string()),
   backend: z.enum(['none', 'existing', 'new']),
   auth: z.enum(['none', 'email', 'sso', 'both']),
@@ -105,7 +105,7 @@ export const estimateInputSchema = z.object({
   design: designInputSchema.optional(),
   branding: brandingInputSchema.optional(),
   custom_web: customWebInputSchema.optional(),
-  custom_mobile: customMobileInput.optional(),
+  custom_mobile: customMobileInputSchema.optional(),
   marketing: marketingInputSchema.optional(),
 });
 
@@ -142,7 +142,7 @@ export const previewResponseSchema = z.object({
 
 export const estimateSchema = z.object({
   id: z.uuid(),
-  orgnaization_id: z.uuid(),
+  organization_id: z.uuid(),
   created_by_user_id: z.uuid(),
   client_id: z.uuid().nullable().optional(),
   category: estimateCategorySchema,

@@ -32,8 +32,8 @@ export function SidebarLink({
         cn(
           'flex items-center gap-2.5 rounded-(--radius-control) px-2.5 py-1.5 text-sm no-underline transition-colors duration-150 focus-visible:outline-none focus-visible:shadow-(--focus-ring)',
           isActive
-            ? 'bg-canvas-elevated text-ink font-semibold'
-            : 'text-muted hover:bg-canvas-elevated/70 hover:text-ink',
+            ? 'bg-accent-soft text-accent font-semibold'
+            : 'text-muted hover:bg-accent-elevated/70 hover:text-accent',
           className,
         )
       }
