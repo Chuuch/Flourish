@@ -67,6 +67,12 @@ describe('RequirePortalAuth', () => {
       .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
 
     server.use(
+      mswHttp.get(`${env.API_URL}/nav/counts`, () =>
+        HttpResponse.json({ tasks: 0, tickets: 0, unread_notifications: 0 }),
+      ),
+      mswHttp.get(`${env.API_URL}/clients`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
       mswHttp.get(`${env.API_URL}/inbox/tasks`, () =>
         HttpResponse.json({ items: [], next_cursor: null }),
       ),
@@ -75,6 +81,6 @@ describe('RequirePortalAuth', () => {
 
     renderAt('/portal');
 
-    expect(await screen.findByText('Flourish')).toBeInTheDocument();
+    expect(await screen.findByText('Acme')).toBeInTheDocument();
   });
 });

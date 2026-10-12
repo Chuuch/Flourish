@@ -12,6 +12,28 @@ const kindKeys = {
   ticket_converted: 'notifications.kind.ticketConverted',
 } as const satisfies Record<Notification['kind'], MessageKey>;
 
+const ticketStatusKeys = {
+  open: 'tickets.status.open',
+  in_progress: 'tickets.status.inProgress',
+  resolved: 'tickets.status.resolved',
+  closed: 'tickets.status.closed',
+} as const satisfies Record<string, MessageKey>;
+
+function formatSummary(item: Notification): string {
+  const summary = item.summary.trim();
+  if (summary === '') {
+    return '';
+  }
+
+  if (
+    (item.kind === 'ticket_status_changed' || item.kind === 'ticket_converted') &&
+    summary in ticketStatusKeys
+  ) {
+    return t(ticketStatusKeys[summary as keyof typeof ticketStatusKeys]);
+  }
+  return summary;
+}
+
 export function notificationLine(item: Notification): string {
   const actor = memberLabel({
     display_name: item.actor_display_name,
@@ -19,7 +41,7 @@ export function notificationLine(item: Notification): string {
   });
 
   const kindLine = t(kindKeys[item.kind], { actor });
-  const summary = item.summary.trim();
+  const summary = formatSummary(item);
 
   if (summary === '') {
     return kindLine;

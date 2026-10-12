@@ -30,16 +30,20 @@ export function RootLayout() {
   const { data: counts } = useNavCounts();
 
   return (
-    <div className="bg-transparent text-ink min-h-dvh md:pl-72">
-      <aside className="border-line bg-surface flex max-h-dvh flex-col gap-4 overflow-x-hidden overflow-y-auto border-b px-3 py-4 md:fixed md:inset-y-0 md:left-0 md:z-20 md:h-dvh md:w-[18rem] md:border-r md:border-b-0 md:px-3 md:py-5">
+    <div className="bg-transparent text-ink flex min-h-screen flex-col md:flex-row">
+      <aside className="border-line bg-surface sticky top-0 z-10 flex max-h-screen flex-col gap-4 overflow-y-auto border-b px-3 py-4 md:h-screen md:w-[18rem] md:shrink-0 md:border-r md:border-b-0 md:px-3 md:py-5">
         <p className="flex items-center gap-2 px-2.5 pt-0.5">
           <Leaf className="text-accent size-4 shrink-0" aria-hidden="true" />
           <span className="truncate text-[0.95rem] font-semibold tracking-tight">
-            {organization?.name ?? client?.name ?? t('home.brand')}
+            {user
+              ? isPortal
+                ? (client?.name ?? t('home.brand'))
+                : (organization?.name ?? t('home.brand'))
+              : t('home.brand')}
           </span>
         </p>
 
-        <nav aria-label={t('nav.main')} className="flex min-h-0 flex-1 flex-col gap-0.5">
+        <nav aria-label={t('nav.main')} className="flex flex-1 flex-col gap-0.5">
           {user && !isPortal ? <StaffSidebarNav /> : null}
 
           {user && isPortal ? (
@@ -58,11 +62,6 @@ export function RootLayout() {
               <SidebarLink to={paths.portalInvoices} icon={Receipt}>
                 {t('common.invoices')}
               </SidebarLink>
-              {client ? (
-                <p className="text-muted mt-3.5 truncate px-2.5 text-xs font-medium">
-                  {client.name}
-                </p>
-              ) : null}
               <SidebarLink to={paths.portalAccount} icon={Settings}>
                 {t('nav.account')}
               </SidebarLink>
@@ -83,11 +82,6 @@ export function RootLayout() {
 
           {user && !isPortal ? (
             <>
-              {organization ? (
-                <p className="text-muted mt-3.5 truncate px-2.5 text-xs font-medium">
-                  {organization.name}
-                </p>
-              ) : null}
               <SidebarLink to={paths.account} icon={Settings}>
                 {t('nav.account')}
               </SidebarLink>
@@ -124,13 +118,13 @@ export function RootLayout() {
           ) : null}
         </nav>
 
-        <div className="border-line mt-auto flex shrink-0 flex-col gap-2 border-t pt-3">
+        <div className="border-line mt-auto flex flex-col gap-2 border-t pt-3">
           <ThemeToggle />
           <LocaleSwitcher />
         </div>
       </aside>
 
-      <div className="min-w-0 overflow-x-hidden px-4 py-6 md:px-8 md:py-8">
+      <div className="flex-1 px-4 py-6 md:px-8 md:py-8">
         <Outlet />
       </div>
     </div>

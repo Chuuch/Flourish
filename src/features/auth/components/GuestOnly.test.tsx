@@ -48,7 +48,7 @@ describe('GuestOnly', () => {
     );
 
     renderAt(paths.login);
-    expect(await screen.findByText('Flourish')).toBeInTheDocument();
+    expect(await screen.findByText('Acme')).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Sign in' })).not.toBeInTheDocument();
   });
 });
