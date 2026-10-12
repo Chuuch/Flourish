@@ -37,7 +37,15 @@ export function CreateTaskForm({ projectId, onSuccess, onCancel }: CreateTaskFor
     formState: { errors },
   } = useForm<CreateTaskFormInput>({
     resolver: zodResolver(createTaskFormSchema),
-    defaultValues: { title: '', notes: '', status: 'todo', assignee_id: '' },
+    defaultValues: {
+      title: '',
+      notes: '',
+      status: 'todo',
+      assignee_id: '',
+      phase_id: '',
+      starts_on: '',
+      due_on: '',
+    },
   });
 
   if (!canCreateTasks(role)) {

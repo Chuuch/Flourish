@@ -57,8 +57,8 @@
 html,
 body,
 #root {
-  min-height: 100%;
-  overflow-x: hidden;
+  height: 100%;
+  overflow: hidden;
   background-color: #f5f5f5;
 }
 
@@ -1000,76 +1000,108 @@ main .panel-card form {
 .project-month-calendar {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.85rem;
   min-width: 0;
+  margin-block: 0.25rem 1rem;
 }
 
 .project-month-calendar__header {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
 }
 
 .project-month-calendar__title {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1.125rem;
   font-weight: 650;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .project-month-calendar__nav {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
+  gap: 0.15rem;
+  padding: 0.15rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--canvas-elevated);
 }
 
-.project-month-calendar__weekdays,
-.project-month-calendar__grid {
+.project-month-calendar__weekdays {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 1px;
+  gap: 0;
   margin: 0;
-  padding: 0;
-  list-style: none;
-  background: var(--line);
-  border: 1px solid var(--line);
+  padding: 0 0.15rem;
 }
 
 .project-month-calendar__weekday {
-  background: var(--canvas-elevated);
-  padding: 0.35rem 0.4rem;
+  padding: 0.25rem 0.35rem;
   color: var(--muted);
   font-size: 0.6875rem;
   font-weight: 600;
+  letter-spacing: 0.03em;
+  text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+}
+
+.project-month-calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .project-month-calendar__day {
-  min-height: 5.5rem;
+  display: flex;
+  min-height: 6.25rem;
+  flex-direction: column;
+  gap: 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
   background: var(--surface);
-  padding: 0.35rem 0.4rem 0.45rem;
+  padding: 0.4rem 0.45rem 0.5rem;
 }
 
 .project-month-calendar__day--outside {
-  background: var(--canvas);
-  color: var(--muted);
+  border-color: transparent;
+  background: transparent;
+  opacity: 0.45;
+}
+
+.project-month-calendar__day--today {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: var(--accent-soft);
 }
 
 .project-month-calendar__day-num {
-  display: block;
-  margin-bottom: 0.25rem;
+  display: inline-flex;
+  width: 1.5rem;
+  height: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 650;
   font-variant-numeric: tabular-nums;
+}
+
+.project-month-calendar__day-num--today {
+  background: var(--accent);
+  color: var(--accent-fg);
 }
 
 .project-month-calendar__events {
   display: flex;
+  min-height: 0;
+  flex: 1;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.2rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1078,10 +1110,12 @@ main .panel-card form {
 .project-month-calendar__event {
   display: block;
   overflow: hidden;
-  border-left: 2px solid var(--accent);
-  padding-left: 0.3rem;
+  border-radius: var(--radius-badge);
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  padding: 0.2rem 0.35rem;
   color: var(--ink) !important;
   font-size: 0.6875rem;
+  font-weight: 550;
   line-height: 1.25;
   text-decoration: none !important;
   text-overflow: ellipsis;
@@ -1089,15 +1123,31 @@ main .panel-card form {
 }
 
 .project-month-calendar__event:hover {
-  text-decoration: underline !important;
+  background: color-mix(in srgb, var(--accent) 26%, var(--surface));
+}
+
+.project-month-calendar__event--active {
+  background: color-mix(in srgb, var(--accent) 28%, var(--surface));
+}
+
+.project-month-calendar__event--done {
+  color: var(--muted) !important;
+  text-decoration: line-through !important;
+  opacity: 0.85;
 }
 
 @media (max-width: 720px) {
+  .project-month-calendar__grid {
+    gap: 0.2rem;
+  }
+
   .project-month-calendar__day {
-    min-height: 3.75rem;
+    min-height: 4.25rem;
+    padding: 0.25rem;
   }
 
   .project-month-calendar__event {
     font-size: 0.625rem;
+    padding: 0.12rem 0.25rem;
   }
 }

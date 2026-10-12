@@ -30,8 +30,8 @@ export function RootLayout() {
   const { data: counts } = useNavCounts();
 
   return (
-    <div className="bg-transparent text-ink flex min-h-screen flex-col md:flex-row">
-      <aside className="border-line bg-surface sticky top-0 z-10 flex max-h-screen flex-col gap-4 overflow-y-auto border-b px-3 py-4 md:h-screen md:w-[18rem] md:shrink-0 md:border-r md:border-b-0 md:px-3 md:py-5">
+    <div className="text-ink flex h-dvh flex-col overflow-hidden md:flex-row">
+      <aside className="border-line bg-surface flex max-h-[45vh] shrink-0 flex-col gap-4 overflow-y-auto border-b px-3 py-4 md:h-full md:max-h-none md:w-[18rem] md:border-r md:border-b-0 md:px-3 md:py-5">
         <p className="flex items-center gap-2 px-2.5 pt-0.5">
           <Leaf className="text-accent size-4 shrink-0" aria-hidden="true" />
           <span className="truncate text-[0.95rem] font-semibold tracking-tight">
@@ -124,7 +124,7 @@ export function RootLayout() {
         </div>
       </aside>
 
-      <div className="flex-1 px-4 py-6 md:px-8 md:py-8">
+      <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 md:px-8 md:py-8">
         <Outlet />
       </div>
     </div>

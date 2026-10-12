@@ -47,3 +47,6 @@ Ensure Flourish `.env` has `VITE_API_URL` pointing at that API before `npm run t
 - `staff-login.spec.ts` — sign in → Clients nav
 - `create-client.spec.ts` — add client → appears in list
 - `portal-ticket.spec.ts` — portal sign in → submit ticket
+- `project-schedule.spec.ts` — API fixture (Northwind project + convert + dated task) → hub shows phases + calendar
+
+Optional: `E2E_API_URL` (default `http://localhost:8080/api/v1`, or `VITE_API_URL`) for the schedule fixture helper.

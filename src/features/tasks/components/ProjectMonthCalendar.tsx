@@ -85,8 +85,8 @@ export function ProjectMonthCalendar({ clientId, projectId, tasks }: ProjectMont
               !day.inMonth && 'project-month-calendar__day--outside',
             )}
           >
-            <span className="project-mont-calendar__day-num">{Number(day.date.slice(8))}</span>
-            <ul className="project-mont-calendar__events">
+            <span className="project-month-calendar__day-num">{Number(day.date.slice(8))}</span>
+            <ul className="project-month-calendar__events">
               {day.tasks.map((task) => (
                 <li key={task.id}>
                   <Link

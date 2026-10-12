@@ -37,7 +37,7 @@ export function ProjectPhaseProgress({ projectId }: { projectId: string }) {
     );
   }
 
-  if (data.length) {
+  if (!data.length) {
     return <p className="text-muted text-sm">{t('phases.empty')}</p>;
   }
 
