@@ -274,6 +274,14 @@ export const bg: Record<MessageKey, string> = {
   'projects.fileCount': '{{count}} файла',
   'projects.searchPlaceholder': 'Търси проекти...',
   'projects.noMatches': 'Няма проекти, които съвпадат с търсенето.',
+  'phases.title': 'Напредък',
+  'phases.loading': 'Зареждане на фази...',
+  'phases.loadError': 'Фазите не можаха да се заредят: {{message}}',
+  'phases.empty':
+    'Все още няма фази. Конвертирайте тикет в този проект, за да се създаде времевата линия.',
+  'phases.hint':
+    'Кликнете върху фаза, за да я маркирате като текуща. Предишните фази се маркират като готови.',
+  'phases.portalEmpty': 'Все още няма проекти',
   'tasks.title': 'Задачи',
   'tasks.add': 'Добави задача',
   'tasks.loading': 'Зареждане на задачи ....',

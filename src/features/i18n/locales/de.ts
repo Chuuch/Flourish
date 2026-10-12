@@ -276,6 +276,14 @@ export const de: Record<MessageKey, string> = {
   'projects.fileCount': '{{count}} Dateien',
   'projects.searchPlaceholder': 'Projekte suchen...',
   'projects.noMatches': 'Keine Projekte entsprechen Ihrer Suche.',
+  'phases.title': 'Fortschritt',
+  'phases.loading': 'Phasen werden geladen...',
+  'phases.loadError': 'Phasen konnten nicht geladen werden: {{message}}',
+  'phases.empty':
+    'Noch keine Phasen. Ticket in dieses Projekt konvertieren, um die Timeline anzulegen.',
+  'phases.hint':
+    'Klicken Sie auf eine Phase, um sie als aktuell zu markieren. Frühere Phasen werden als erledigt markiert.',
+  'phases.portalEmpty': 'Noch keine Projekte',
   'tasks.title': 'Tasks',
   'tasks.add': 'Aufgabe hinzufügen',
   'tasks.loading': 'Aufgaben werden geladen...',

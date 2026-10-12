@@ -7,6 +7,7 @@ import { PortalInvoiceList } from '@/features/invoices/components/PortalInvoiceL
 import { CreateTicketForm, TicketList } from '@/features/tickets';
 import { useListSearch } from '@/hooks/useListSearch';
 import { Link } from 'react-router';
+import { PortalPhaseProgress } from '@/features/phases';
 
 export function PortalHomePage() {
   const user = useAuthStore((state) => state.user);
@@ -21,6 +22,10 @@ export function PortalHomePage() {
         title={t('portal.title')}
         description={[user?.email, client?.name].filter(Boolean).join(' · ')}
       />
+
+      <section className="mb-8">
+        <PortalPhaseProgress />
+      </section>
 
       <section className="flex flex-col gap-4">
         <PageHeader

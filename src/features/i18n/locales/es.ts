@@ -276,6 +276,14 @@ export const es: Record<MessageKey, string> = {
   'projects.fileCount': '{{count}} archivos',
   'projects.searchPlaceholder': 'Buscar proyectos...',
   'projects.noMatches': 'Ningun proyecto coincide con tu búsqueda.',
+  'phases.title': 'Progreso',
+  'phases.loading': 'Cargando fases...',
+  'phases.loadError': 'No se pudieron cargar las fases: {{message}}',
+  'phases.empty':
+    'Aún no hay fases. Convierte un ticket en este proyecto para crear la línea de tiempo.',
+  'phases.hint':
+    'Haz clic en una fase para marcarla como actual. Las fases anteriores se marcan como hechas.',
+  'phases.portalEmpty': 'Aún no hay proyectos',
   'tasks.title': 'Tasks',
   'tasks.add': 'Añadir tarea',
   'tasks.loading': 'Cargando tareas...',

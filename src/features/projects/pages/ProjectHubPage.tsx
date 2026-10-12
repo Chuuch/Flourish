@@ -15,6 +15,7 @@ import { useTasks } from '@/features/tasks/hooks/useTasks';
 import { ProjectManageForm } from '../components/ProjectManageForm';
 import { useProject } from '../hooks/useProject';
 import { canManageProjects } from '../schemas/project.schema';
+import { ProjectPhaseProgress } from '@/features/phases';
 
 export function ProjectHubPage() {
   const { clientId, projectId } = useParams();
@@ -116,6 +117,10 @@ function ProjectHub({
       <div className="page-header">
         <h1>{project.name}</h1>
         <p>{project.notes ? project.notes : t('projects.notesEmpty')}</p>
+      </div>
+
+      <div className="mb-6">
+        <ProjectPhaseProgress projectId={projectId} />
       </div>
 
       <nav className="hub-nav" aria-label={project.name}>

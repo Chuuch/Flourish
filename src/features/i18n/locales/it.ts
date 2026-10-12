@@ -275,6 +275,14 @@ export const it: Record<MessageKey, string> = {
   'projects.fileCount': '{{count}} file',
   'projects.searchPlaceholder': 'Cerca progetti...',
   'projects.noMatches': 'Nessun progetto corrisponde alla ricerca.',
+  'phases.title': 'Avanzamento',
+  'phases.loading': 'Caricamento fasi...',
+  'phases.loadError': 'Impossibile caricare le fasi: {{message}}',
+  'phases.empty':
+    'Nessuna fase ancora. Converti un ticket in questo progetto per creare la timeline.',
+  'phases.hint':
+    'Fai clic su una fase per marcarla come corrente. Le fasi precedenti vengono segnate come completate.',
+  'phases.portalEmpty': 'Nessun progetto ancora.',
   'tasks.title': 'Tasks',
   'tasks.add': 'Aggiungi attività',
   'tasks.loading': 'Caricamento attività...',
