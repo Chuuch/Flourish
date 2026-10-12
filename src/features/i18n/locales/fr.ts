@@ -275,6 +275,14 @@ export const fr: Record<MessageKey, string> = {
   'projects.fileCount': '{{count}} fichiers',
   'projects.searchPlaceholder': 'Cerca progetti...',
   'projects.noMatches': 'Nessun progetto corrisponde alla ricerca.',
+  'phases.title': 'Avancement',
+  'phases.loading': 'Chargement des phases...',
+  'phases.loadError': 'Impossible de charger les phases : {{message}}',
+  'phases.empty':
+    'Aucune phase pour le moment. Convertissez un ticket vers ce projet pour créer la chronologie.',
+  'phases.hint':
+    'Cliquez sur une phase pour la marquer comme actuelle. Les phases précédentes sont marquées comme terminées.',
+  'phases.portalEmpty': 'Aucun projet pour le moment.',
   'tasks.title': 'Tasks',
   'tasks.add': 'Ajouter une tâche',
   'tasks.loading': 'Chargement des tâches...',

@@ -22,6 +22,15 @@ export const fetchProjects = (
     },
   });
 
+export const fetchPortalProjects = (params?: { q?: string; cursor?: string; limit?: number }) =>
+  http.get(`/client-auth/projects`, projectsPageSchema, {
+    params: {
+      limit: params?.limit ?? DEFAULT_LIMIT,
+      ...(params?.q ? { q: params.q } : {}),
+      ...(params?.cursor ? { cursor: params.cursor } : {}),
+    },
+  });
+
 export const createProject = (clientId: string, input: CreateProjectInput) =>
   http.post(`/clients/${clientId}/projects`, projectSchema, input, withIdempotencyKey());
 

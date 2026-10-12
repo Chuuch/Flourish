@@ -274,6 +274,13 @@ export const ru: Record<MessageKey, string> = {
   'projects.fileCount': '{{count}} файлов',
   'projects.searchPlaceholder': 'Искать проекты...',
   'projects.noMatches': 'Нет проектов по вашему запросу.',
+  'phases.title': 'Прогресс',
+  'phases.loading': 'Загрузка этапов...',
+  'phases.loadError': 'Не удалось загрузить этапы: {{message}}',
+  'phases.empty': 'Пока нет этапов. Конвертируйте тикет в этот проект, чтобы создать таймлайн.',
+  'phases.hint':
+    'Нажмите на этап, чтобы сделать его текущим. Предыдущие этапы отмечаются как выполненные.',
+  'phases.portalEmpty': 'Пока нет проектов.',
   'tasks.title': 'Tasks',
   'tasks.add': 'Добавить задачу',
   'tasks.loading': 'Загрузка задач...',
