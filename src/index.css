@@ -996,3 +996,108 @@ main .panel-card form {
   color: var(--ink);
   font-size: 0.875rem;
 }
+
+.project-month-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.project-month-calendar__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.project-month-calendar__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.project-month-calendar__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.project-month-calendar__weekdays,
+.project-month-calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.project-month-calendar__weekday {
+  background: var(--canvas-elevated);
+  padding: 0.35rem 0.4rem;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.project-month-calendar__day {
+  min-height: 5.5rem;
+  background: var(--surface);
+  padding: 0.35rem 0.4rem 0.45rem;
+}
+
+.project-month-calendar__day--outside {
+  background: var(--canvas);
+  color: var(--muted);
+}
+
+.project-month-calendar__day-num {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.project-month-calendar__events {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.project-month-calendar__event {
+  display: block;
+  overflow: hidden;
+  border-left: 2px solid var(--accent);
+  padding-left: 0.3rem;
+  color: var(--ink) !important;
+  font-size: 0.6875rem;
+  line-height: 1.25;
+  text-decoration: none !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-month-calendar__event:hover {
+  text-decoration: underline !important;
+}
+
+@media (max-width: 720px) {
+  .project-month-calendar__day {
+    min-height: 3.75rem;
+  }
+
+  .project-month-calendar__event {
+    font-size: 0.625rem;
+  }
+}

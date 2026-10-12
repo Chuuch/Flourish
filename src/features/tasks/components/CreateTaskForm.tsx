@@ -5,6 +5,8 @@ import {
   assigneeIdOrNull,
   canCreateTasks,
   createTaskFormSchema,
+  dateOnOrNull,
+  phaseIdOrNull,
   type CreateTaskFormInput,
 } from '../schemas/task.schema';
 import { Alert, Button, FieldGrid, SelectField, TextArea, TextField } from '@/components/ui';
@@ -12,6 +14,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMembers } from '@/features/members';
 import { AssigneeSelect } from './AssigneeSelect';
 import { useI18n } from '@/features/i18n';
+import { usePhases } from '@/features/phases';
+import { PhaseSelect } from './PhaseSelect';
 
 type CreateTaskFormProps = {
   projectId: string;
@@ -23,6 +27,7 @@ export function CreateTaskForm({ projectId, onSuccess, onCancel }: CreateTaskFor
   const role = useAuthStore((state) => state.role);
   const createTask = useCreateTask(projectId);
   const members = useMembers();
+  const phases = usePhases(projectId);
   const { t } = useI18n();
 
   const {
@@ -49,6 +54,9 @@ export function CreateTaskForm({ projectId, onSuccess, onCancel }: CreateTaskFor
               notes: input.notes,
               status: input.status,
               assignee_id: assigneeIdOrNull(input.assignee_id),
+              phase_id: phaseIdOrNull(input.phase_id),
+              starts_on: dateOnOrNull(input.starts_on),
+              due_on: dateOnOrNull(input.due_on),
             },
             {
               onSuccess: () => {
@@ -86,6 +94,28 @@ export function CreateTaskForm({ projectId, onSuccess, onCancel }: CreateTaskFor
           <option value="in_progress">{t('tasks.inProgress')}</option>
           <option value="done">{t('tasks.done')}</option>
         </SelectField>
+      </FieldGrid>
+
+      <FieldGrid>
+        <PhaseSelect
+          id="phase_id"
+          label={t('tasks.phase')}
+          phases={phases.data ?? []}
+          error={errors.phase_id?.message}
+          registration={register('phase_id')}
+        />
+        <TextField
+          type="date"
+          label={t('tasks.startsOn')}
+          error={errors.starts_on?.message}
+          {...register('starts_on')}
+        />
+        <TextField
+          type="date"
+          label={t('tasks.dueOn')}
+          error={errors.due_on?.message}
+          {...register('due_on')}
+        />
       </FieldGrid>
 
       {createTask.isError ? <Alert>{createTask.error.message}</Alert> : null}

@@ -173,6 +173,7 @@ describe('RequireAuth', () => {
       mswHttp.get(`${env.API_URL}/clients/${project.client_id}/projects`, () =>
         HttpResponse.json({ items: [project], next_cursor: null }),
       ),
+      mswHttp.get(`${env.API_URL}/projects/${project.id}/phases`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () =>
         HttpResponse.json({ items: [], next_cursor: null }),
       ),
@@ -206,6 +207,7 @@ describe('RequireAuth', () => {
 
     server.use(
       mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/projects/${project.id}/phases`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/projects/${project.id}/tasks`, () =>
         HttpResponse.json({ items: [task], next_cursor: null }),
       ),

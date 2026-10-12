@@ -21,6 +21,7 @@ describe('EditTaskForm', () => {
 
     server.use(
       mswHttp.get(membersUrl, () => HttpResponse.json([member])),
+      mswHttp.get(`${env.API_URL}/projects/${task.project_id}/phases`, () => HttpResponse.json([])),
       mswHttp.patch(`${env.API_URL}/tasks/${task.id}`, async ({ request }) => {
         const input = updateTaskSchema.parse(await request.json());
         expect(input.title).toBe('Ship site');
@@ -33,6 +34,9 @@ describe('EditTaskForm', () => {
           title: input.title,
           notes: input.notes,
           assignee_id: input.assignee_id,
+          phase_id: input.phase_id ?? null,
+          starts_on: input.starts_on ?? null,
+          due_on: input.due_on ?? null,
           version: 2,
         });
       }),
