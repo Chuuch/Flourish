@@ -14,9 +14,16 @@ export function portalCredentials() {
   };
 }
 
+async function pinEnglish(page: Page) {
+  await page.addInitScript(() => {
+    localStorage.setItem('flourish-locale', 'en');
+  });
+}
+
 export async function staffLogin(page: Page) {
   const { email, password } = staffCredentials();
 
+  await pinEnglish(page);
   await page.goto('/login');
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill(password);
@@ -28,6 +35,7 @@ export async function staffLogin(page: Page) {
 export async function portalLogin(page: Page) {
   const { email, password } = portalCredentials();
 
+  await pinEnglish(page);
   await page.goto('/portal/login');
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill(password);

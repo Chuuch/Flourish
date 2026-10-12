@@ -11,6 +11,7 @@ export default defineConfig({
   reporter: process.env.CI ? 'github' : 'list',
   use: {
     baseURL,
+    locale: 'en-US',
     trace: 'on-first-retry',
     ...devices['Desktop Chrome'],
   },
