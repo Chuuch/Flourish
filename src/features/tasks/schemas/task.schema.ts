@@ -6,7 +6,8 @@ export const taskStatusSchema = z.enum(['todo', 'in_progress', 'done']);
 const dateOnSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/)
-  .nullable();
+  .nullish()
+  .transform((v) => v ?? null);
 
 export const taskSchema = z.object({
   id: z.uuid(),
