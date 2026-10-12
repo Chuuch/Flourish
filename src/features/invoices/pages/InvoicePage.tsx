@@ -1,7 +1,8 @@
-import { clientInvoicesPath, clientPath, paths } from '@/app/router/paths';
+import { clientInvoicesPath, paths } from '@/app/router/paths';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 import { Alert, Button, FieldGrid, TextField } from '@/components/ui';
 import { useAuthStore } from '@/features/auth';
+import { ClientCrumb } from '@/features/clients/components/ClientCrumb';
 import { canManageClients } from '@/features/clients/schemas/client.schema';
 import { useI18n } from '@/features/i18n';
 import { reportRange } from '@/features/reports/lib/reportRange';
@@ -81,7 +82,7 @@ function InvoiceDetail({ clientId, invoiceId }: { clientId: string; invoiceId: s
       <p className="breadcrumb">
         <Link to={paths.clients}>{t('common.clients')}</Link>
         <span aria-hidden="true">/</span>
-        <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
+        <ClientCrumb clientId={clientId} />
         <span aria-hidden="true">/</span>
         <Link to={clientInvoicesPath(clientId)}>{t('invoices.title')}</Link>
       </p>

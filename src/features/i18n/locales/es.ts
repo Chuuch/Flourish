@@ -200,6 +200,8 @@ export const es: Record<MessageKey, string> = {
   'clients.notesFor': 'Notas para {{name}}',
   'clients.save': 'Guardar {{name}}',
   'clients.remove': 'Quitar {{name}}',
+  'clients.hasInvoices':
+    'Este cliente tiene facturas. Elimínalas primero y después podrás quitar el cliente.',
   'clients.notFound': 'Cliente no encontrado',
   'clients.notFoundPeriod': 'Cliente no encontrado.',
   'clients.notesEmpty': 'Aún no hay notas.',
@@ -280,7 +282,8 @@ export const es: Record<MessageKey, string> = {
   'phases.loading': 'Cargando fases...',
   'phases.loadError': 'No se pudieron cargar las fases: {{message}}',
   'phases.empty':
-    'Aún no hay fases. Convierte un ticket en este proyecto para crear la línea de tiempo.',
+    'Aún no hay fases. Los proyectos nuevos generan una línea de tiempo automáticamente; también puedes crearla aquí o al convertir un ticket.',
+  'phases.seedTimeline': 'Generar línea de tiempo',
   'phases.hint':
     'Haz clic en una fase para marcarla como actual. Las fases anteriores se marcan como hechas.',
   'phases.portalEmpty': 'Aún no hay proyectos',
@@ -321,6 +324,9 @@ export const es: Record<MessageKey, string> = {
   'tasks.calendarPrev': 'Mes anterior',
   'tasks.calendarNext': 'Mes siguiente',
   'tasks.calendarToday': 'Hoy',
+  'tasks.scheduleHint':
+    'Las fechas de inicio y vencimiento aparecen en el calendario del proyecto.',
+  'tasks.fromTicket': 'Ver ticket de origen',
   'inbox.loading': 'Cargando bandeja de entrada...',
   'inbox.loadError': 'No se pudo cargar la bandeja de entrada: {{message}}',
   'inbox.empty': 'No hay tareas en la bandeja.',
@@ -331,6 +337,7 @@ export const es: Record<MessageKey, string> = {
   'inbox.filterAll': 'Todas',
   'inbox.filterMine': 'Asignadas a mí',
   'inbox.filterUnassigned': 'Sin asignar',
+  'inbox.openTask': 'Abrir tarea',
   'comments.title': 'Comentarios',
   'comments.add': 'Añadir comentario',
   'comments.loading': 'Cargando comentarios...',
@@ -385,6 +392,9 @@ export const es: Record<MessageKey, string> = {
   'tickets.convertOn': 'Convertir {{title}} en',
   'tickets.selectProject': 'Seleccionar un proyecto',
   'tickets.convert': 'Convertir en tarea',
+  'tickets.convertHeading': 'Convertir en tarea',
+  'tickets.convertNoProjects': 'Crea un proyecto para este cliente antes de convertir.',
+  'tickets.createProjectCta': 'Crear un proyecto',
   'tickets.openedAs': 'Abierta como {{title}}',
   'tickets.attachment': 'Adjunto',
   'tickets.attachmentsLoading': 'Cargando adjuntos...',

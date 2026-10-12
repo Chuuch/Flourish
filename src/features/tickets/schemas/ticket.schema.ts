@@ -42,6 +42,18 @@ export const updateTicketSchema = z.object({
 
 export const convertTicketSchema = z.object({
   project_id: z.string().min(1, { error: () => t('validation.projectRequired') }),
+  assignee_id: z.uuid().nullable().optional(),
+  phase_id: z.uuid().nullable().optional(),
+  starts_on: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullable()
+    .optional(),
+  due_on: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullable()
+    .optional(),
 });
 
 export type Ticket = z.infer<typeof ticketSchema>;

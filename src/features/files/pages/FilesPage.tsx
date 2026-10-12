@@ -1,8 +1,10 @@
-import { clientPath, clientProjectsPath, paths, projectPath } from '@/app/router/paths';
+import { clientProjectsPath, paths } from '@/app/router/paths';
 import { PageHeader, SearchField } from '@/components/ui';
 import { useAuthStore } from '@/features/auth';
+import { ClientCrumb } from '@/features/clients/components/ClientCrumb';
 import { useI18n } from '@/features/i18n';
 import { useModal } from '@/features/modal';
+import { ProjectCrumb } from '@/features/projects/components/ProjectCrumb';
 import { useListSearch } from '@/hooks/useListSearch';
 import { Link, useParams } from 'react-router';
 import { CreateFileForm } from '../components/CreateFileForm';
@@ -30,11 +32,11 @@ export function FilesPage() {
       <p>
         <Link to={paths.clients}>{t('common.clients')}</Link>
         {' / '}
-        <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
+        <ClientCrumb clientId={clientId} />
         {' / '}
         <Link to={clientProjectsPath(clientId)}>{t('common.projects')}</Link>
         {' / '}
-        <Link to={projectPath(clientId, projectId)}>{t('projects.hubCrumb')}</Link>
+        <ProjectCrumb clientId={clientId} projectId={projectId} />
       </p>
       <PageHeader
         title={t('files.title')}

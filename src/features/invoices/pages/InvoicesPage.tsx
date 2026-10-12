@@ -1,5 +1,6 @@
-import { clientPath, paths } from '@/app/router/paths';
+import { paths } from '@/app/router/paths';
 import { SearchField } from '@/components/ui';
+import { ClientCrumb } from '@/features/clients/components/ClientCrumb';
 import { useI18n } from '@/features/i18n';
 import { useListSearch } from '@/hooks/useListSearch';
 import { Link, useParams } from 'react-router';
@@ -26,7 +27,7 @@ export function InvoicesPage() {
       <p className="breadcrumb">
         <Link to={paths.clients}>{t('common.clients')}</Link>
         <span aria-hidden="true">/</span>
-        <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
+        <ClientCrumb clientId={clientId} />
       </p>
       <div className="page-header">
         <h1>{t('invoices.title')}</h1>

@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Flourish">
   <style>
     .mark {
-      fill: #ff5c00;
-      stroke: #ff5c00;
+      fill: #cf9fff;
+      stroke: #cf9fff;
     }
     @media (prefers-color-scheme: dark) {
       .mark {
-        fill: #ff7a33;
-        stroke: #ff7a33;
+        fill: #ccccff;
+        stroke: #ccccff;
       }
     }
   </style>

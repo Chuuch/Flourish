@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { clientTicketPath, clientTicketsPath } from '@/app/router/paths';
 import { Alert, Button, SelectField } from '@/components/ui';
 import { useStaffTickets } from '../hooks/useStaffTickets';
 import { useUpdateTicket } from '../hooks/useUpdateTicket';
@@ -14,6 +14,7 @@ import { useDeleteTicket } from '../hooks/useDeleteTicket';
 import { useI18n } from '@/features/i18n';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 import { isVersionConflict } from '@/lib/api/versionConflict';
+import { useNavigate, useParams } from 'react-router';
 
 function ticketStatusLabel(
   status: TicketStatus,
@@ -133,10 +134,10 @@ function AgencyTicketDetail({
         <option value="closed">{t('tickets.status.closed')}</option>
       </SelectField>
 
-      <details className="ticket-panel">
-        <summary>{t('tickets.convert')}</summary>
+      <section className="flex flex-col gap-3">
+        <h3 className="m-0 text-sm font-semibold tracking-tight">{t('tickets.convertHeading')}</h3>
         <ConvertTicketForm clientId={clientId} ticketId={ticket.id} ticketTitle={ticket.title} />
-      </details>
+      </section>
 
       <details className="ticket-panel">
         <summary>{t('tickets.attachment')}</summary>
@@ -165,7 +166,8 @@ export function AgencyTicketList({ clientId, query = '' }: { clientId: string; q
     isFetchingNextPage,
     fetchNextPage,
   } = useStaffTickets(clientId, query);
-  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const { ticketId } = useParams();
+  const navigate = useNavigate();
   const { t } = useI18n();
 
   if (isPending) {
@@ -193,9 +195,7 @@ export function AgencyTicketList({ clientId, query = '' }: { clientId: string; q
     );
   }
 
-  const selectedTicket = selectedTicketId
-    ? (items.find((ticket) => ticket.id === selectedTicketId) ?? null)
-    : null;
+  const selectedTicket = ticketId ? (items.find((ticket) => ticket.id === ticketId) ?? null) : null;
 
   if (selectedTicket) {
     return (
@@ -203,7 +203,7 @@ export function AgencyTicketList({ clientId, query = '' }: { clientId: string; q
         clientId={clientId}
         ticket={selectedTicket}
         onBack={() => {
-          setSelectedTicketId(null);
+          void navigate(clientTicketsPath(clientId));
         }}
         onRefresh={() => {
           void refetch();
@@ -221,7 +221,7 @@ export function AgencyTicketList({ clientId, query = '' }: { clientId: string; q
               type="button"
               className="hover:bg-canvas-elevated/60 flex w-full cursor-pointer items-start justify-between gap-3 px-[0.9rem] py-[0.75rem] text-left transition-colors duration-150 focus-visible:outline-none focus-visible:shadow-[var(--focus-ring)]"
               onClick={() => {
-                setSelectedTicketId(ticket.id);
+                void navigate(clientTicketPath(clientId, ticket.id));
               }}
             >
               <span className="min-w-0">

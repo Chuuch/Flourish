@@ -18,6 +18,13 @@ export const phaseSchema = z.object({
 
 export const phasesSchema = z.array(phaseSchema);
 
+export const createPhaseSchema = z.object({
+  name: z.string().min(1).max(100),
+  sort_order: z.int().min(0).optional(),
+  starts_on: z.string().nullable().optional(),
+  due_on: z.string().nullable().optional(),
+});
+
 export const updatePhaseSchema = z.object({
   name: z.string().min(1).max(100),
   sort_order: z.int().min(0),
@@ -27,6 +34,18 @@ export const updatePhaseSchema = z.object({
   version: z.int().min(1),
 });
 
+export const DEFAULT_PHASE_NAMES = [
+  'Kickoff',
+  'Discovery',
+  'Design',
+  'Development',
+  'Content',
+  'QA',
+  'Launch',
+  'Support',
+] as const;
+
 export type Phase = z.infer<typeof phaseSchema>;
 export type PhaseStatus = z.infer<typeof phaseStatusSchema>;
+export type CreatePhaseInput = z.infer<typeof createPhaseSchema>;
 export type UpdatePhaseInput = z.infer<typeof updatePhaseSchema>;

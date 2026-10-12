@@ -200,6 +200,8 @@ export const de: Record<MessageKey, string> = {
   'clients.notesFor': 'Notizen für {{name}}',
   'clients.save': '{{name}} speichern',
   'clients.remove': '{{name}} entfernen',
+  'clients.hasInvoices':
+    'Dieser Kunde hat Rechnungen. Lösche zuerst die Rechnungen, dann kannst du den Kunden entfernen.',
   'clients.notFound': 'Kunde nicht gefunden',
   'clients.notFoundPeriod': 'Kunde nicht gefunden.',
   'clients.notesEmpty': 'Noch keine Notizen',
@@ -280,7 +282,8 @@ export const de: Record<MessageKey, string> = {
   'phases.loading': 'Phasen werden geladen...',
   'phases.loadError': 'Phasen konnten nicht geladen werden: {{message}}',
   'phases.empty':
-    'Noch keine Phasen. Ticket in dieses Projekt konvertieren, um die Timeline anzulegen.',
+    'Noch keine Phasen. Neue Projekte legen automatisch eine Zeitleiste an; Sie können auch hier oder beim Konvertieren eines Tickets eine anlegen.',
+  'phases.seedTimeline': 'Zeitleiste anlegen',
   'phases.hint':
     'Klicken Sie auf eine Phase, um sie als aktuell zu markieren. Frühere Phasen werden als erledigt markiert.',
   'phases.portalEmpty': 'Noch keine Projekte',
@@ -321,6 +324,8 @@ export const de: Record<MessageKey, string> = {
   'tasks.calendarPrev': 'Vorheriger Monat',
   'tasks.calendarNext': 'Nächster Monat',
   'tasks.calendarToday': 'Heute',
+  'tasks.scheduleHint': 'Start- und Fälligkeitsdatum erscheinen im Projektkalender.',
+  'tasks.fromTicket': 'Quellticket anzeigen',
   'inbox.loading': 'Posteingang wird geladen...',
   'inbox.loadError': 'Posteingang konnte nicht geladen werden: {{message}}',
   'inbox.empty': 'Keine Aufgaben im Posteingang.',
@@ -331,6 +336,7 @@ export const de: Record<MessageKey, string> = {
   'inbox.filterAll': 'Alle',
   'inbox.filterMine': 'Mir zugewiesen',
   'inbox.filterUnassigned': 'Nicht zugewiesen',
+  'inbox.openTask': 'Aufgabe öffnen',
   'comments.title': 'Kommentare',
   'comments.add': 'Kommentar hinzufügen',
   'comments.loading': 'Kommentare werden geladen...',
@@ -385,6 +391,10 @@ export const de: Record<MessageKey, string> = {
   'tickets.convertOn': '{{title}} umwandeln in',
   'tickets.selectProject': 'Projekt auswählen',
   'tickets.convert': 'In Aufgabe umwandeln',
+  'tickets.convertHeading': 'In Aufgabe umwandeln',
+  'tickets.convertNoProjects':
+    'Erstellen Sie ein Projekt für diesen Kunden, bevor Sie konvertieren.',
+  'tickets.createProjectCta': 'Projekt erstellen',
   'tickets.openedAs': 'Als {{title}} geöffnet',
   'tickets.attachment': 'Anhang',
   'tickets.attachmentsLoading': 'Anhänge werden geladen...',

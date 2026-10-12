@@ -37,6 +37,7 @@ describe('ConvertTicketForm', () => {
 
     server.use(
       mswHttp.get(projectsUrl, () => HttpResponse.json({ items: [website], next_cursor: null })),
+      mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
     );
 
     renderWithProviders(
@@ -59,6 +60,7 @@ describe('ConvertTicketForm', () => {
 
     server.use(
       mswHttp.get(projectsUrl, () => HttpResponse.json({ items: [website], next_cursor: null })),
+      mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
     );
 
     renderWithProviders(
@@ -78,18 +80,23 @@ describe('ConvertTicketForm', () => {
     expect(await screen.findByText('Project is required')).toBeInTheDocument();
   });
 
-  it('converts a ticket and links to the project tasks', async () => {
+  it('converts a ticket and links to the task workspace', async () => {
     const user = userEvent.setup();
     signInAs('member');
     const website = makeProject({ client_id: clientId, name: 'Website' });
+    const createdId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 
     server.use(
       mswHttp.get(projectsUrl, () => HttpResponse.json({ items: [website], next_cursor: null })),
+      mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/projects/${website.id}/phases`, () => HttpResponse.json([])),
       mswHttp.post(convertUrl, async ({ request }) => {
         const input = convertTicketSchema.parse(await request.json());
         expect(input.project_id).toBe(website.id);
         return HttpResponse.json(
           makeTask({
+            id: createdId,
+            client_id: clientId,
             project_id: website.id,
             ticket_id: ticketId,
             title: 'Login button broken',
@@ -116,7 +123,7 @@ describe('ConvertTicketForm', () => {
 
     expect(
       await screen.findByRole('link', { name: 'Opened as Login button broken' }),
-    ).toHaveAttribute('href', `/clients/${clientId}/projects/${website.id}/tasks`);
+    ).toHaveAttribute('href', `/clients/${clientId}/projects/${website.id}/tasks/${createdId}`);
   });
 
   it('shows the server error message', async () => {
@@ -126,6 +133,8 @@ describe('ConvertTicketForm', () => {
 
     server.use(
       mswHttp.get(projectsUrl, () => HttpResponse.json({ items: [website], next_cursor: null })),
+      mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/projects/${website.id}/phases`, () => HttpResponse.json([])),
       mswHttp.post(convertUrl, () =>
         HttpResponse.json({ error: { message: 'ticket already converted' } }, { status: 409 }),
       ),

@@ -32,6 +32,23 @@ function signInAs(role: 'owner' | 'admin' | 'member') {
     .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, role);
 }
 
+function renderList(initialPath = `/clients/${clientId}/tickets`) {
+  return renderWithProviders(
+    <MemoryRouter initialEntries={[initialPath]}>
+      <Routes>
+        <Route
+          path="/clients/:clientId/tickets"
+          element={<AgencyTicketList clientId={clientId} />}
+        />
+        <Route
+          path="/clients/:clientId/tickets/:ticketId"
+          element={<AgencyTicketList clientId={clientId} />}
+        />
+      </Routes>
+    </MemoryRouter>,
+  );
+}
+
 async function openTicket(user: ReturnType<typeof userEvent.setup>, title: string) {
   await user.click(await screen.findByRole('button', { name: new RegExp(title) }));
 }
@@ -63,7 +80,7 @@ describe('AgencyTicketList', () => {
       ),
     );
 
-    renderWithProviders(<AgencyTicketList clientId={clientId} />);
+    renderList();
 
     expect(await screen.findByRole('button', { name: /Login button broken/ })).toBeInTheDocument();
     expect(screen.getByText('(bug)')).toBeInTheDocument();
@@ -86,6 +103,9 @@ describe('AgencyTicketList', () => {
 
     server.use(
       mswHttp.get(ticketsUrl, () => HttpResponse.json({ items: [ticket], next_cursor: null })),
+      mswHttp.get(`${env.API_URL}/clients`, () =>
+        HttpResponse.json({ items: [], next_cursor: null }),
+      ),
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/clients/${clientId}/users`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/tickets/${ticket.id}/files`, () => HttpResponse.json([])),
@@ -103,6 +123,7 @@ describe('AgencyTicketList', () => {
       <MemoryRouter initialEntries={[`/clients/${clientId}/tickets`]}>
         <Routes>
           <Route path="/clients/:clientId/tickets" element={<AgencyTicketsPage />} />
+          <Route path="/clients/:clientId/tickets/:ticketId" element={<AgencyTicketsPage />} />
         </Routes>
       </MemoryRouter>,
     );
@@ -151,7 +172,7 @@ describe('AgencyTicketList', () => {
       ),
     );
 
-    renderWithProviders(<AgencyTicketList clientId={clientId} />);
+    renderList();
 
     await openTicket(user, 'Login button broken');
     expect(await screen.findByLabelText('Status for Login button broken')).toHaveAttribute(
@@ -168,7 +189,7 @@ describe('AgencyTicketList', () => {
 
   it('renders an empty state', async () => {
     server.use(mswHttp.get(ticketsUrl, () => HttpResponse.json({ items: [], next_cursor: null })));
-    renderWithProviders(<AgencyTicketList clientId={clientId} />);
+    renderList();
     expect(await screen.findByText('No tickets yet.')).toBeInTheDocument();
   });
 
@@ -179,7 +200,7 @@ describe('AgencyTicketList', () => {
       ),
     );
 
-    renderWithProviders(<AgencyTicketList clientId={clientId} />);
+    renderList();
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Database unavailable');
   });
@@ -207,7 +228,7 @@ describe('AgencyTicketList', () => {
       }),
     );
 
-    renderWithProviders(<AgencyTicketList clientId={clientId} />);
+    renderList();
 
     await openTicket(user, 'Login button broken');
     await user.click(await screen.findByRole('button', { name: 'Remove Login button broken' }));
@@ -238,7 +259,7 @@ describe('AgencyTicketList', () => {
       ),
     );
 
-    renderWithProviders(<AgencyTicketList clientId={clientId} />);
+    renderList();
 
     await openTicket(user, 'Login button broken');
     expect(await screen.findByLabelText('Status for Login button broken')).toBeInTheDocument();

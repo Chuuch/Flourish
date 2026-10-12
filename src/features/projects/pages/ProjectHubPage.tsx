@@ -1,14 +1,9 @@
 import { Link, useParams } from 'react-router';
-import {
-  clientPath,
-  clientProjectsPath,
-  paths,
-  projectFilesPath,
-  projectTasksPath,
-} from '@/app/router/paths';
+import { clientProjectsPath, paths, projectFilesPath, projectTasksPath } from '@/app/router/paths';
 import { Alert, Button } from '@/components/ui';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 import { useAuthStore } from '@/features/auth';
+import { ClientCrumb } from '@/features/clients/components/ClientCrumb';
 import { useI18n } from '@/features/i18n';
 import { useFiles } from '@/features/files/hooks/useFiles';
 import { useTasks } from '@/features/tasks/hooks/useTasks';
@@ -82,7 +77,7 @@ function ProjectHub({
         <p className="breadcrumb">
           <Link to={paths.clients}>{t('common.clients')}</Link>
           <span aria-hidden="true">/</span>
-          <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
+          <ClientCrumb clientId={clientId} />
           <span aria-hidden="true">/</span>
           <Link to={clientProjectsPath(clientId)}>{t('common.projects')}</Link>
         </p>
@@ -111,7 +106,7 @@ function ProjectHub({
       <p className="breadcrumb">
         <Link to={paths.clients}>{t('common.clients')}</Link>
         <span aria-hidden="true">/</span>
-        <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
+        <ClientCrumb clientId={clientId} />
         <span aria-hidden="true">/</span>
         <Link to={clientProjectsPath(clientId)}>{t('common.projects')}</Link>
       </p>

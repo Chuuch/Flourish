@@ -1,15 +1,10 @@
-import {
-  clientPath,
-  clientProjectsPath,
-  paths,
-  projectPath,
-  projectTasksPath,
-  taskPath,
-} from '@/app/router/paths';
+import { clientProjectsPath, paths, projectTasksPath, taskPath } from '@/app/router/paths';
+import { ClientCrumb } from '@/features/clients/components/ClientCrumb';
+import { useI18n } from '@/features/i18n';
+import { ProjectCrumb } from '@/features/projects/components/ProjectCrumb';
 import { Link, useParams } from 'react-router';
 import { CreateCommentForm } from '../components/CreateCommentForm';
 import { CommentList } from '../components/CommentList';
-import { useI18n } from '@/features/i18n';
 
 export function CommentsPage() {
   const { clientId, projectId, taskid, taskId: taskIdParam } = useParams();
@@ -30,11 +25,11 @@ export function CommentsPage() {
       <p>
         <Link to={paths.clients}>{t('common.clients')}</Link>
         {' / '}
-        <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
+        <ClientCrumb clientId={clientId} />
         {' / '}
         <Link to={clientProjectsPath(clientId)}>{t('common.projects')}</Link>
         {' / '}
-        <Link to={projectPath(clientId, projectId)}>{t('projects.hubCrumb')}</Link>
+        <ProjectCrumb clientId={clientId} projectId={projectId} />
         {' / '}
         <Link to={projectTasksPath(clientId, projectId)}>{t('common.tasks')}</Link>
         {' / '}

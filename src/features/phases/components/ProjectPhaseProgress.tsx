@@ -7,6 +7,7 @@ import { useAuthStore } from '@/features/auth';
 import { canManageProjects } from '@/features/projects/schemas/project.schema';
 import { useQueryClient } from '@tanstack/react-query';
 import { useUpdatePhase } from '../hooks/useUpdatePhase';
+import { useSeedDefaultPhases } from '../hooks/useSeedDefaultPhases';
 import { useState } from 'react';
 import { advancePhaseStatuses, updateInputFromPhase } from '../lib/advancePhase';
 import { updatePhase } from '../api/phases.api';
@@ -19,6 +20,7 @@ export function ProjectPhaseProgress({ projectId }: { projectId: string }) {
   const queryClient = useQueryClient();
   const { data, isPending, isError, error, refetch } = usePhases(projectId);
   const update = useUpdatePhase(projectId);
+  const seedDefaults = useSeedDefaultPhases(projectId);
   const [advancing, setAdvancing] = useState(false);
 
   if (isPending) {
@@ -38,7 +40,26 @@ export function ProjectPhaseProgress({ projectId }: { projectId: string }) {
   }
 
   if (!data.length) {
-    return <p className="text-muted text-sm">{t('phases.empty')}</p>;
+    return (
+      <div className="flex flex-col gap-2">
+        <p className="text-muted m-0 text-sm">{t('phases.empty')}</p>
+        {canManage ? (
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            className="self-start"
+            disabled={seedDefaults.isPending}
+            onClick={() => {
+              seedDefaults.mutate();
+            }}
+          >
+            {t('phases.seedTimeline')}
+          </Button>
+        ) : null}
+        {seedDefaults.isError ? <Alert>{seedDefaults.error.message}</Alert> : null}
+      </div>
+    );
   }
 
   return (

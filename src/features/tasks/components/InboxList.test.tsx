@@ -7,6 +7,7 @@ import { server } from '@/test/server';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { HttpResponse, http as mswHttp } from 'msw';
+import { MemoryRouter } from 'react-router';
 import { describe, expect, it } from 'vitest';
 import { InboxList } from './InboxList';
 
@@ -16,6 +17,8 @@ const membersUrl = `${env.API_URL}/members`;
 const testOrg = makeOrganization({ name: 'Acme' });
 
 const userId = crypto.randomUUID();
+const clientId = '44444444-4444-4444-8444-444444444444';
+const projectId = '55555555-5555-5555-8555-555555555555';
 
 function signIn() {
   useAuthStore
@@ -30,23 +33,37 @@ function mockInbox(tasks: ReturnType<typeof makeTask>[]) {
   );
 }
 
+function renderInbox() {
+  return renderWithProviders(
+    <MemoryRouter>
+      <InboxList />
+    </MemoryRouter>,
+  );
+}
+
 describe('InboxList', () => {
-  it('renders inbox tasks as a compact list', async () => {
+  it('defaults to assigned-to-me and links to the task workspace', async () => {
     signIn();
-    mockInbox([
-      makeTask({ title: 'Mine', notes: '', assignee_id: userId }),
-      makeTask({ title: 'Open', notes: 'Pick this up', assignee_id: null }),
-    ]);
+    const mine = makeTask({
+      title: 'Mine',
+      notes: '',
+      assignee_id: userId,
+      client_id: clientId,
+      project_id: projectId,
+    });
+    mockInbox([mine, makeTask({ title: 'Open', notes: 'Pick this up', assignee_id: null })]);
 
-    renderWithProviders(<InboxList />);
+    renderInbox();
 
-    expect(await screen.findByRole('button', { name: /Mine/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Open/ })).toBeInTheDocument();
-    expect(screen.getByText('Pick this up')).toBeInTheDocument();
-    expect(screen.queryByLabelText(/Status for/)).not.toBeInTheDocument();
+    const link = await screen.findByRole('link', { name: /Mine/ });
+    expect(link).toHaveAttribute(
+      'href',
+      `/clients/${clientId}/projects/${projectId}/tasks/${mine.id}`,
+    );
+    expect(screen.queryByRole('link', { name: /Open/ })).not.toBeInTheDocument();
   });
 
-  it('filters to assigned tasks', async () => {
+  it('filters to all tasks', async () => {
     const user = userEvent.setup();
     signIn();
     mockInbox([
@@ -54,12 +71,12 @@ describe('InboxList', () => {
       makeTask({ title: 'Open', notes: 'Pick this up', assignee_id: null }),
     ]);
 
-    renderWithProviders(<InboxList />);
+    renderInbox();
 
-    await user.click(await screen.findByRole('radio', { name: 'Assigned to me' }));
+    await user.click(await screen.findByRole('radio', { name: 'All' }));
 
-    expect(screen.getByRole('button', { name: /Mine/ })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /Open/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Mine/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Open/ })).toBeInTheDocument();
   });
 
   it('filters to unassigned tasks', async () => {
@@ -70,35 +87,19 @@ describe('InboxList', () => {
       makeTask({ title: 'Open', notes: 'Pick this up', assignee_id: null }),
     ]);
 
-    renderWithProviders(<InboxList />);
+    renderInbox();
 
     await user.click(await screen.findByRole('radio', { name: 'Unassigned' }));
 
-    expect(screen.queryByRole('button', { name: /Mine/ })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Open/ })).toBeInTheDocument();
-  });
-
-  it('opens a task detail with the edit form', async () => {
-    const user = userEvent.setup();
-    signIn();
-    mockInbox([
-      makeTask({ title: 'Open', notes: 'Pick this up', status: 'todo', assignee_id: null }),
-    ]);
-
-    renderWithProviders(<InboxList />);
-
-    await user.click(await screen.findByRole('button', { name: /Open/ }));
-
-    expect(screen.getByRole('button', { name: 'Back to inbox' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Status for Open')).toHaveAttribute('data-value', 'todo');
-    expect(screen.getByLabelText('Title for Open')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /Mine/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Open/ })).toBeInTheDocument();
   });
 
   it('renders an empty state', async () => {
     signIn();
     mockInbox([]);
 
-    renderWithProviders(<InboxList />);
+    renderInbox();
 
     expect(await screen.findByText('No inbox tasks.')).toBeInTheDocument();
   });

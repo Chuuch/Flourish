@@ -1,6 +1,7 @@
-import { clientPath, paths } from '@/app/router/paths';
+import { paths } from '@/app/router/paths';
 import { PageHeader, SearchField } from '@/components/ui';
 import { useAuthStore } from '@/features/auth';
+import { ClientCrumb } from '@/features/clients/components/ClientCrumb';
 import { useI18n } from '@/features/i18n';
 import { useModal } from '@/features/modal';
 import { useListSearch } from '@/hooks/useListSearch';
@@ -30,7 +31,7 @@ export function ProjectsPage() {
       <p className="breadcrumb">
         <Link to={paths.clients}>{t('common.clients')}</Link>
         <span aria-hidden="true">/</span>
-        <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
+        <ClientCrumb clientId={clientId} />
       </p>
       <PageHeader
         title={t('common.projects')}

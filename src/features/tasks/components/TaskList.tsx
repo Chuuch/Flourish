@@ -9,6 +9,7 @@ import { useDeleteTask } from '../hooks/useDeleteTask';
 import { EditTaskForm } from './EditTaskForm';
 import { useI18n } from '@/features/i18n';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
+import { formatDateTime } from '@/lib/formatDate';
 import { isVersionConflict } from '@/lib/api/versionConflict';
 
 export function TaskList({
@@ -35,7 +36,7 @@ export function TaskList({
   } = useTasks(projectId, query);
   const updateTask = useUpdateTask(projectId);
   const deleteTask = useDeleteTask(projectId);
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
 
   if (isPending) {
     return <ListSkeleton label={t('tasks.loading')} />;
@@ -92,7 +93,9 @@ export function TaskList({
                   {task.notes ? <p className="text-muted m-0 mt-1 text-sm">{task.notes}</p> : null}
                   {task.completed_at ? (
                     <p className="text-muted m-0 mt-1 text-xs">
-                      {t('tasks.completed', { completedAt: task.completed_at })}
+                      {t('tasks.completed', {
+                        completedAt: formatDateTime(task.completed_at, locale),
+                      })}
                     </p>
                   ) : null}
                 </div>

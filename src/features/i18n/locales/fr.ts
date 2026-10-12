@@ -199,6 +199,8 @@ export const fr: Record<MessageKey, string> = {
   'clients.notesFor': 'Notes pour {{name}}',
   'clients.save': 'Enregistrer {{name}}',
   'clients.remove': 'Retirer {{name}}',
+  'clients.hasInvoices':
+    'Ce client a des factures. Supprimez-les d’abord, puis vous pourrez retirer le client.',
   'clients.notFound': 'Client introuvable',
   'clients.notFoundPeriod': 'Client introuvable.',
   'clients.notesEmpty': 'Pas encore de notes.',
@@ -279,7 +281,8 @@ export const fr: Record<MessageKey, string> = {
   'phases.loading': 'Chargement des phases...',
   'phases.loadError': 'Impossible de charger les phases : {{message}}',
   'phases.empty':
-    'Aucune phase pour le moment. Convertissez un ticket vers ce projet pour créer la chronologie.',
+    'Aucune phase pour le moment. Les nouveaux projets créent automatiquement une timeline ; vous pouvez aussi en créer une ici ou lors de la conversion d’un ticket.',
+  'phases.seedTimeline': 'Créer la timeline',
   'phases.hint':
     'Cliquez sur une phase pour la marquer comme actuelle. Les phases précédentes sont marquées comme terminées.',
   'phases.portalEmpty': 'Aucun projet pour le moment.',
@@ -320,6 +323,9 @@ export const fr: Record<MessageKey, string> = {
   'tasks.calendarPrev': 'Mois précédent',
   'tasks.calendarNext': 'Mois suivant',
   'tasks.calendarToday': "Aujourd'hui",
+  'tasks.scheduleHint':
+    'Les dates de début et d’échéance apparaissent dans le calendrier du projet.',
+  'tasks.fromTicket': 'Voir le ticket source',
   'tasks.dueOnFor': 'Échéance pour {{title}}',
   'inbox.loading': 'Chargement de la boîte de réception...',
   'inbox.loadError': 'Impossible de charger la boîte de réception : {{message}}',
@@ -331,6 +337,7 @@ export const fr: Record<MessageKey, string> = {
   'inbox.filterAll': 'Toutes',
   'inbox.filterMine': 'Assignées à moi',
   'inbox.filterUnassigned': 'Non assignées',
+  'inbox.openTask': 'Ouvrir la tâche',
   'comments.title': 'Commentaires',
   'comments.add': 'Ajouter un commentaire',
   'comments.loading': 'Chargement des commentaires...',
@@ -385,6 +392,9 @@ export const fr: Record<MessageKey, string> = {
   'tickets.convertOn': 'Convertir {{title}} vers',
   'tickets.selectProject': 'Sélectionner un projet',
   'tickets.convert': 'Convertir en tâche',
+  'tickets.convertHeading': 'Convertir en tâche',
+  'tickets.convertNoProjects': 'Créez un projet pour ce client avant de convertir.',
+  'tickets.createProjectCta': 'Créer un projet',
   'tickets.openedAs': 'Ouvert comme {{title}}',
   'tickets.attachment': 'Pièce jointe',
   'tickets.attachmentsLoading': 'Chargement des pièces jointes...',

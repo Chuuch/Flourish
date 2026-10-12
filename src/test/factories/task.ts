@@ -7,6 +7,7 @@ export function makeTask(overrides: Partial<Task> = {}): Task {
     id: crypto.randomUUID(),
     organization_id: crypto.randomUUID(),
     project_id: crypto.randomUUID(),
+    client_id: crypto.randomUUID(),
     ticket_id: null,
     phase_id: null,
     title: 'Fix login',

@@ -8,6 +8,7 @@ import { screen } from '@testing-library/react';
 import { useAuthStore } from '@/features/auth';
 import userEvent from '@testing-library/user-event';
 import { makeOrganization } from '@/test/factories/organization';
+import { MemoryRouter } from 'react-router';
 
 const notificationsUrl = `${env.API_URL}/notifications`;
 
@@ -39,6 +40,8 @@ describe('NotificationList', () => {
               kind: 'ticket_opened',
               entity_type: 'ticket',
               entity_id: crypto.randomUUID(),
+              client_id: crypto.randomUUID(),
+              project_id: null,
               summary: 'Login broken',
               read_at: readAt,
               created_at: '2026-10-01T12:00:00Z',
@@ -53,15 +56,20 @@ describe('NotificationList', () => {
       }),
     );
 
-    renderWithProviders(<NotificationList />);
+    renderWithProviders(
+      <MemoryRouter>
+        <NotificationList />
+      </MemoryRouter>,
+    );
 
     expect(await screen.findByText('Pat opened a ticket: Login broken')).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Mark as read' }));
-    expect(await screen.findByText('Pat opened a ticket: Login broken')).toBeInTheDocument();
+    expect(screen.queryByText('Pat opened a ticket: Login broken')).not.toBeInTheDocument();
+    expect(await screen.findByText('No notifications.')).toBeInTheDocument();
   });
 
-  it('falls back to email and hides mark-as-read when already read', async () => {
+  it('falls back to email for unread notifications', async () => {
     useAuthStore
       .getState()
       .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
@@ -80,6 +88,51 @@ describe('NotificationList', () => {
               kind: 'task_assigned',
               entity_type: 'task',
               entity_id: crypto.randomUUID(),
+              client_id: crypto.randomUUID(),
+              project_id: crypto.randomUUID(),
+              summary: 'Draw wireframes',
+              read_at: null,
+              created_at: '2026-10-01T12:00:00Z',
+            },
+          ],
+          next_cursor: null,
+        }),
+      ),
+    );
+
+    renderWithProviders(
+      <MemoryRouter>
+        <NotificationList />
+      </MemoryRouter>,
+    );
+
+    expect(
+      await screen.findByText('linus@example.com assigned you a task: Draw wireframes'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Mark as read' })).toBeInTheDocument();
+  });
+
+  it('hides already-read notifications', async () => {
+    useAuthStore
+      .getState()
+      .setSession({ id: crypto.randomUUID(), email: 'ada@example.com' }, 'token', testOrg, 'owner');
+
+    server.use(
+      mswHttp.get(notificationsUrl, () =>
+        HttpResponse.json({
+          items: [
+            {
+              id: crypto.randomUUID(),
+              organization_id: testOrg.id,
+              recipient_id: crypto.randomUUID(),
+              actor_id: crypto.randomUUID(),
+              actor_email: 'linus@example.com',
+              actor_display_name: '',
+              kind: 'task_assigned',
+              entity_type: 'task',
+              entity_id: crypto.randomUUID(),
+              client_id: null,
+              project_id: null,
               summary: 'Draw wireframes',
               read_at: '2026-10-01T12:01:00Z',
               created_at: '2026-10-01T12:00:00Z',
@@ -90,11 +143,15 @@ describe('NotificationList', () => {
       ),
     );
 
-    renderWithProviders(<NotificationList />);
+    renderWithProviders(
+      <MemoryRouter>
+        <NotificationList />
+      </MemoryRouter>,
+    );
 
+    expect(await screen.findByText('No notifications.')).toBeInTheDocument();
     expect(
-      await screen.findByText('linus@example.com assigned you a task: Draw wireframes'),
-    ).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Mark as read' })).not.toBeInTheDocument();
+      screen.queryByText('linus@example.com assigned you a task: Draw wireframes'),
+    ).not.toBeInTheDocument();
   });
 });

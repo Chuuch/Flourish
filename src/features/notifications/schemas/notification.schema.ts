@@ -20,6 +20,8 @@ export const notificationSchema = z.object({
   kind: notificationKindSchema,
   entity_type: z.string(),
   entity_id: z.uuid(),
+  client_id: z.uuid().nullable(),
+  project_id: z.uuid().nullable(),
   summary: z.string(),
   read_at: z.string().nullable(),
   created_at: z.string(),

@@ -1,6 +1,9 @@
+import { clientInvoicesPath } from '@/app/router/paths';
 import { Alert, Button, FieldGrid, FormSection, TextArea, TextField } from '@/components/ui';
 import { useI18n } from '@/features/i18n';
+import { ApiError } from '@/lib/api/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Link } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useDeleteClient } from '../hooks/useDeleteClient';
 import { useUpdateClient } from '../hooks/useUpdateClient';
@@ -10,6 +13,8 @@ export function ClientManageForm({ client }: { client: Client }) {
   const updateClient = useUpdateClient();
   const deleteClient = useDeleteClient();
   const { t } = useI18n();
+  const deleteBlockedByInvoices =
+    deleteClient.error instanceof ApiError && deleteClient.error.code === 'client_has_invoices';
 
   const {
     register,
@@ -33,7 +38,18 @@ export function ClientManageForm({ client }: { client: Client }) {
   return (
     <div className="flex flex-col gap-3">
       {updateClient.isError ? <Alert>{updateClient.error.message}</Alert> : null}
-      {deleteClient.isError ? <Alert>{deleteClient.error.message}</Alert> : null}
+      {deleteClient.isError ? (
+        <Alert>
+          {deleteBlockedByInvoices ? (
+            <p>
+              {t('clients.hasInvoices')}{' '}
+              <Link to={clientInvoicesPath(client.id)}>{t('clients.viewInvoices')}</Link>
+            </p>
+          ) : (
+            deleteClient.error.message
+          )}
+        </Alert>
+      ) : null}
       <form
         onSubmit={(event) =>
           void handleSubmit((input) => {

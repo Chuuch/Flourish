@@ -421,12 +421,27 @@ export const routes: RouteObject[] = [
               },
               {
                 path: 'tickets',
-                HydrateFallback: PageLoader,
-                lazy: async () => {
-                  const { AgencyTicketsPage } =
-                    await import('@/features/tickets/pages/AgencyTicketsPage');
-                  return { Component: AgencyTicketsPage };
-                },
+                element: <Outlet />,
+                children: [
+                  {
+                    index: true,
+                    HydrateFallback: PageLoader,
+                    lazy: async () => {
+                      const { AgencyTicketsPage } =
+                        await import('@/features/tickets/pages/AgencyTicketsPage');
+                      return { Component: AgencyTicketsPage };
+                    },
+                  },
+                  {
+                    path: ':ticketId',
+                    HydrateFallback: PageLoader,
+                    lazy: async () => {
+                      const { AgencyTicketsPage } =
+                        await import('@/features/tickets/pages/AgencyTicketsPage');
+                      return { Component: AgencyTicketsPage };
+                    },
+                  },
+                ],
               },
               {
                 path: 'invoices',

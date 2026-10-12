@@ -1,13 +1,12 @@
 import { useMemo, useState } from 'react';
-import { Alert, Button, Radio, SelectField } from '@/components/ui';
+import { Link } from 'react-router';
+import { taskPath } from '@/app/router/paths';
+import { Alert, Button, Radio } from '@/components/ui';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 import { useAuthStore } from '@/features/auth';
 import { useI18n } from '@/features/i18n';
-import { isVersionConflict } from '@/lib/api/versionConflict';
 import { useInbox } from '../hooks/useInbox';
-import { useUpdateTask } from '../hooks/useUpdateTask';
-import { taskStatusSchema, type Task, type TaskStatus } from '../schemas/task.schema';
-import { EditTaskForm } from './EditTaskForm';
+import { type TaskStatus } from '../schemas/task.schema';
 
 type InboxFilter = 'all' | 'mine' | 'unassigned';
 
@@ -25,77 +24,6 @@ function statusLabel(
   }
 }
 
-function InboxTaskDetail({
-  task,
-  onBack,
-  onRefresh,
-}: {
-  task: Task;
-  onBack: () => void;
-  onRefresh: () => void;
-}) {
-  const updateTask = useUpdateTask();
-  const { t } = useI18n();
-
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="page-header">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="self-start px-0"
-          onClick={onBack}
-        >
-          {t('inbox.back')}
-        </Button>
-        <h2 className="m-0 text-base font-semibold tracking-tight">{task.title}</h2>
-        {task.notes ? <p className="text-muted m-0 text-sm leading-relaxed">{task.notes}</p> : null}
-      </div>
-
-      {updateTask.isError ? (
-        <Alert>
-          <p>
-            {isVersionConflict(updateTask.error)
-              ? t('toast.versionConflict')
-              : updateTask.error.message}
-          </p>
-          {isVersionConflict(updateTask.error) ? (
-            <Button type="button" variant="ghost" size="sm" onClick={onRefresh}>
-              {t('common.retry')}
-            </Button>
-          ) : null}
-        </Alert>
-      ) : null}
-
-      <SelectField
-        label={t('tasks.statusFor', { title: task.title })}
-        value={task.status}
-        disabled={updateTask.isPending}
-        onChange={(event) => {
-          const parsed = taskStatusSchema.safeParse(event.currentTarget.value);
-
-          if (!parsed.success) {
-            return;
-          }
-
-          const status: TaskStatus = parsed.data;
-          updateTask.mutate({
-            taskId: task.id,
-            input: { status, version: task.version },
-          });
-        }}
-      >
-        <option value="todo">{t('tasks.todo')}</option>
-        <option value="in_progress">{t('tasks.inProgress')}</option>
-        <option value="done">{t('tasks.done')}</option>
-      </SelectField>
-
-      <EditTaskForm task={task} />
-    </div>
-  );
-}
-
 export function InboxList({ query = '' }: { query?: string }) {
   const userId = useAuthStore((state) => state.user?.id);
   const {
@@ -109,8 +37,7 @@ export function InboxList({ query = '' }: { query?: string }) {
     isFetchingNextPage,
     fetchNextPage,
   } = useInbox(query);
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const [filter, setFilter] = useState<InboxFilter>('all');
+  const [filter, setFilter] = useState<InboxFilter>('mine');
   const { t } = useI18n();
 
   const items = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data]);
@@ -139,24 +66,6 @@ export function InboxList({ query = '' }: { query?: string }) {
           {t('common.retry')}
         </Button>
       </Alert>
-    );
-  }
-
-  const selectedTask = selectedTaskId
-    ? (filteredItems.find((task) => task.id === selectedTaskId) ?? null)
-    : null;
-
-  if (selectedTask) {
-    return (
-      <InboxTaskDetail
-        task={selectedTask}
-        onBack={() => {
-          setSelectedTaskId(null);
-        }}
-        onRefresh={() => {
-          void refetch();
-        }}
-      />
     );
   }
 
@@ -202,12 +111,9 @@ export function InboxList({ query = '' }: { query?: string }) {
           >
             {filteredItems.map((task) => (
               <li key={task.id} className="p-0!">
-                <button
-                  type="button"
-                  className="hover:bg-canvas-elevated/60 flex w-full cursor-pointer items-start justify-between gap-3 px-[0.9rem] py-3 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
-                  onClick={() => {
-                    setSelectedTaskId(task.id);
-                  }}
+                <Link
+                  to={taskPath(task.client_id, task.project_id, task.id)}
+                  className="hover:bg-canvas-elevated/60 flex w-full items-start justify-between gap-3 px-[0.9rem] py-3 text-left no-underline transition-colors duration-150 focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
                 >
                   <span className="min-w-0">
                     <span className="block truncate text-sm font-semibold text-ink">
@@ -222,7 +128,7 @@ export function InboxList({ query = '' }: { query?: string }) {
                   <span className="text-muted shrink-0 text-xs font-medium tabular-nums">
                     {statusLabel(task.status, t)}
                   </span>
-                </button>
+                </Link>
               </li>
             ))}
           </ul>

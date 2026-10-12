@@ -31,7 +31,7 @@ import {
   UsersRound,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useNavCounts } from '../hooks/useNavCounts';
 
 function ClientBranch({
@@ -168,10 +168,8 @@ function ProjectBranch({
 export function StaffSidebarNav() {
   const { t } = useI18n();
   const { clientId } = useParams();
-  const location = useLocation();
   const { data: counts } = useNavCounts();
   const clients = useClients();
-  const clientsSectionOpen = location.pathname.startsWith(paths.clients);
 
   return (
     <>
@@ -183,22 +181,20 @@ export function StaffSidebarNav() {
         {t('nav.home')}
       </SidebarLink>
 
-      <SidebarLink to={paths.clients} icon={Building2}>
+      <SidebarLink to={paths.clients} icon={Building2} count={counts?.tickets} badge="solid">
         {t('nav.clients')}
       </SidebarLink>
 
-      {clientsSectionOpen ? (
-        <div className="mt-0.5 flex flex-col gap-0.5">
-          {(clients.data?.pages.flatMap((page) => page.items) ?? []).map((client) => (
-            <ClientBranch
-              key={client.id}
-              clientId={client.id}
-              clientName={client.name}
-              forceOpen={clientId === client.id}
-            />
-          ))}
-        </div>
-      ) : null}
+      <div className="mt-0.5 flex flex-col gap-0.5">
+        {(clients.data?.pages.flatMap((page) => page.items) ?? []).map((client) => (
+          <ClientBranch
+            key={client.id}
+            clientId={client.id}
+            clientName={client.name}
+            forceOpen={clientId === client.id}
+          />
+        ))}
+      </div>
 
       <SidebarLink
         to={paths.notifications}

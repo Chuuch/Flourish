@@ -31,15 +31,21 @@ export function PhaseProgressStrip({
       {ordered.map((phase, index) => {
         const done = phase.status === 'done';
         const active = phase.status === 'in_progress';
-        const connectorFilled = done;
         const canSelect = interactive && !disabled && Boolean(onSelect);
+        const isLast = index === ordered.length - 1;
 
         const marker = (
           <span
             className={cn(
-              'inline-flex size-8 shrink-0 items-center justify-center rounded-full border-2',
-              done && 'border-accent bg-accent text-accent-fg',
-              active && !done && 'border-accent bg-surface text-transparent',
+              'relative z-10 inline-flex size-8 shrink-0 items-center justify-center rounded-full border-2',
+              done
+                ? 'border-accent bg-accent text-[#171717]'
+                : active
+                  ? 'border-accent bg-surface text-transparent'
+                  : 'border-line bg-surface text-transparent',
+              canSelect &&
+                'transition-[border-color,background-color,box-shadow] group-hover:border-accent group-hover:shadow-(--focus-ring)',
+              canSelect && active && !done && 'group-hover:bg-accent-soft',
             )}
             aria-current={active ? 'step' : undefined}
           >
@@ -47,61 +53,52 @@ export function PhaseProgressStrip({
           </span>
         );
 
-        return (
-          <li
-            key={phase.id}
+        const label = (
+          <span
             className={cn(
-              'flex min-w-0 flex-1 flex-col items-center',
-              index < ordered.length - 1 && 'relative',
+              'mt-2 max-w-30 text-center text-xs leading-snug',
+              active || done ? 'text-ink font-medium' : 'text-muted',
+              canSelect && 'group-hover:text-ink',
             )}
           >
-            <div className="flex w-full items-center">
-              {index > 0 ? (
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    'h-0.5 flex-1',
-                    ordered[index - 1]?.status === 'done' ? 'bg-accent' : 'bg-accent/25',
-                  )}
-                />
-              ) : (
-                <span className="flex-1" aria-hidden="true" />
-              )}
+            {phase.name}
+          </span>
+        );
 
-              {canSelect ? (
-                <button
-                  type="button"
-                  className="rounded-full focus-visible:outline-none focus-visible:shadow-(--focus-ring)"
-                  aria-label={phase.name}
-                  disabled={disabled}
-                  onClick={() => {
-                    onSelect?.(phase.id);
-                  }}
-                >
-                  {marker}
-                </button>
-              ) : (
-                marker
-              )}
+        const step = (
+          <>
+            {marker}
+            {label}
+          </>
+        );
 
-              {index < ordered.length - 1 ? (
-                <span
-                  aria-hidden="true"
-                  className={cn('h-0.5 flex-1', connectorFilled ? 'bg-accent' : 'bg-accent/25')}
-                />
-              ) : (
-                <span className="flex-1" aria-hidden="true" />
-              )}
-            </div>
+        return (
+          <li key={phase.id} className="relative flex min-w-0 flex-1 flex-col items-center">
+            {!isLast ? (
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'pointer-events-none absolute top-4 left-1/2 z-0 h-0.5 w-full -translate-y-1/2',
+                  done ? 'bg-accent' : 'bg-accent/25',
+                )}
+              />
+            ) : null}
 
-            <span
-              className={cn(
-                'mt-2 max-w-30 text-center text-xs leading-snug',
-                active || done ? 'text-ink font-medium' : 'text-muted',
-              )}
-            >
-              {phase.name}
-            </span>
+            {canSelect ? (
+              <button
+                type="button"
+                className="group flex w-full cursor-pointer flex-col items-center border-0 bg-transparent p-0 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                aria-label={phase.name}
+                disabled={disabled}
+                onClick={() => {
+                  onSelect?.(phase.id);
+                }}
+              >
+                {step}
+              </button>
+            ) : (
+              <div className="flex w-full flex-col items-center">{step}</div>
+            )}
           </li>
         );
       })}

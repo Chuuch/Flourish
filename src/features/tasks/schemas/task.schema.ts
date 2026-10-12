@@ -13,6 +13,7 @@ export const taskSchema = z.object({
   id: z.uuid(),
   organization_id: z.uuid(),
   project_id: z.uuid(),
+  client_id: z.uuid(),
   ticket_id: z.uuid().nullable(),
   phase_id: z.uuid().nullable(),
   title: z.string().min(1),

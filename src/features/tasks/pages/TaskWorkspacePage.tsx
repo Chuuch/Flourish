@@ -1,19 +1,16 @@
 import { Link, useParams } from 'react-router';
-import {
-  clientPath,
-  clientProjectsPath,
-  paths,
-  projectPath,
-  projectTasksPath,
-} from '@/app/router/paths';
+import { clientProjectsPath, clientTicketPath, paths, projectTasksPath } from '@/app/router/paths';
 import { Alert, Button, SelectField } from '@/components/ui';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 import { useAuthStore } from '@/features/auth';
+import { ClientCrumb } from '@/features/clients/components/ClientCrumb';
 import { useI18n } from '@/features/i18n';
 import { CreateCommentForm } from '@/features/comments/components/CreateCommentForm';
 import { CommentList } from '@/features/comments/components/CommentList';
+import { ProjectCrumb } from '@/features/projects/components/ProjectCrumb';
 import { CreateTimeEntryForm } from '@/features/timeentries/components/CreateTimeEntryForm';
 import { TimeEntryList } from '@/features/timeentries/components/TimeEntryList';
+import { formatDateTime } from '@/lib/formatDate';
 import { EditTaskForm } from '../components/EditTaskForm';
 import { useDeleteTask } from '../hooks/useDeleteTask';
 import { useTask } from '../hooks/useTask';
@@ -50,7 +47,7 @@ function TaskWorkspace({
   const { task, isPending, isError, error, refetch } = useTask(projectId, taskId);
   const updateTask = useUpdateTask(projectId);
   const deleteTask = useDeleteTask(projectId);
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
 
   if (isPending) {
     return (
@@ -81,11 +78,11 @@ function TaskWorkspace({
         <p>
           <Link to={paths.clients}>{t('common.clients')}</Link>
           {' / '}
-          <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
+          <ClientCrumb clientId={clientId} />
           {' / '}
           <Link to={clientProjectsPath(clientId)}>{t('common.projects')}</Link>
           {' / '}
-          <Link to={projectPath(clientId, projectId)}>{t('projects.hubCrumb')}</Link>
+          <ProjectCrumb clientId={clientId} projectId={projectId} />
           {' / '}
           <Link to={projectTasksPath(clientId, projectId)}>{t('common.tasks')}</Link>
         </p>
@@ -99,16 +96,21 @@ function TaskWorkspace({
       <p>
         <Link to={paths.clients}>{t('common.clients')}</Link>
         {' / '}
-        <Link to={clientPath(clientId)}>{t('clients.hubCrumb')}</Link>
+        <ClientCrumb clientId={clientId} />
         {' / '}
         <Link to={clientProjectsPath(clientId)}>{t('common.projects')}</Link>
         {' / '}
-        <Link to={projectPath(clientId, projectId)}>{t('projects.hubCrumb')}</Link>
+        <ProjectCrumb clientId={clientId} projectId={projectId} />
         {' / '}
         <Link to={projectTasksPath(clientId, projectId)}>{t('common.tasks')}</Link>
       </p>
       <h1>{task.title}</h1>
       <p className="text-muted">{task.notes ? task.notes : t('tasks.notesEmpty')}</p>
+      {task.ticket_id ? (
+        <p className="m-0">
+          <Link to={clientTicketPath(clientId, task.ticket_id)}>{t('tasks.fromTicket')}</Link>
+        </p>
+      ) : null}
       {updateTask.isError ? <Alert>{updateTask.error.message}</Alert> : null}
       {deleteTask.isError ? <Alert>{deleteTask.error.message}</Alert> : null}
       <SelectField
@@ -134,7 +136,9 @@ function TaskWorkspace({
         <option value="done">{t('tasks.done')}</option>
       </SelectField>
       {task.completed_at ? (
-        <span>{t('tasks.completed', { completedAt: task.completed_at })}</span>
+        <span className="text-muted text-sm">
+          {t('tasks.completed', { completedAt: formatDateTime(task.completed_at, locale) })}
+        </span>
       ) : null}
       <EditTaskForm task={task} projectId={projectId} />
       {canManage ? (

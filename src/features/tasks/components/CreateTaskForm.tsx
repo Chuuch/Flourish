@@ -126,6 +126,8 @@ export function CreateTaskForm({ projectId, onSuccess, onCancel }: CreateTaskFor
         />
       </FieldGrid>
 
+      <p className="text-muted m-0 text-xs">{t('tasks.scheduleHint')}</p>
+
       {createTask.isError ? <Alert>{createTask.error.message}</Alert> : null}
 
       <div className="form-actions">
