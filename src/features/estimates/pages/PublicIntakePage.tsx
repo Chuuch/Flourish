@@ -38,7 +38,7 @@ export function PublicIntakePage() {
   if (!token) {
     return (
       <main>
-        <h1>Project questionnaire</h1>
+        <h1>{label(t, 'intake.title', 'Tell us a bit about your project')}</h1>
         <p>Missing token in URL.</p>
       </main>
     );
@@ -55,7 +55,7 @@ export function PublicIntakePage() {
   if (isError) {
     return (
       <main>
-        <h1>Project questionnaire</h1>
+        <h1>{label(t, 'intake.title', 'Tell us a bit about your project')}</h1>
         <Alert>
           <p>
             {error instanceof Error ? error.message : 'Could not open this questionnaire link.'}
@@ -108,9 +108,9 @@ export function PublicIntakePage() {
   return (
     <main>
       <div className="page-header">
-        <h1>{label(t, 'intake.title', 'Project questionnaire')}</h1>
+        <h1>{label(t, 'intake.title', 'Tell us a bit about your project')}</h1>
         <p>
-          {data.category} · {data.mode}
+          {t(`estimates.category.${data.category}`)} · {t(`estimates.mode.${data.mode}`)}
         </p>
       </div>
 

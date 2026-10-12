@@ -1,4 +1,4 @@
-import { clientTicketPath, taskPath } from '@/app/router/paths';
+import { clientTicketPath, intakeDetailPath, taskPath } from '@/app/router/paths';
 import { Alert, Button } from '@/components/ui';
 import { ListSkeleton } from '@/components/feedback/ListSkeleton';
 import { useI18n } from '@/features/i18n';
@@ -16,6 +16,10 @@ function notificationHref(item: Notification): string | null {
 
   if (item.entity_type === 'task' && item.client_id && item.project_id) {
     return taskPath(item.client_id, item.project_id, item.entity_id);
+  }
+
+  if (item.entity_type === 'intake') {
+    return intakeDetailPath(item.entity_id);
   }
 
   return null;

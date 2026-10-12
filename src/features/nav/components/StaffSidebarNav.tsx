@@ -213,7 +213,12 @@ export function StaffSidebarNav() {
         {t('nav.reports')}
       </SidebarLink>
 
-      <SidebarLink to={paths.estimates} icon={Calculator}>
+      <SidebarLink
+        to={paths.estimates}
+        icon={Calculator}
+        count={counts?.submitted_intakes}
+        badge="solid"
+      >
         {t('nav.estimates')}
       </SidebarLink>
 

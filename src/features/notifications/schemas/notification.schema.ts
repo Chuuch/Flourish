@@ -8,6 +8,7 @@ export const notificationKindSchema = z.enum([
   'ticket_staff_comment',
   'ticket_status_changed',
   'ticket_converted',
+  'intake_submitted',
 ]);
 
 export const notificationSchema = z.object({

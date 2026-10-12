@@ -10,6 +10,7 @@ const kindKeys = {
   ticket_staff_comment: 'notifications.kind.ticketStaffComment',
   ticket_status_changed: 'notifications.kind.ticketStatusChanged',
   ticket_converted: 'notifications.kind.ticketConverted',
+  intake_submitted: 'notifications.kind.intakeSubmitted',
 } as const satisfies Record<Notification['kind'], MessageKey>;
 
 const ticketStatusKeys = {
