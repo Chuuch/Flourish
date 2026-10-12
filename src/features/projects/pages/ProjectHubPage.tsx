@@ -16,6 +16,7 @@ import { ProjectManageForm } from '../components/ProjectManageForm';
 import { useProject } from '../hooks/useProject';
 import { canManageProjects } from '../schemas/project.schema';
 import { ProjectPhaseProgress } from '@/features/phases';
+import { ProjectMonthCalendar } from '@/features/tasks/components/ProjectMonthCalendar';
 
 export function ProjectHubPage() {
   const { clientId, projectId } = useParams();
@@ -121,6 +122,11 @@ function ProjectHub({
 
       <div className="mb-6">
         <ProjectPhaseProgress projectId={projectId} />
+        <ProjectMonthCalendar
+          clientId={clientId}
+          projectId={projectId}
+          tasks={tasks.data?.pages.flatMap((page) => page.items) ?? []}
+        />
       </div>
 
       <nav className="hub-nav" aria-label={project.name}>

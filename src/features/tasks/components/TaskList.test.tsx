@@ -17,6 +17,8 @@ import { makeOrganization } from '@/test/factories/organization';
 const clientId = '44444444-4444-4444-8444-444444444444';
 const projectId = '55555555-5555-5555-8555-555555555555';
 const tasksUrl = `${env.API_URL}/projects/${projectId}/tasks`;
+const phasesUrl = `${env.API_URL}/projects/${projectId}/phases`;
+const membersUrl = `${env.API_URL}/members`;
 
 const testOrg = makeOrganization({
   created_at: '2026-09-11T11:12:20Z',
@@ -38,9 +40,9 @@ describe('TaskList', () => {
       status: 'todo',
     });
 
-    const membersUrl = `${env.API_URL}/members`;
     server.use(
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
+      mswHttp.get(phasesUrl, () => HttpResponse.json([])),
       mswHttp.get(tasksUrl, () =>
         HttpResponse.json({
           items: [login, makeTask({ title: 'Ship site', notes: '', status: 'done' })],
@@ -76,9 +78,9 @@ describe('TaskList', () => {
       version: 1,
     });
 
-    const membersUrl = `${env.API_URL}/members`;
     server.use(
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
+      mswHttp.get(phasesUrl, () => HttpResponse.json([])),
       mswHttp.get(tasksUrl, () => HttpResponse.json({ items: [task], next_cursor: null })),
       mswHttp.patch(`${env.API_URL}/tasks/${task.id}`, async ({ request }) => {
         const input = updateTaskSchema.parse(await request.json());
@@ -109,7 +111,6 @@ describe('TaskList', () => {
 
   it('renders a version conflict on update', async () => {
     const user = userEvent.setup();
-    const membersUrl = `${env.API_URL}/members`;
     const task = makeTask({
       project_id: projectId,
       title: 'Fix login',
@@ -119,6 +120,7 @@ describe('TaskList', () => {
 
     server.use(
       mswHttp.get(membersUrl, () => HttpResponse.json([])),
+      mswHttp.get(phasesUrl, () => HttpResponse.json([])),
       mswHttp.get(tasksUrl, () => HttpResponse.json({ items: [task], next_cursor: null })),
       mswHttp.patch(`${env.API_URL}/tasks/${task.id}`, () =>
         HttpResponse.json(
@@ -147,7 +149,10 @@ describe('TaskList', () => {
   });
 
   it('renders an empty state', async () => {
-    server.use(mswHttp.get(tasksUrl, () => HttpResponse.json({ items: [], next_cursor: null })));
+    server.use(
+      mswHttp.get(phasesUrl, () => HttpResponse.json([])),
+      mswHttp.get(tasksUrl, () => HttpResponse.json({ items: [], next_cursor: null })),
+    );
     renderWithProviders(
       <MemoryRouter>
         <TaskList clientId={clientId} projectId={projectId} />
@@ -161,6 +166,7 @@ describe('TaskList', () => {
 
   it('renders the API error response', async () => {
     server.use(
+      mswHttp.get(phasesUrl, () => HttpResponse.json([])),
       mswHttp.get(tasksUrl, () =>
         HttpResponse.json({ error: { message: 'Database unavailable' } }, { status: 503 }),
       ),
@@ -178,6 +184,8 @@ describe('TaskList', () => {
   it('hides remove for members', async () => {
     signInAs('member');
     server.use(
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
+      mswHttp.get(phasesUrl, () => HttpResponse.json([])),
       mswHttp.get(tasksUrl, () =>
         HttpResponse.json({
           items: [
@@ -215,6 +223,8 @@ describe('TaskList', () => {
     let tasks: Task[] = [task];
 
     server.use(
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
+      mswHttp.get(phasesUrl, () => HttpResponse.json([])),
       mswHttp.get(tasksUrl, () => HttpResponse.json({ items: tasks, next_cursor: null })),
       mswHttp.delete(`${env.API_URL}/tasks/${task.id}`, () => {
         tasks = [];
@@ -246,6 +256,8 @@ describe('TaskList', () => {
     });
 
     server.use(
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
+      mswHttp.get(phasesUrl, () => HttpResponse.json([])),
       mswHttp.get(tasksUrl, () => HttpResponse.json({ items: [task], next_cursor: null })),
       mswHttp.delete(`${env.API_URL}/tasks/${task.id}`, () =>
         HttpResponse.json({ error: { code: 'forbidden', message: 'forbidden' } }, { status: 403 }),
@@ -274,6 +286,8 @@ describe('TaskList', () => {
     });
 
     server.use(
+      mswHttp.get(membersUrl, () => HttpResponse.json([])),
+      mswHttp.get(phasesUrl, () => HttpResponse.json([])),
       mswHttp.get(tasksUrl, () => HttpResponse.json({ items: [task], next_cursor: null })),
       mswHttp.delete(`${env.API_URL}/tasks/${task.id}`, () =>
         HttpResponse.json(

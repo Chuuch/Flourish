@@ -3,17 +3,25 @@ import z from 'zod';
 
 export const taskStatusSchema = z.enum(['todo', 'in_progress', 'done']);
 
+const dateOnSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/)
+  .nullable();
+
 export const taskSchema = z.object({
   id: z.uuid(),
   organization_id: z.uuid(),
   project_id: z.uuid(),
   ticket_id: z.uuid().nullable(),
+  phase_id: z.uuid().nullable(),
   title: z.string().min(1),
   notes: z.string(),
   status: taskStatusSchema,
   completed_at: z.string().nullable(),
   created_by: z.uuid().nullable(),
   assignee_id: z.uuid().nullable(),
+  starts_on: dateOnSchema,
+  due_on: dateOnSchema,
   version: z.number().int().min(1),
   created_at: z.string(),
   updated_at: z.string(),
@@ -34,6 +42,17 @@ export const createTaskSchema = z.object({
   notes: z.string().max(2000),
   status: taskStatusSchema,
   assignee_id: z.uuid().nullable().optional(),
+  phase_id: z.uuid().nullable().optional(),
+  starts_on: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullable()
+    .optional(),
+  due_on: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullable()
+    .optional(),
 });
 
 export const createTaskFormSchema = z.object({
@@ -44,6 +63,9 @@ export const createTaskFormSchema = z.object({
   notes: z.string().max(2000),
   status: taskStatusSchema,
   assignee_id: z.string(),
+  phase_id: z.string(),
+  starts_on: z.string(),
+  due_on: z.string(),
 });
 
 export const updateTaskSchema = z.object({
@@ -51,6 +73,17 @@ export const updateTaskSchema = z.object({
   notes: z.string().max(2000).optional(),
   status: taskStatusSchema,
   assignee_id: z.uuid().nullable().optional(),
+  phase_id: z.uuid().nullable().optional(),
+  starts_on: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullable()
+    .optional(),
+  due_on: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullable()
+    .optional(),
   version: z.int().min(1),
 });
 
@@ -61,6 +94,9 @@ export const editTaskFormSchema = z.object({
     .max(100),
   notes: z.string().max(2000),
   assignee_id: z.string(),
+  phase_id: z.string(),
+  starts_on: z.string(),
+  due_on: z.string(),
 });
 
 export type Task = z.infer<typeof taskSchema>;
@@ -79,5 +115,13 @@ export function canCreateTasks(role: string | null | undefined): boolean {
 }
 
 export function assigneeIdOrNull(value: string): string | null {
+  return value === '' ? null : value;
+}
+
+export function phaseIdOrNull(value: string): string | null {
+  return value === '' ? null : value;
+}
+
+export function dateOnOrNull(value: string): string | null {
   return value === '' ? null : value;
 }

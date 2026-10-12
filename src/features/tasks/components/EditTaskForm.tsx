@@ -1,19 +1,25 @@
 import { useMembers } from '@/features/members';
 import {
   assigneeIdOrNull,
+  dateOnOrNull,
   editTaskFormSchema,
+  phaseIdOrNull,
   type EditTaskFormInput,
   type Task,
 } from '../schemas/task.schema';
 import { useUpdateTask } from '../hooks/useUpdateTask';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, Button, TextArea, TextField } from '@/components/ui';
+import { Alert, Button, FieldGrid, TextArea, TextField } from '@/components/ui';
 import { AssigneeSelect } from './AssigneeSelect';
 import { useI18n } from '@/features/i18n';
+import { usePhases } from '@/features/phases';
+import { PhaseSelect } from './PhaseSelect';
 
 export function EditTaskForm({ task, projectId }: { task: Task; projectId?: string }) {
   const members = useMembers();
+  const resolvedProjectid = projectId ?? task.project_id;
+  const phases = usePhases(resolvedProjectid);
   const updateTask = useUpdateTask(projectId);
   const { t } = useI18n();
 
@@ -27,6 +33,9 @@ export function EditTaskForm({ task, projectId }: { task: Task; projectId?: stri
       title: task.title,
       notes: task.notes,
       assignee_id: task.assignee_id ?? '',
+      phase_id: task.phase_id ?? '',
+      starts_on: task.starts_on ?? '',
+      due_on: task.due_on ?? '',
     },
   });
 
@@ -41,6 +50,9 @@ export function EditTaskForm({ task, projectId }: { task: Task; projectId?: stri
               notes: input.notes,
               status: task.status,
               assignee_id: assigneeIdOrNull(input.assignee_id),
+              phase_id: phaseIdOrNull(input.phase_id),
+              starts_on: dateOnOrNull(input.starts_on),
+              due_on: dateOnOrNull(input.due_on),
               version: task.version,
             },
           });
@@ -66,6 +78,28 @@ export function EditTaskForm({ task, projectId }: { task: Task; projectId?: stri
         error={errors.assignee_id?.message}
         registration={register('assignee_id')}
       />
+
+      <FieldGrid>
+        <PhaseSelect
+          id={`phase-${task.id}`}
+          label={t('tasks.phaseFor', { title: task.title })}
+          phases={phases.data ?? []}
+          error={errors.phase_id?.message}
+          registration={register('phase_id')}
+        />
+        <TextField
+          type="date"
+          label={t('tasks.startsOnFor', { title: task.title })}
+          error={errors.starts_on?.message}
+          {...register('starts_on')}
+        />
+        <TextField
+          type="date"
+          label={t('tasks.dueOnFor', { title: task.title })}
+          error={errors.due_on?.message}
+          {...register('due_on')}
+        />
+      </FieldGrid>
 
       {updateTask.isError ? <Alert>{updateTask.error.message}</Alert> : null}
 

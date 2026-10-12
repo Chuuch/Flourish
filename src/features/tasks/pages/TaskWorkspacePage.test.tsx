@@ -27,6 +27,7 @@ function signInAs(role: 'owner' | 'admin' | 'member') {
 function mockWorkspaceApis(task: Task) {
   server.use(
     mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
+    mswHttp.get(`${env.API_URL}/projects/${task.project_id}/phases`, () => HttpResponse.json([])),
     mswHttp.get(`${env.API_URL}/projects/${task.project_id}/tasks`, () =>
       HttpResponse.json({ items: [task], next_cursor: null }),
     ),
@@ -73,6 +74,7 @@ describe('TaskWorkspacePage', () => {
 
     server.use(
       mswHttp.get(`${env.API_URL}/members`, () => HttpResponse.json([])),
+      mswHttp.get(`${env.API_URL}/projects/${task.project_id}/phases`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/projects/${task.project_id}/tasks`, () =>
         HttpResponse.json({ items: [task], next_cursor: null }),
       ),
@@ -120,6 +122,7 @@ describe('TaskWorkspacePage', () => {
     const taskId = crypto.randomUUID();
 
     server.use(
+      mswHttp.get(`${env.API_URL}/projects/${projectId}/phases`, () => HttpResponse.json([])),
       mswHttp.get(`${env.API_URL}/projects/${projectId}/tasks`, () =>
         HttpResponse.json({ items: [], next_cursor: null }),
       ),
